@@ -1,0 +1,14 @@
+# Common ignored files/directories
+.DS_Store
+php_error.log
+cache/
+logs/
+vendor/
+.vscode/
+
+# Project-specific ignored files/directories
+db/database.sqlite
+secrets/
+uploads/
+.kilocode/
+php_error.log

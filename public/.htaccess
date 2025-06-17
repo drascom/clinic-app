@@ -1,0 +1,3 @@
+# MIME type configuration for HEIC files
+AddType image/heic .heic
+AddType image/heif .heif

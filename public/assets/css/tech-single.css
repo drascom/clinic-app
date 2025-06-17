@@ -1,0 +1,241 @@
+:root {
+  --primary-color: #0d6efd;
+  --secondary-color: #6c757d;
+  --success-color: #198754;
+  --warning-color: #ffc107;
+  --danger-color: #dc3545;
+  --light-color: #f8f9fa;
+  --dark-color: #212529;
+}
+
+[data-bs-theme="dark"] {
+  --bs-body-bg: #1a1a1a;
+  --bs-body-color: #ffffff;
+  --bs-card-bg: #2d2d2d;
+  --bs-border-color: #404040;
+}
+
+body {
+  font-family: 'Klavika', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.calendar-table {
+  margin-bottom: 0;
+}
+
+.calendar-table td {
+  height: 80px;
+  width: 14.28%;
+  vertical-align: top;
+  padding: 8px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.calendar-table td:hover {
+  background-color: var(--bs-light);
+  transform: scale(1.02);
+}
+
+[data-bs-theme="dark"] .calendar-table td:hover {
+  background-color: var(--bs-dark);
+}
+
+.calendar-day {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.calendar-day:hover {
+  transform: scale(1.05);
+}
+
+.calendar-day.available {
+  background-color: var(--primary-color);
+  color: white;
+  box-shadow: 0 2px 8px rgba(13, 110, 253, 0.3);
+}
+
+.calendar-day.today {
+  border: 2px solid var(--warning-color);
+  box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.2);
+}
+
+.calendar-day.today.available {
+  border-color: var(--warning-color);
+}
+
+.calendar-day.empty {
+  cursor: default;
+  color: var(--bs-secondary);
+}
+
+.calendar-day.empty:hover {
+  transform: none;
+  background: transparent;
+}
+
+.list-view-container {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.list-day-item {
+  padding: 16px;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  justify-content: between;
+  align-items: center;
+}
+
+.list-day-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.list-day-item.available {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.list-day-item.today {
+  border: 2px solid var(--warning-color);
+  box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.2);
+}
+
+/* Weekend styling for calendar and list views */
+.calendar-day.weekend {
+  background-color: #dcdada !important;
+  color: #721c24 !important;
+  cursor: not-allowed !important;
+  opacity: 0.7;
+}
+
+.calendar-day.weekend:hover {
+  background-color: #bfbebe !important;
+  color: #721c24 !important;
+}
+
+.list-day-item.weekend {
+  background-color: #dcdada !important;
+  color: #545353 !important;
+  cursor: not-allowed !important;
+  opacity: 0.8;
+}
+
+.list-day-item.weekend:hover {
+  background-color: #bfbebe !important;
+  color: #272727 !important;
+}
+
+.legend-box {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+#loading {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+}
+
+.card {
+  border: none;
+  border-radius: 12px;
+}
+
+.btn {
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.form-control {
+  border-radius: 8px;
+  border: 1px solid var(--bs-border-color);
+  padding: 12px 16px;
+}
+
+.form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.alert {
+  border-radius: 8px;
+  border: none;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+}
+
+/* Dark theme adjustments */
+[data-bs-theme="dark"] .calendar-table {
+  --bs-table-bg: var(--bs-card-bg);
+}
+
+[data-bs-theme="dark"] .table-bordered {
+  border-color: var(--bs-border-color);
+}
+
+[data-bs-theme="dark"] .table-bordered td,
+[data-bs-theme="dark"] .table-bordered th {
+  border-color: var(--bs-border-color);
+}
+
+[data-bs-theme="dark"] .legend-box.bg-light {
+  background-color: var(--bs-secondary) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .calendar-table td {
+    height: 60px;
+    font-size: 0.875rem;
+  }
+
+  .navbar-brand {
+    font-size: 1.25rem;
+  }
+
+  .card-body {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .calendar-table td {
+    height: 50px;
+    font-size: 0.75rem;
+    padding: 4px;
+  }
+
+  .container {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}

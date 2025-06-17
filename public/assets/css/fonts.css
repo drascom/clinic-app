@@ -1,0 +1,233 @@
+/* ===================================
+   CUSTOM FONT DEFINITIONS
+   =================================== */
+
+/* Klavika Font Family */
+@font-face {
+    font-family: 'Klavika';
+    src: url('../fonts/Klavika.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+    /* Improves loading performance */
+}
+
+/* Font weight variations for Klavika - using same file for all weights */
+@font-face {
+    font-family: 'Klavika';
+    src: url('../fonts/Klavika.ttf') format('truetype');
+    font-weight: 300 700;
+    /* Support range of weights */
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Fallback font stack for better compatibility */
+:root {
+    --font-family-klavika: 'Klavika', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Apply Klavika font system-wide */
+body,
+html {
+    font-family: var(--font-family-klavika) !important;
+}
+
+/* Ensure all text elements use Klavika */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+    font-family: var(--font-family-klavika) !important;
+}
+
+/* Navigation elements */
+.navbar-brand,
+.nav-link,
+.navbar-nav {
+    font-family: var(--font-family-klavika) !important;
+}
+
+/* Form elements */
+.form-control,
+.form-select,
+.form-label,
+.form-text,
+input,
+textarea,
+select {
+    font-family: var(--font-family-klavika) !important;
+}
+
+/* Button elements */
+.btn,
+button {
+    font-family: var(--font-family-klavika) !important;
+}
+
+/* Table elements */
+.table,
+.table th,
+.table td {
+    font-family: var(--font-family-klavika) !important;
+}
+
+/* Card elements */
+.card,
+.card-title,
+.card-text,
+.card-header,
+.card-body,
+.card-footer {
+    font-family: var(--font-family-klavika) !important;
+}
+
+/* Alert and badge elements */
+.alert,
+.badge {
+    font-family: var(--font-family-klavika) !important;
+}
+
+/* Modal elements */
+.modal,
+.modal-title,
+.modal-body,
+.modal-header,
+.modal-footer {
+    font-family: var(--font-family-klavika) !important;
+}
+
+/* Dropdown elements */
+.dropdown-menu,
+.dropdown-item {
+    font-family: var(--font-family-klavika) !important;
+}
+
+/* Breadcrumb and pagination */
+.breadcrumb,
+.pagination {
+    font-family: var(--font-family-klavika) !important;
+}
+
+/* Tooltip and popover */
+.tooltip,
+.popover {
+    font-family: var(--font-family-klavika) !important;
+}
+
+/* Calendar specific elements */
+.fc,
+.fc-event,
+.fc-toolbar,
+.fc-button {
+    font-family: var(--font-family-klavika) !important;
+}
+
+/* Global font override - ensures Klavika is used everywhere except icons */
+*:not(.fa):not(.fas):not(.far):not(.fal):not(.fab):not(.fad):not(.fass):not(.fasr):not(.fasl):not([class*="fa-"]) {
+    font-family: var(--font-family-klavika) !important;
+}
+
+/* Preserve FontAwesome icons */
+.fa,
+.fas,
+.far,
+.fal,
+.fab,
+.fad,
+.fass,
+.fasr,
+.fasl,
+[class*="fa-"] {
+    font-family: "Font Awesome 6 Free", "Font Awesome 6 Pro", "Font Awesome 6 Brands" !important;
+}
+
+/* Ensure FontAwesome icons display correctly */
+.fa,
+.fas,
+.far,
+.fal,
+.fab,
+.fad,
+.fass,
+.fasr,
+.fasl,
+[class*="fa-"] {
+    -webkit-font-smoothing: antialiased;
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 1;
+}
+
+/* Additional FontAwesome preservation rules */
+i.fa,
+i.fas,
+i.far,
+i.fal,
+i.fab,
+i.fad,
+i.fass,
+i.fasr,
+i.fasl,
+i[class*="fa-"],
+span.fa,
+span.fas,
+span.far,
+span.fal,
+span.fab,
+span.fad,
+span.fass,
+span.fasr,
+span.fasl,
+span[class*="fa-"] {
+    font-family: "Font Awesome 6 Free", "Font Awesome 6 Pro", "Font Awesome 6 Brands" !important;
+}
+
+/* Ensure icons in buttons and navigation work */
+.btn .fa,
+.btn .fas,
+.btn .far,
+.btn .fal,
+.btn .fab,
+.btn .fad,
+.btn .fass,
+.btn .fasr,
+.btn .fasl,
+.btn [class*="fa-"],
+.nav-link .fa,
+.nav-link .fas,
+.nav-link .far,
+.nav-link .fal,
+.nav-link .fab,
+.nav-link .fad,
+.nav-link .fass,
+.nav-link .fasr,
+.nav-link .fasl,
+.nav-link [class*="fa-"],
+.navbar-brand .fa,
+.navbar-brand .fas,
+.navbar-brand .far,
+.navbar-brand .fal,
+.navbar-brand .fab,
+.navbar-brand .fad,
+.navbar-brand .fass,
+.navbar-brand .fasr,
+.navbar-brand .fasl,
+.navbar-brand [class*="fa-"] {
+    font-family: "Font Awesome 6 Free", "Font Awesome 6 Pro", "Font Awesome 6 Brands" !important;
+}
+
+/* Specific overrides for better performance */
+.klavika-font {
+    font-family: 'Klavika', sans-serif !important;
+}

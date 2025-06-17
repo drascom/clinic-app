@@ -1,0 +1,158 @@
+ :root {
+     --color-primary: #87CEEB;
+     --color-accent: #40E0D0;
+     --color-bg: #F8F9FA;
+     --color-text: #2c3e50;
+     --frosted-bg: rgba(255, 255, 255, 0.8);
+     --shadow-elevated: 0 4px 20px rgba(0, 0, 0, 0.06);
+ }
+
+ .dark-mode {
+     --color-primary: #4ea1d3;
+     --color-accent: #20b2aa;
+     --color-bg: #121212;
+     --color-text: #f0f0f0;
+     --frosted-bg: rgba(30, 30, 30, 0.7);
+     --shadow-elevated: 0 4px 20px rgba(0, 0, 0, 0.3);
+ }
+
+ html,
+ body {
+     font-size: 1.3rem;
+ }
+
+ a,
+ button {
+     transition: all 0.2s ease-in-out;
+ }
+
+ /* Frosted glass utility */
+ .frosted {
+     background: var(--frosted-bg) !important;
+     backdrop-filter: blur(10px);
+ }
+
+ /* Primary / Accent overrides */
+ .btn-primary {
+     background-color: var(--color-primary);
+     border-color: var(--color-primary);
+     color: #fff;
+ }
+
+ .btn-outline-light:hover {
+     background-color: var(--color-accent);
+     border-color: var(--color-accent);
+     color: #fff;
+ }
+
+ /* Card styling */
+ .card {
+     border: none;
+     box-shadow: var(--shadow-elevated);
+ }
+
+ .card-header {
+     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+ }
+
+ /* Calendar day buttons */
+ .calendar-day {
+     width: 100%;
+     aspect-ratio: 1 / 1;
+     border: none;
+     border-radius: 12px;
+     background: transparent;
+     font-weight: 500;
+     color: var(--color-text);
+ }
+
+ .calendar-day:hover:not(.empty):not(.weekend):not(:disabled) {
+     background: var(--color-primary);
+     color: #fff;
+     transform: scale(1.05);
+ }
+
+ .calendar-day.available {
+     background: var(--color-primary);
+     color: #fff;
+ }
+
+ .calendar-day.today {
+     outline: 3px solid var(--color-accent);
+ }
+
+ .calendar-day.weekend {
+     background: rgba(220, 53, 69, 0.15);
+     color: rgba(220, 53, 69, 0.8);
+     cursor: not-allowed;
+ }
+
+ /* List view items */
+ .list-day-item {
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     padding: 0.75rem 1rem;
+     margin-bottom: 0.5rem;
+     border-radius: 12px;
+     background: transparent;
+     border: 1px solid rgba(0, 0, 0, 0.05);
+     transition: all 0.2s ease-in-out;
+ }
+
+ .list-day-item.available {
+     background: var(--color-primary);
+     color: #fff;
+ }
+
+ .list-day-item:hover:not(.weekend) {
+     background: var(--color-primary);
+     color: #fff;
+     transform: translateY(-2px);
+     box-shadow: var(--shadow-elevated);
+ }
+
+ .list-day-item.weekend {
+     background: rgba(220, 53, 69, 0.15);
+     color: rgba(220, 53, 69, 0.8);
+     cursor: not-allowed;
+ }
+
+ /* Legend */
+ .legend-box {
+     width: 14px;
+     height: 14px;
+     border-radius: 50%;
+ }
+
+ /* Theme toggle */
+ /* #theme-btn {
+     width: 70px;
+     height: 70px;
+     border-radius: 50%;
+     border: none;
+     background: var(--frosted-bg);
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     box-shadow: var(--shadow-elevated);
+ } */
+
+ /* #theme-btn i {
+     color: var(--color-text);
+ } */
+
+ /* Responsive tweaks */
+ @media (max-width: 767.98px) {
+     .card-header {
+         position: sticky;
+         top: 0;
+         z-index: 10;
+         font-size: 0.5rem !important;
+
+     }
+
+     body {
+         font-size: 0.8rem !important;
+     }
+ }

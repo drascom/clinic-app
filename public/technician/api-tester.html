@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API Tester</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0 auto;
+            max-width: 640px;
+            padding: 2rem;
+        }
+
+        label {
+            display: block;
+            margin-top: 1rem;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 0.5rem;
+            box-sizing: border-box;
+        }
+
+        button {
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+        }
+
+        pre {
+            background: #f4f4f4;
+            padding: 1rem;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>API Tester</h1>
+    <form id="postForm">
+        <label>
+            URL
+            <input type="text" id="url" value="localhost" />
+        </label>
+        <label>
+            Port
+            <input type="number" id="port" value="9000" />
+        </label>
+        <label>
+            Entity
+            <input type="text" id="entity" placeholder="e.g. users" />
+        </label>
+        <label>
+            Action
+            <input type="text" id="action" placeholder="e.g. list" />
+        </label>
+        <label>
+            Additional Data (JSON, optional)
+            <textarea id="data" rows="6" placeholder='{"key": "value"}'></textarea>
+        </label>
+        <button type="submit">Send POST</button>
+    </form>
+
+    <h2>Response</h2>
+    <pre id="response"></pre>
+
+    <script>
+        document.getElementById("postForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            // Gather form values with defaults
+            const url = document.getElementById("url").value || "localhost";
+            const port = document.getElementById("port").value || "9000";
+            const entity = document.getElementById("entity").value.trim();
+            const action = document.getElementById("action").value.trim();
+
+            // Basic validation
+            if (!entity || !action) {
+                alert("Please provide both an entity and an action.");
+                return;
+            }
+
+            // Parse extra JSON data, if provided
+            let extraText = document.getElementById("data").value.trim();
+            let extraObj = {};
+            if (extraText) {
+                try {
+                    extraObj = JSON.parse(extraText);
+                } catch (err) {
+                    alert("Invalid JSON body: " + err.message);
+                    return;
+                }
+            }
+
+            // Build the final payload, embedding entity + action
+            const payload = { entity, action, ...extraObj };
+            const endpoint = `http://${url}:${port}/api.php`;
+
+            try {
+                const res = await fetch(endpoint, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+                });
+
+                const text = await res.text();
+                document.getElementById("response").textContent = text;
+            } catch (err) {
+                document.getElementById("response").textContent =
+                    "Request failed: " + err;
+            }
+        });
+    </script>
+</body>
+
+</html>

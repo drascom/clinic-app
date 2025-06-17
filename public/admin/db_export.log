@@ -1,0 +1,1329 @@
+2025-06-12 00:58:21,969 - INFO - Starting database export process
+2025-06-12 00:58:21,970 - INFO - Initialized exporter for database: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/database.sqlite
+2025-06-12 00:58:21,970 - INFO - Backup directory: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_005821
+2025-06-12 00:58:21,971 - INFO - Found 18 tables: users, surgeries, appointments, patients, photo_album_types, patient_photos, agencies, invitations, interview_invitations, rooms, room_reservations, technicians, technician_availability, surgery_technicians, procedures, settings, job_candidates, candidate_notes
+2025-06-12 00:58:21,971 - INFO - Exporting table: users
+2025-06-12 00:58:21,971 - INFO - Exported 4 records from table 'users'
+2025-06-12 00:58:21,971 - INFO - Saved 4 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_005821/users.json
+2025-06-12 00:58:21,971 - INFO - Exporting table: surgeries
+2025-06-12 00:58:21,971 - INFO - Exported 0 records from table 'surgeries'
+2025-06-12 00:58:21,971 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_005821/surgeries.json
+2025-06-12 00:58:21,971 - INFO - Exporting table: appointments
+2025-06-12 00:58:21,971 - INFO - Exported 0 records from table 'appointments'
+2025-06-12 00:58:21,972 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_005821/appointments.json
+2025-06-12 00:58:21,972 - INFO - Exporting table: patients
+2025-06-12 00:58:21,972 - INFO - Exported 0 records from table 'patients'
+2025-06-12 00:58:21,972 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_005821/patients.json
+2025-06-12 00:58:21,972 - INFO - Exporting table: photo_album_types
+2025-06-12 00:58:21,972 - INFO - Exported 15 records from table 'photo_album_types'
+2025-06-12 00:58:21,972 - INFO - Saved 15 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_005821/photo_album_types.json
+2025-06-12 00:58:21,972 - INFO - Exporting table: patient_photos
+2025-06-12 00:58:21,972 - INFO - Exported 0 records from table 'patient_photos'
+2025-06-12 00:58:21,972 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_005821/patient_photos.json
+2025-06-12 00:58:21,972 - INFO - Exporting table: agencies
+2025-06-12 00:58:21,972 - INFO - Exported 3 records from table 'agencies'
+2025-06-12 00:58:21,973 - INFO - Saved 3 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_005821/agencies.json
+2025-06-12 00:58:21,973 - INFO - Exporting table: invitations
+2025-06-12 00:58:21,973 - INFO - Exported 0 records from table 'invitations'
+2025-06-12 00:58:21,973 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_005821/invitations.json
+2025-06-12 00:58:21,973 - INFO - Exporting table: interview_invitations
+2025-06-12 00:58:21,973 - INFO - Exported 1 records from table 'interview_invitations'
+2025-06-12 00:58:21,973 - INFO - Saved 1 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_005821/interview_invitations.json
+2025-06-12 00:58:21,973 - INFO - Exporting table: rooms
+2025-06-12 00:58:21,973 - INFO - Exported 5 records from table 'rooms'
+2025-06-12 00:58:21,973 - INFO - Saved 5 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_005821/rooms.json
+2025-06-12 00:58:21,973 - INFO - Exporting table: room_reservations
+2025-06-12 00:58:21,973 - INFO - Exported 0 records from table 'room_reservations'
+2025-06-12 00:58:21,973 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_005821/room_reservations.json
+2025-06-12 00:58:21,974 - INFO - Exporting table: technicians
+2025-06-12 00:58:21,974 - INFO - Exported 14 records from table 'technicians'
+2025-06-12 00:58:21,974 - INFO - Saved 14 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_005821/technicians.json
+2025-06-12 00:58:21,974 - INFO - Exporting table: technician_availability
+2025-06-12 00:58:21,974 - INFO - Exported 0 records from table 'technician_availability'
+2025-06-12 00:58:21,974 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_005821/technician_availability.json
+2025-06-12 00:58:21,974 - INFO - Exporting table: surgery_technicians
+2025-06-12 00:58:21,974 - INFO - Exported 0 records from table 'surgery_technicians'
+2025-06-12 00:58:21,974 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_005821/surgery_technicians.json
+2025-06-12 00:58:21,974 - INFO - Exporting table: procedures
+2025-06-12 00:58:21,974 - INFO - Exported 22 records from table 'procedures'
+2025-06-12 00:58:21,974 - INFO - Saved 22 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_005821/procedures.json
+2025-06-12 00:58:21,975 - INFO - Exporting table: settings
+2025-06-12 00:58:21,975 - INFO - Exported 3 records from table 'settings'
+2025-06-12 00:58:21,975 - INFO - Saved 3 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_005821/settings.json
+2025-06-12 00:58:21,975 - INFO - Exporting table: job_candidates
+2025-06-12 00:58:21,975 - INFO - Exported 2 records from table 'job_candidates'
+2025-06-12 00:58:21,975 - INFO - Saved 2 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_005821/job_candidates.json
+2025-06-12 00:58:21,975 - INFO - Exporting table: candidate_notes
+2025-06-12 00:58:21,975 - INFO - Exported 0 records from table 'candidate_notes'
+2025-06-12 00:58:21,976 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_005821/candidate_notes.json
+2025-06-12 00:58:21,976 - INFO - Created backup manifest: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_005821/backup_manifest.json
+2025-06-12 00:58:21,976 - INFO - Export completed: 18/18 tables exported successfully
+2025-06-12 00:58:21,976 - INFO - Total records exported: 69
+2025-06-12 00:58:21,976 - INFO - Backup saved to: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_005821
+2025-06-12 00:58:21,976 - INFO - Database export completed successfully
+2025-06-12 01:07:29,045 - INFO - Starting database export process
+2025-06-12 01:07:29,045 - INFO - Initialized exporter for database: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/database.sqlite
+2025-06-12 01:07:29,045 - INFO - Backup directory: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_010729
+2025-06-12 01:07:29,046 - INFO - Found 18 tables: users, surgeries, appointments, patients, photo_album_types, patient_photos, agencies, invitations, interview_invitations, rooms, room_reservations, technicians, technician_availability, surgery_technicians, procedures, settings, job_candidates, candidate_notes
+2025-06-12 01:07:29,046 - INFO - Exporting table: users
+2025-06-12 01:07:29,046 - INFO - Exported 4 records from table 'users'
+2025-06-12 01:07:29,047 - INFO - Saved 4 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_010729/users.json
+2025-06-12 01:07:29,047 - INFO - Exporting table: surgeries
+2025-06-12 01:07:29,047 - INFO - Exported 0 records from table 'surgeries'
+2025-06-12 01:07:29,047 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_010729/surgeries.json
+2025-06-12 01:07:29,047 - INFO - Exporting table: appointments
+2025-06-12 01:07:29,047 - INFO - Exported 0 records from table 'appointments'
+2025-06-12 01:07:29,047 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_010729/appointments.json
+2025-06-12 01:07:29,047 - INFO - Exporting table: patients
+2025-06-12 01:07:29,048 - INFO - Exported 0 records from table 'patients'
+2025-06-12 01:07:29,048 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_010729/patients.json
+2025-06-12 01:07:29,048 - INFO - Exporting table: photo_album_types
+2025-06-12 01:07:29,048 - INFO - Exported 15 records from table 'photo_album_types'
+2025-06-12 01:07:29,048 - INFO - Saved 15 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_010729/photo_album_types.json
+2025-06-12 01:07:29,048 - INFO - Exporting table: patient_photos
+2025-06-12 01:07:29,048 - INFO - Exported 0 records from table 'patient_photos'
+2025-06-12 01:07:29,048 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_010729/patient_photos.json
+2025-06-12 01:07:29,048 - INFO - Exporting table: agencies
+2025-06-12 01:07:29,048 - INFO - Exported 3 records from table 'agencies'
+2025-06-12 01:07:29,048 - INFO - Saved 3 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_010729/agencies.json
+2025-06-12 01:07:29,048 - INFO - Exporting table: invitations
+2025-06-12 01:07:29,048 - INFO - Exported 0 records from table 'invitations'
+2025-06-12 01:07:29,049 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_010729/invitations.json
+2025-06-12 01:07:29,049 - INFO - Exporting table: interview_invitations
+2025-06-12 01:07:29,049 - INFO - Exported 1 records from table 'interview_invitations'
+2025-06-12 01:07:29,049 - INFO - Saved 1 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_010729/interview_invitations.json
+2025-06-12 01:07:29,049 - INFO - Exporting table: rooms
+2025-06-12 01:07:29,049 - INFO - Exported 5 records from table 'rooms'
+2025-06-12 01:07:29,049 - INFO - Saved 5 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_010729/rooms.json
+2025-06-12 01:07:29,049 - INFO - Exporting table: room_reservations
+2025-06-12 01:07:29,049 - INFO - Exported 0 records from table 'room_reservations'
+2025-06-12 01:07:29,049 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_010729/room_reservations.json
+2025-06-12 01:07:29,049 - INFO - Exporting table: technicians
+2025-06-12 01:07:29,049 - INFO - Exported 14 records from table 'technicians'
+2025-06-12 01:07:29,050 - INFO - Saved 14 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_010729/technicians.json
+2025-06-12 01:07:29,050 - INFO - Exporting table: technician_availability
+2025-06-12 01:07:29,050 - INFO - Exported 0 records from table 'technician_availability'
+2025-06-12 01:07:29,050 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_010729/technician_availability.json
+2025-06-12 01:07:29,050 - INFO - Exporting table: surgery_technicians
+2025-06-12 01:07:29,050 - INFO - Exported 0 records from table 'surgery_technicians'
+2025-06-12 01:07:29,050 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_010729/surgery_technicians.json
+2025-06-12 01:07:29,050 - INFO - Exporting table: procedures
+2025-06-12 01:07:29,050 - INFO - Exported 22 records from table 'procedures'
+2025-06-12 01:07:29,050 - INFO - Saved 22 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_010729/procedures.json
+2025-06-12 01:07:29,050 - INFO - Exporting table: settings
+2025-06-12 01:07:29,050 - INFO - Exported 3 records from table 'settings'
+2025-06-12 01:07:29,051 - INFO - Saved 3 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_010729/settings.json
+2025-06-12 01:07:29,051 - INFO - Exporting table: job_candidates
+2025-06-12 01:07:29,051 - INFO - Exported 2 records from table 'job_candidates'
+2025-06-12 01:07:29,051 - INFO - Saved 2 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_010729/job_candidates.json
+2025-06-12 01:07:29,051 - INFO - Exporting table: candidate_notes
+2025-06-12 01:07:29,051 - INFO - Exported 0 records from table 'candidate_notes'
+2025-06-12 01:07:29,051 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_010729/candidate_notes.json
+2025-06-12 01:07:29,051 - INFO - Created backup manifest: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_010729/backup_manifest.json
+2025-06-12 01:07:29,052 - INFO - Added agencies.json to ZIP archive
+2025-06-12 01:07:29,052 - INFO - Added settings.json to ZIP archive
+2025-06-12 01:07:29,052 - INFO - Added backup_manifest.json to ZIP archive
+2025-06-12 01:07:29,052 - INFO - Added patients.json to ZIP archive
+2025-06-12 01:07:29,052 - INFO - Added appointments.json to ZIP archive
+2025-06-12 01:07:29,052 - INFO - Added candidate_notes.json to ZIP archive
+2025-06-12 01:07:29,053 - INFO - Added users.json to ZIP archive
+2025-06-12 01:07:29,053 - INFO - Added procedures.json to ZIP archive
+2025-06-12 01:07:29,053 - INFO - Added rooms.json to ZIP archive
+2025-06-12 01:07:29,053 - INFO - Added job_candidates.json to ZIP archive
+2025-06-12 01:07:29,053 - INFO - Added interview_invitations.json to ZIP archive
+2025-06-12 01:07:29,053 - INFO - Added invitations.json to ZIP archive
+2025-06-12 01:07:29,053 - INFO - Added technician_availability.json to ZIP archive
+2025-06-12 01:07:29,053 - INFO - Added patient_photos.json to ZIP archive
+2025-06-12 01:07:29,053 - INFO - Added photo_album_types.json to ZIP archive
+2025-06-12 01:07:29,053 - INFO - Added room_reservations.json to ZIP archive
+2025-06-12 01:07:29,053 - INFO - Added surgery_technicians.json to ZIP archive
+2025-06-12 01:07:29,054 - INFO - Added technicians.json to ZIP archive
+2025-06-12 01:07:29,054 - INFO - Added surgeries.json to ZIP archive
+2025-06-12 01:07:29,054 - INFO - Created ZIP backup: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_010729.zip (10.87 KB)
+2025-06-12 01:07:29,054 - INFO - Export completed: 18/18 tables exported successfully
+2025-06-12 01:07:29,054 - INFO - Total records exported: 69
+2025-06-12 01:07:29,054 - INFO - Backup saved to: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_010729
+2025-06-12 01:07:29,054 - INFO - ZIP backup created: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_010729.zip
+2025-06-12 01:07:29,054 - INFO - Database export completed successfully
+2025-06-12 01:13:17,725 - INFO - Starting database export process
+2025-06-12 01:13:17,725 - INFO - Initialized exporter for database: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/database.sqlite
+2025-06-12 01:13:17,725 - INFO - Backup directory: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011317
+2025-06-12 01:13:17,727 - INFO - Found 18 tables: users, surgeries, appointments, patients, photo_album_types, patient_photos, agencies, invitations, interview_invitations, rooms, room_reservations, technicians, technician_availability, surgery_technicians, procedures, settings, job_candidates, candidate_notes
+2025-06-12 01:13:17,727 - INFO - Exporting table: users
+2025-06-12 01:13:17,727 - INFO - Exported 4 records from table 'users'
+2025-06-12 01:13:17,727 - INFO - Saved 4 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011317/users.json
+2025-06-12 01:13:17,727 - INFO - Exporting table: surgeries
+2025-06-12 01:13:17,728 - INFO - Exported 0 records from table 'surgeries'
+2025-06-12 01:13:17,728 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011317/surgeries.json
+2025-06-12 01:13:17,728 - INFO - Exporting table: appointments
+2025-06-12 01:13:17,728 - INFO - Exported 0 records from table 'appointments'
+2025-06-12 01:13:17,728 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011317/appointments.json
+2025-06-12 01:13:17,728 - INFO - Exporting table: patients
+2025-06-12 01:13:17,728 - INFO - Exported 0 records from table 'patients'
+2025-06-12 01:13:17,728 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011317/patients.json
+2025-06-12 01:13:17,728 - INFO - Exporting table: photo_album_types
+2025-06-12 01:13:17,728 - INFO - Exported 15 records from table 'photo_album_types'
+2025-06-12 01:13:17,729 - INFO - Saved 15 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011317/photo_album_types.json
+2025-06-12 01:13:17,729 - INFO - Exporting table: patient_photos
+2025-06-12 01:13:17,729 - INFO - Exported 0 records from table 'patient_photos'
+2025-06-12 01:13:17,729 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011317/patient_photos.json
+2025-06-12 01:13:17,729 - INFO - Exporting table: agencies
+2025-06-12 01:13:17,729 - INFO - Exported 3 records from table 'agencies'
+2025-06-12 01:13:17,729 - INFO - Saved 3 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011317/agencies.json
+2025-06-12 01:13:17,730 - INFO - Exporting table: invitations
+2025-06-12 01:13:17,730 - INFO - Exported 0 records from table 'invitations'
+2025-06-12 01:13:17,730 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011317/invitations.json
+2025-06-12 01:13:17,730 - INFO - Exporting table: interview_invitations
+2025-06-12 01:13:17,730 - INFO - Exported 1 records from table 'interview_invitations'
+2025-06-12 01:13:17,730 - INFO - Saved 1 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011317/interview_invitations.json
+2025-06-12 01:13:17,730 - INFO - Exporting table: rooms
+2025-06-12 01:13:17,730 - INFO - Exported 5 records from table 'rooms'
+2025-06-12 01:13:17,730 - INFO - Saved 5 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011317/rooms.json
+2025-06-12 01:13:17,730 - INFO - Exporting table: room_reservations
+2025-06-12 01:13:17,730 - INFO - Exported 0 records from table 'room_reservations'
+2025-06-12 01:13:17,731 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011317/room_reservations.json
+2025-06-12 01:13:17,731 - INFO - Exporting table: technicians
+2025-06-12 01:13:17,731 - INFO - Exported 14 records from table 'technicians'
+2025-06-12 01:13:17,731 - INFO - Saved 14 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011317/technicians.json
+2025-06-12 01:13:17,731 - INFO - Exporting table: technician_availability
+2025-06-12 01:13:17,731 - INFO - Exported 0 records from table 'technician_availability'
+2025-06-12 01:13:17,731 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011317/technician_availability.json
+2025-06-12 01:13:17,731 - INFO - Exporting table: surgery_technicians
+2025-06-12 01:13:17,731 - INFO - Exported 0 records from table 'surgery_technicians'
+2025-06-12 01:13:17,732 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011317/surgery_technicians.json
+2025-06-12 01:13:17,732 - INFO - Exporting table: procedures
+2025-06-12 01:13:17,732 - INFO - Exported 22 records from table 'procedures'
+2025-06-12 01:13:17,732 - INFO - Saved 22 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011317/procedures.json
+2025-06-12 01:13:17,732 - INFO - Exporting table: settings
+2025-06-12 01:13:17,732 - INFO - Exported 3 records from table 'settings'
+2025-06-12 01:13:17,732 - INFO - Saved 3 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011317/settings.json
+2025-06-12 01:13:17,732 - INFO - Exporting table: job_candidates
+2025-06-12 01:13:17,733 - INFO - Exported 2 records from table 'job_candidates'
+2025-06-12 01:13:17,733 - INFO - Saved 2 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011317/job_candidates.json
+2025-06-12 01:13:17,733 - INFO - Exporting table: candidate_notes
+2025-06-12 01:13:17,733 - INFO - Exported 0 records from table 'candidate_notes'
+2025-06-12 01:13:17,733 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011317/candidate_notes.json
+2025-06-12 01:13:17,733 - INFO - Created backup manifest: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011317/backup_manifest.json
+2025-06-12 01:13:17,734 - INFO - Added agencies.json to ZIP archive
+2025-06-12 01:13:17,734 - INFO - Added settings.json to ZIP archive
+2025-06-12 01:13:17,734 - INFO - Added backup_manifest.json to ZIP archive
+2025-06-12 01:13:17,734 - INFO - Added patients.json to ZIP archive
+2025-06-12 01:13:17,734 - INFO - Added appointments.json to ZIP archive
+2025-06-12 01:13:17,734 - INFO - Added candidate_notes.json to ZIP archive
+2025-06-12 01:13:17,734 - INFO - Added users.json to ZIP archive
+2025-06-12 01:13:17,734 - INFO - Added procedures.json to ZIP archive
+2025-06-12 01:13:17,735 - INFO - Added rooms.json to ZIP archive
+2025-06-12 01:13:17,735 - INFO - Added job_candidates.json to ZIP archive
+2025-06-12 01:13:17,735 - INFO - Added interview_invitations.json to ZIP archive
+2025-06-12 01:13:17,735 - INFO - Added invitations.json to ZIP archive
+2025-06-12 01:13:17,735 - INFO - Added technician_availability.json to ZIP archive
+2025-06-12 01:13:17,735 - INFO - Added patient_photos.json to ZIP archive
+2025-06-12 01:13:17,735 - INFO - Added photo_album_types.json to ZIP archive
+2025-06-12 01:13:17,735 - INFO - Added room_reservations.json to ZIP archive
+2025-06-12 01:13:17,735 - INFO - Added surgery_technicians.json to ZIP archive
+2025-06-12 01:13:17,735 - INFO - Added technicians.json to ZIP archive
+2025-06-12 01:13:17,735 - INFO - Added surgeries.json to ZIP archive
+2025-06-12 01:13:17,736 - INFO - Created ZIP backup: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011317.zip (10.88 KB)
+2025-06-12 01:13:17,736 - INFO - Export completed: 18/18 tables exported successfully
+2025-06-12 01:13:17,736 - INFO - Total records exported: 69
+2025-06-12 01:13:17,736 - INFO - Backup saved to: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011317
+2025-06-12 01:13:17,736 - INFO - ZIP backup created: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011317.zip
+2025-06-12 01:13:17,736 - INFO - Database export completed successfully
+2025-06-12 01:13:21,422 - INFO - Starting database export process
+2025-06-12 01:13:21,423 - INFO - Initialized exporter for database: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/database.sqlite
+2025-06-12 01:13:21,423 - INFO - Backup directory: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011321
+2025-06-12 01:13:21,425 - INFO - Found 18 tables: users, surgeries, appointments, patients, photo_album_types, patient_photos, agencies, invitations, interview_invitations, rooms, room_reservations, technicians, technician_availability, surgery_technicians, procedures, settings, job_candidates, candidate_notes
+2025-06-12 01:13:21,425 - INFO - Exporting table: users
+2025-06-12 01:13:21,425 - INFO - Exported 4 records from table 'users'
+2025-06-12 01:13:21,425 - INFO - Saved 4 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011321/users.json
+2025-06-12 01:13:21,425 - INFO - Exporting table: surgeries
+2025-06-12 01:13:21,425 - INFO - Exported 0 records from table 'surgeries'
+2025-06-12 01:13:21,425 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011321/surgeries.json
+2025-06-12 01:13:21,426 - INFO - Exporting table: appointments
+2025-06-12 01:13:21,426 - INFO - Exported 0 records from table 'appointments'
+2025-06-12 01:13:21,426 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011321/appointments.json
+2025-06-12 01:13:21,426 - INFO - Exporting table: patients
+2025-06-12 01:13:21,426 - INFO - Exported 0 records from table 'patients'
+2025-06-12 01:13:21,426 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011321/patients.json
+2025-06-12 01:13:21,426 - INFO - Exporting table: photo_album_types
+2025-06-12 01:13:21,426 - INFO - Exported 15 records from table 'photo_album_types'
+2025-06-12 01:13:21,426 - INFO - Saved 15 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011321/photo_album_types.json
+2025-06-12 01:13:21,426 - INFO - Exporting table: patient_photos
+2025-06-12 01:13:21,426 - INFO - Exported 0 records from table 'patient_photos'
+2025-06-12 01:13:21,427 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011321/patient_photos.json
+2025-06-12 01:13:21,427 - INFO - Exporting table: agencies
+2025-06-12 01:13:21,427 - INFO - Exported 3 records from table 'agencies'
+2025-06-12 01:13:21,427 - INFO - Saved 3 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011321/agencies.json
+2025-06-12 01:13:21,427 - INFO - Exporting table: invitations
+2025-06-12 01:13:21,427 - INFO - Exported 0 records from table 'invitations'
+2025-06-12 01:13:21,427 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011321/invitations.json
+2025-06-12 01:13:21,427 - INFO - Exporting table: interview_invitations
+2025-06-12 01:13:21,427 - INFO - Exported 1 records from table 'interview_invitations'
+2025-06-12 01:13:21,427 - INFO - Saved 1 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011321/interview_invitations.json
+2025-06-12 01:13:21,427 - INFO - Exporting table: rooms
+2025-06-12 01:13:21,427 - INFO - Exported 5 records from table 'rooms'
+2025-06-12 01:13:21,428 - INFO - Saved 5 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011321/rooms.json
+2025-06-12 01:13:21,428 - INFO - Exporting table: room_reservations
+2025-06-12 01:13:21,428 - INFO - Exported 0 records from table 'room_reservations'
+2025-06-12 01:13:21,428 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011321/room_reservations.json
+2025-06-12 01:13:21,428 - INFO - Exporting table: technicians
+2025-06-12 01:13:21,428 - INFO - Exported 14 records from table 'technicians'
+2025-06-12 01:13:21,428 - INFO - Saved 14 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011321/technicians.json
+2025-06-12 01:13:21,428 - INFO - Exporting table: technician_availability
+2025-06-12 01:13:21,428 - INFO - Exported 0 records from table 'technician_availability'
+2025-06-12 01:13:21,429 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011321/technician_availability.json
+2025-06-12 01:13:21,429 - INFO - Exporting table: surgery_technicians
+2025-06-12 01:13:21,429 - INFO - Exported 0 records from table 'surgery_technicians'
+2025-06-12 01:13:21,429 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011321/surgery_technicians.json
+2025-06-12 01:13:21,429 - INFO - Exporting table: procedures
+2025-06-12 01:13:21,429 - INFO - Exported 22 records from table 'procedures'
+2025-06-12 01:13:21,430 - INFO - Saved 22 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011321/procedures.json
+2025-06-12 01:13:21,430 - INFO - Exporting table: settings
+2025-06-12 01:13:21,430 - INFO - Exported 3 records from table 'settings'
+2025-06-12 01:13:21,430 - INFO - Saved 3 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011321/settings.json
+2025-06-12 01:13:21,430 - INFO - Exporting table: job_candidates
+2025-06-12 01:13:21,430 - INFO - Exported 2 records from table 'job_candidates'
+2025-06-12 01:13:21,430 - INFO - Saved 2 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011321/job_candidates.json
+2025-06-12 01:13:21,430 - INFO - Exporting table: candidate_notes
+2025-06-12 01:13:21,430 - INFO - Exported 0 records from table 'candidate_notes'
+2025-06-12 01:13:21,430 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011321/candidate_notes.json
+2025-06-12 01:13:21,431 - INFO - Created backup manifest: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011321/backup_manifest.json
+2025-06-12 01:13:21,431 - INFO - Added agencies.json to ZIP archive
+2025-06-12 01:13:21,431 - INFO - Added settings.json to ZIP archive
+2025-06-12 01:13:21,432 - INFO - Added backup_manifest.json to ZIP archive
+2025-06-12 01:13:21,432 - INFO - Added patients.json to ZIP archive
+2025-06-12 01:13:21,432 - INFO - Added appointments.json to ZIP archive
+2025-06-12 01:13:21,432 - INFO - Added candidate_notes.json to ZIP archive
+2025-06-12 01:13:21,432 - INFO - Added users.json to ZIP archive
+2025-06-12 01:13:21,433 - INFO - Added procedures.json to ZIP archive
+2025-06-12 01:13:21,433 - INFO - Added rooms.json to ZIP archive
+2025-06-12 01:13:21,433 - INFO - Added job_candidates.json to ZIP archive
+2025-06-12 01:13:21,433 - INFO - Added interview_invitations.json to ZIP archive
+2025-06-12 01:13:21,433 - INFO - Added invitations.json to ZIP archive
+2025-06-12 01:13:21,433 - INFO - Added technician_availability.json to ZIP archive
+2025-06-12 01:13:21,433 - INFO - Added patient_photos.json to ZIP archive
+2025-06-12 01:13:21,433 - INFO - Added photo_album_types.json to ZIP archive
+2025-06-12 01:13:21,433 - INFO - Added room_reservations.json to ZIP archive
+2025-06-12 01:13:21,434 - INFO - Added surgery_technicians.json to ZIP archive
+2025-06-12 01:13:21,434 - INFO - Added technicians.json to ZIP archive
+2025-06-12 01:13:21,434 - INFO - Added surgeries.json to ZIP archive
+2025-06-12 01:13:21,434 - INFO - Created ZIP backup: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011321.zip (10.87 KB)
+2025-06-12 01:13:21,434 - INFO - Export completed: 18/18 tables exported successfully
+2025-06-12 01:13:21,434 - INFO - Total records exported: 69
+2025-06-12 01:13:21,434 - INFO - Backup saved to: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011321
+2025-06-12 01:13:21,434 - INFO - ZIP backup created: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011321.zip
+2025-06-12 01:13:21,434 - INFO - Database export completed successfully
+2025-06-12 01:13:30,997 - INFO - Starting database export process
+2025-06-12 01:13:30,998 - INFO - Initialized exporter for database: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/database.sqlite
+2025-06-12 01:13:30,998 - INFO - Backup directory: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011330
+2025-06-12 01:13:30,999 - INFO - Found 18 tables: users, surgeries, appointments, patients, photo_album_types, patient_photos, agencies, invitations, interview_invitations, rooms, room_reservations, technicians, technician_availability, surgery_technicians, procedures, settings, job_candidates, candidate_notes
+2025-06-12 01:13:30,999 - INFO - Exporting table: users
+2025-06-12 01:13:30,999 - INFO - Exported 4 records from table 'users'
+2025-06-12 01:13:30,999 - INFO - Saved 4 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011330/users.json
+2025-06-12 01:13:30,999 - INFO - Exporting table: surgeries
+2025-06-12 01:13:30,999 - INFO - Exported 0 records from table 'surgeries'
+2025-06-12 01:13:31,000 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011330/surgeries.json
+2025-06-12 01:13:31,000 - INFO - Exporting table: appointments
+2025-06-12 01:13:31,000 - INFO - Exported 0 records from table 'appointments'
+2025-06-12 01:13:31,000 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011330/appointments.json
+2025-06-12 01:13:31,000 - INFO - Exporting table: patients
+2025-06-12 01:13:31,000 - INFO - Exported 0 records from table 'patients'
+2025-06-12 01:13:31,000 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011330/patients.json
+2025-06-12 01:13:31,001 - INFO - Exporting table: photo_album_types
+2025-06-12 01:13:31,001 - INFO - Exported 15 records from table 'photo_album_types'
+2025-06-12 01:13:31,001 - INFO - Saved 15 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011330/photo_album_types.json
+2025-06-12 01:13:31,001 - INFO - Exporting table: patient_photos
+2025-06-12 01:13:31,001 - INFO - Exported 0 records from table 'patient_photos'
+2025-06-12 01:13:31,001 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011330/patient_photos.json
+2025-06-12 01:13:31,001 - INFO - Exporting table: agencies
+2025-06-12 01:13:31,001 - INFO - Exported 3 records from table 'agencies'
+2025-06-12 01:13:31,002 - INFO - Saved 3 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011330/agencies.json
+2025-06-12 01:13:31,002 - INFO - Exporting table: invitations
+2025-06-12 01:13:31,002 - INFO - Exported 0 records from table 'invitations'
+2025-06-12 01:13:31,002 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011330/invitations.json
+2025-06-12 01:13:31,003 - INFO - Exporting table: interview_invitations
+2025-06-12 01:13:31,003 - INFO - Exported 1 records from table 'interview_invitations'
+2025-06-12 01:13:31,003 - INFO - Saved 1 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011330/interview_invitations.json
+2025-06-12 01:13:31,003 - INFO - Exporting table: rooms
+2025-06-12 01:13:31,003 - INFO - Exported 5 records from table 'rooms'
+2025-06-12 01:13:31,003 - INFO - Saved 5 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011330/rooms.json
+2025-06-12 01:13:31,003 - INFO - Exporting table: room_reservations
+2025-06-12 01:13:31,003 - INFO - Exported 0 records from table 'room_reservations'
+2025-06-12 01:13:31,004 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011330/room_reservations.json
+2025-06-12 01:13:31,004 - INFO - Exporting table: technicians
+2025-06-12 01:13:31,004 - INFO - Exported 14 records from table 'technicians'
+2025-06-12 01:13:31,004 - INFO - Saved 14 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011330/technicians.json
+2025-06-12 01:13:31,004 - INFO - Exporting table: technician_availability
+2025-06-12 01:13:31,004 - INFO - Exported 0 records from table 'technician_availability'
+2025-06-12 01:13:31,004 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011330/technician_availability.json
+2025-06-12 01:13:31,004 - INFO - Exporting table: surgery_technicians
+2025-06-12 01:13:31,005 - INFO - Exported 0 records from table 'surgery_technicians'
+2025-06-12 01:13:31,005 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011330/surgery_technicians.json
+2025-06-12 01:13:31,005 - INFO - Exporting table: procedures
+2025-06-12 01:13:31,005 - INFO - Exported 22 records from table 'procedures'
+2025-06-12 01:13:31,005 - INFO - Saved 22 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011330/procedures.json
+2025-06-12 01:13:31,005 - INFO - Exporting table: settings
+2025-06-12 01:13:31,005 - INFO - Exported 3 records from table 'settings'
+2025-06-12 01:13:31,005 - INFO - Saved 3 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011330/settings.json
+2025-06-12 01:13:31,005 - INFO - Exporting table: job_candidates
+2025-06-12 01:13:31,005 - INFO - Exported 2 records from table 'job_candidates'
+2025-06-12 01:13:31,006 - INFO - Saved 2 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011330/job_candidates.json
+2025-06-12 01:13:31,006 - INFO - Exporting table: candidate_notes
+2025-06-12 01:13:31,006 - INFO - Exported 0 records from table 'candidate_notes'
+2025-06-12 01:13:31,006 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011330/candidate_notes.json
+2025-06-12 01:13:31,006 - INFO - Created backup manifest: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011330/backup_manifest.json
+2025-06-12 01:13:31,007 - INFO - Added agencies.json to ZIP archive
+2025-06-12 01:13:31,007 - INFO - Added settings.json to ZIP archive
+2025-06-12 01:13:31,008 - INFO - Added backup_manifest.json to ZIP archive
+2025-06-12 01:13:31,010 - INFO - Added patients.json to ZIP archive
+2025-06-12 01:13:31,011 - INFO - Added appointments.json to ZIP archive
+2025-06-12 01:13:31,011 - INFO - Added candidate_notes.json to ZIP archive
+2025-06-12 01:13:31,011 - INFO - Added users.json to ZIP archive
+2025-06-12 01:13:31,011 - INFO - Added procedures.json to ZIP archive
+2025-06-12 01:13:31,011 - INFO - Added rooms.json to ZIP archive
+2025-06-12 01:13:31,011 - INFO - Added job_candidates.json to ZIP archive
+2025-06-12 01:13:31,011 - INFO - Added interview_invitations.json to ZIP archive
+2025-06-12 01:13:31,011 - INFO - Added invitations.json to ZIP archive
+2025-06-12 01:13:31,012 - INFO - Added technician_availability.json to ZIP archive
+2025-06-12 01:13:31,012 - INFO - Added patient_photos.json to ZIP archive
+2025-06-12 01:13:31,012 - INFO - Added photo_album_types.json to ZIP archive
+2025-06-12 01:13:31,012 - INFO - Added room_reservations.json to ZIP archive
+2025-06-12 01:13:31,012 - INFO - Added surgery_technicians.json to ZIP archive
+2025-06-12 01:13:31,012 - INFO - Added technicians.json to ZIP archive
+2025-06-12 01:13:31,012 - INFO - Added surgeries.json to ZIP archive
+2025-06-12 01:13:31,012 - INFO - Created ZIP backup: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011330.zip (10.86 KB)
+2025-06-12 01:13:31,012 - INFO - Export completed: 18/18 tables exported successfully
+2025-06-12 01:13:31,012 - INFO - Total records exported: 69
+2025-06-12 01:13:31,012 - INFO - Backup saved to: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011330
+2025-06-12 01:13:31,012 - INFO - ZIP backup created: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011330.zip
+2025-06-12 01:13:31,013 - INFO - Database export completed successfully
+2025-06-12 01:14:26,430 - INFO - Starting database export process
+2025-06-12 01:14:26,430 - INFO - Initialized exporter for database: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/database.sqlite
+2025-06-12 01:14:26,430 - INFO - Backup directory: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011426
+2025-06-12 01:14:26,431 - INFO - Found 18 tables: users, surgeries, appointments, patients, photo_album_types, patient_photos, agencies, invitations, interview_invitations, rooms, room_reservations, technicians, technician_availability, surgery_technicians, procedures, settings, job_candidates, candidate_notes
+2025-06-12 01:14:26,431 - INFO - Exporting table: users
+2025-06-12 01:14:26,431 - INFO - Exported 4 records from table 'users'
+2025-06-12 01:14:26,432 - INFO - Saved 4 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011426/users.json
+2025-06-12 01:14:26,432 - INFO - Exporting table: surgeries
+2025-06-12 01:14:26,432 - INFO - Exported 0 records from table 'surgeries'
+2025-06-12 01:14:26,432 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011426/surgeries.json
+2025-06-12 01:14:26,432 - INFO - Exporting table: appointments
+2025-06-12 01:14:26,432 - INFO - Exported 0 records from table 'appointments'
+2025-06-12 01:14:26,432 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011426/appointments.json
+2025-06-12 01:14:26,432 - INFO - Exporting table: patients
+2025-06-12 01:14:26,432 - INFO - Exported 0 records from table 'patients'
+2025-06-12 01:14:26,433 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011426/patients.json
+2025-06-12 01:14:26,433 - INFO - Exporting table: photo_album_types
+2025-06-12 01:14:26,433 - INFO - Exported 15 records from table 'photo_album_types'
+2025-06-12 01:14:26,433 - INFO - Saved 15 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011426/photo_album_types.json
+2025-06-12 01:14:26,433 - INFO - Exporting table: patient_photos
+2025-06-12 01:14:26,433 - INFO - Exported 0 records from table 'patient_photos'
+2025-06-12 01:14:26,433 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011426/patient_photos.json
+2025-06-12 01:14:26,433 - INFO - Exporting table: agencies
+2025-06-12 01:14:26,433 - INFO - Exported 3 records from table 'agencies'
+2025-06-12 01:14:26,434 - INFO - Saved 3 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011426/agencies.json
+2025-06-12 01:14:26,434 - INFO - Exporting table: invitations
+2025-06-12 01:14:26,434 - INFO - Exported 0 records from table 'invitations'
+2025-06-12 01:14:26,434 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011426/invitations.json
+2025-06-12 01:14:26,434 - INFO - Exporting table: interview_invitations
+2025-06-12 01:14:26,434 - INFO - Exported 1 records from table 'interview_invitations'
+2025-06-12 01:14:26,434 - INFO - Saved 1 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011426/interview_invitations.json
+2025-06-12 01:14:26,434 - INFO - Exporting table: rooms
+2025-06-12 01:14:26,434 - INFO - Exported 5 records from table 'rooms'
+2025-06-12 01:14:26,434 - INFO - Saved 5 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011426/rooms.json
+2025-06-12 01:14:26,434 - INFO - Exporting table: room_reservations
+2025-06-12 01:14:26,434 - INFO - Exported 0 records from table 'room_reservations'
+2025-06-12 01:14:26,434 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011426/room_reservations.json
+2025-06-12 01:14:26,435 - INFO - Exporting table: technicians
+2025-06-12 01:14:26,435 - INFO - Exported 14 records from table 'technicians'
+2025-06-12 01:14:26,435 - INFO - Saved 14 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011426/technicians.json
+2025-06-12 01:14:26,435 - INFO - Exporting table: technician_availability
+2025-06-12 01:14:26,435 - INFO - Exported 0 records from table 'technician_availability'
+2025-06-12 01:14:26,435 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011426/technician_availability.json
+2025-06-12 01:14:26,435 - INFO - Exporting table: surgery_technicians
+2025-06-12 01:14:26,435 - INFO - Exported 0 records from table 'surgery_technicians'
+2025-06-12 01:14:26,436 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011426/surgery_technicians.json
+2025-06-12 01:14:26,436 - INFO - Exporting table: procedures
+2025-06-12 01:14:26,436 - INFO - Exported 22 records from table 'procedures'
+2025-06-12 01:14:26,436 - INFO - Saved 22 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011426/procedures.json
+2025-06-12 01:14:26,436 - INFO - Exporting table: settings
+2025-06-12 01:14:26,436 - INFO - Exported 3 records from table 'settings'
+2025-06-12 01:14:26,436 - INFO - Saved 3 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011426/settings.json
+2025-06-12 01:14:26,436 - INFO - Exporting table: job_candidates
+2025-06-12 01:14:26,436 - INFO - Exported 2 records from table 'job_candidates'
+2025-06-12 01:14:26,437 - INFO - Saved 2 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011426/job_candidates.json
+2025-06-12 01:14:26,437 - INFO - Exporting table: candidate_notes
+2025-06-12 01:14:26,437 - INFO - Exported 0 records from table 'candidate_notes'
+2025-06-12 01:14:26,437 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011426/candidate_notes.json
+2025-06-12 01:14:26,437 - INFO - Created backup manifest: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011426/backup_manifest.json
+2025-06-12 01:14:26,438 - INFO - Added agencies.json to ZIP archive
+2025-06-12 01:14:26,438 - INFO - Added settings.json to ZIP archive
+2025-06-12 01:14:26,438 - INFO - Added backup_manifest.json to ZIP archive
+2025-06-12 01:14:26,438 - INFO - Added patients.json to ZIP archive
+2025-06-12 01:14:26,438 - INFO - Added appointments.json to ZIP archive
+2025-06-12 01:14:26,438 - INFO - Added candidate_notes.json to ZIP archive
+2025-06-12 01:14:26,438 - INFO - Added users.json to ZIP archive
+2025-06-12 01:14:26,438 - INFO - Added procedures.json to ZIP archive
+2025-06-12 01:14:26,438 - INFO - Added rooms.json to ZIP archive
+2025-06-12 01:14:26,438 - INFO - Added job_candidates.json to ZIP archive
+2025-06-12 01:14:26,439 - INFO - Added interview_invitations.json to ZIP archive
+2025-06-12 01:14:26,439 - INFO - Added invitations.json to ZIP archive
+2025-06-12 01:14:26,439 - INFO - Added technician_availability.json to ZIP archive
+2025-06-12 01:14:26,439 - INFO - Added patient_photos.json to ZIP archive
+2025-06-12 01:14:26,439 - INFO - Added photo_album_types.json to ZIP archive
+2025-06-12 01:14:26,439 - INFO - Added room_reservations.json to ZIP archive
+2025-06-12 01:14:26,439 - INFO - Added surgery_technicians.json to ZIP archive
+2025-06-12 01:14:26,440 - INFO - Added technicians.json to ZIP archive
+2025-06-12 01:14:26,440 - INFO - Added surgeries.json to ZIP archive
+2025-06-12 01:14:26,440 - INFO - Created ZIP backup: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011426.zip (10.87 KB)
+2025-06-12 01:14:26,440 - INFO - Export completed: 18/18 tables exported successfully
+2025-06-12 01:14:26,440 - INFO - Total records exported: 69
+2025-06-12 01:14:26,440 - INFO - Backup saved to: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011426
+2025-06-12 01:14:26,440 - INFO - ZIP backup created: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011426.zip
+2025-06-12 01:14:26,440 - INFO - Database export completed successfully
+2025-06-12 01:16:26,545 - INFO - Starting database export process
+2025-06-12 01:16:26,545 - INFO - Initialized exporter for database: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/database.sqlite
+2025-06-12 01:16:26,545 - INFO - Backup directory: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011626
+2025-06-12 01:16:26,547 - INFO - Found 18 tables: users, surgeries, appointments, patients, photo_album_types, patient_photos, agencies, invitations, interview_invitations, rooms, room_reservations, technicians, technician_availability, surgery_technicians, procedures, settings, job_candidates, candidate_notes
+2025-06-12 01:16:26,547 - INFO - Exporting table: users
+2025-06-12 01:16:26,547 - INFO - Exported 4 records from table 'users'
+2025-06-12 01:16:26,547 - INFO - Saved 4 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011626/users.json
+2025-06-12 01:16:26,547 - INFO - Exporting table: surgeries
+2025-06-12 01:16:26,547 - INFO - Exported 0 records from table 'surgeries'
+2025-06-12 01:16:26,547 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011626/surgeries.json
+2025-06-12 01:16:26,547 - INFO - Exporting table: appointments
+2025-06-12 01:16:26,547 - INFO - Exported 0 records from table 'appointments'
+2025-06-12 01:16:26,548 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011626/appointments.json
+2025-06-12 01:16:26,548 - INFO - Exporting table: patients
+2025-06-12 01:16:26,548 - INFO - Exported 0 records from table 'patients'
+2025-06-12 01:16:26,549 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011626/patients.json
+2025-06-12 01:16:26,549 - INFO - Exporting table: photo_album_types
+2025-06-12 01:16:26,549 - INFO - Exported 15 records from table 'photo_album_types'
+2025-06-12 01:16:26,549 - INFO - Saved 15 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011626/photo_album_types.json
+2025-06-12 01:16:26,549 - INFO - Exporting table: patient_photos
+2025-06-12 01:16:26,549 - INFO - Exported 0 records from table 'patient_photos'
+2025-06-12 01:16:26,549 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011626/patient_photos.json
+2025-06-12 01:16:26,549 - INFO - Exporting table: agencies
+2025-06-12 01:16:26,549 - INFO - Exported 3 records from table 'agencies'
+2025-06-12 01:16:26,550 - INFO - Saved 3 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011626/agencies.json
+2025-06-12 01:16:26,550 - INFO - Exporting table: invitations
+2025-06-12 01:16:26,550 - INFO - Exported 0 records from table 'invitations'
+2025-06-12 01:16:26,550 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011626/invitations.json
+2025-06-12 01:16:26,550 - INFO - Exporting table: interview_invitations
+2025-06-12 01:16:26,550 - INFO - Exported 1 records from table 'interview_invitations'
+2025-06-12 01:16:26,551 - INFO - Saved 1 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011626/interview_invitations.json
+2025-06-12 01:16:26,551 - INFO - Exporting table: rooms
+2025-06-12 01:16:26,551 - INFO - Exported 5 records from table 'rooms'
+2025-06-12 01:16:26,551 - INFO - Saved 5 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011626/rooms.json
+2025-06-12 01:16:26,551 - INFO - Exporting table: room_reservations
+2025-06-12 01:16:26,551 - INFO - Exported 0 records from table 'room_reservations'
+2025-06-12 01:16:26,551 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011626/room_reservations.json
+2025-06-12 01:16:26,551 - INFO - Exporting table: technicians
+2025-06-12 01:16:26,551 - INFO - Exported 14 records from table 'technicians'
+2025-06-12 01:16:26,552 - INFO - Saved 14 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011626/technicians.json
+2025-06-12 01:16:26,552 - INFO - Exporting table: technician_availability
+2025-06-12 01:16:26,552 - INFO - Exported 0 records from table 'technician_availability'
+2025-06-12 01:16:26,552 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011626/technician_availability.json
+2025-06-12 01:16:26,552 - INFO - Exporting table: surgery_technicians
+2025-06-12 01:16:26,552 - INFO - Exported 0 records from table 'surgery_technicians'
+2025-06-12 01:16:26,552 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011626/surgery_technicians.json
+2025-06-12 01:16:26,552 - INFO - Exporting table: procedures
+2025-06-12 01:16:26,552 - INFO - Exported 22 records from table 'procedures'
+2025-06-12 01:16:26,552 - INFO - Saved 22 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011626/procedures.json
+2025-06-12 01:16:26,552 - INFO - Exporting table: settings
+2025-06-12 01:16:26,552 - INFO - Exported 3 records from table 'settings'
+2025-06-12 01:16:26,553 - INFO - Saved 3 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011626/settings.json
+2025-06-12 01:16:26,553 - INFO - Exporting table: job_candidates
+2025-06-12 01:16:26,553 - INFO - Exported 2 records from table 'job_candidates'
+2025-06-12 01:16:26,553 - INFO - Saved 2 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011626/job_candidates.json
+2025-06-12 01:16:26,553 - INFO - Exporting table: candidate_notes
+2025-06-12 01:16:26,553 - INFO - Exported 0 records from table 'candidate_notes'
+2025-06-12 01:16:26,553 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011626/candidate_notes.json
+2025-06-12 01:16:26,553 - INFO - Created backup manifest: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011626/backup_manifest.json
+2025-06-12 01:16:26,554 - INFO - Added agencies.json to ZIP archive
+2025-06-12 01:16:26,554 - INFO - Added settings.json to ZIP archive
+2025-06-12 01:16:26,554 - INFO - Added backup_manifest.json to ZIP archive
+2025-06-12 01:16:26,554 - INFO - Added patients.json to ZIP archive
+2025-06-12 01:16:26,555 - INFO - Added appointments.json to ZIP archive
+2025-06-12 01:16:26,555 - INFO - Added candidate_notes.json to ZIP archive
+2025-06-12 01:16:26,555 - INFO - Added users.json to ZIP archive
+2025-06-12 01:16:26,555 - INFO - Added procedures.json to ZIP archive
+2025-06-12 01:16:26,555 - INFO - Added rooms.json to ZIP archive
+2025-06-12 01:16:26,555 - INFO - Added job_candidates.json to ZIP archive
+2025-06-12 01:16:26,555 - INFO - Added interview_invitations.json to ZIP archive
+2025-06-12 01:16:26,555 - INFO - Added invitations.json to ZIP archive
+2025-06-12 01:16:26,555 - INFO - Added technician_availability.json to ZIP archive
+2025-06-12 01:16:26,556 - INFO - Added patient_photos.json to ZIP archive
+2025-06-12 01:16:26,556 - INFO - Added photo_album_types.json to ZIP archive
+2025-06-12 01:16:26,556 - INFO - Added room_reservations.json to ZIP archive
+2025-06-12 01:16:26,556 - INFO - Added surgery_technicians.json to ZIP archive
+2025-06-12 01:16:26,556 - INFO - Added technicians.json to ZIP archive
+2025-06-12 01:16:26,556 - INFO - Added surgeries.json to ZIP archive
+2025-06-12 01:16:26,556 - INFO - Created ZIP backup: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011626.zip (10.87 KB)
+2025-06-12 01:16:26,557 - INFO - Export completed: 18/18 tables exported successfully
+2025-06-12 01:16:26,557 - INFO - Total records exported: 69
+2025-06-12 01:16:26,557 - INFO - Backup saved to: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011626
+2025-06-12 01:16:26,557 - INFO - ZIP backup created: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011626.zip
+2025-06-12 01:16:26,557 - INFO - Database export completed successfully
+2025-06-12 01:16:30,925 - INFO - Starting database export process
+2025-06-12 01:16:30,925 - INFO - Initialized exporter for database: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/database.sqlite
+2025-06-12 01:16:30,925 - INFO - Backup directory: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011630
+2025-06-12 01:16:30,926 - INFO - Found 18 tables: users, surgeries, appointments, patients, photo_album_types, patient_photos, agencies, invitations, interview_invitations, rooms, room_reservations, technicians, technician_availability, surgery_technicians, procedures, settings, job_candidates, candidate_notes
+2025-06-12 01:16:30,926 - INFO - Exporting table: users
+2025-06-12 01:16:30,926 - INFO - Exported 4 records from table 'users'
+2025-06-12 01:16:30,926 - INFO - Saved 4 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011630/users.json
+2025-06-12 01:16:30,926 - INFO - Exporting table: surgeries
+2025-06-12 01:16:30,927 - INFO - Exported 0 records from table 'surgeries'
+2025-06-12 01:16:30,927 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011630/surgeries.json
+2025-06-12 01:16:30,927 - INFO - Exporting table: appointments
+2025-06-12 01:16:30,927 - INFO - Exported 0 records from table 'appointments'
+2025-06-12 01:16:30,928 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011630/appointments.json
+2025-06-12 01:16:30,928 - INFO - Exporting table: patients
+2025-06-12 01:16:30,928 - INFO - Exported 0 records from table 'patients'
+2025-06-12 01:16:30,928 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011630/patients.json
+2025-06-12 01:16:30,928 - INFO - Exporting table: photo_album_types
+2025-06-12 01:16:30,928 - INFO - Exported 15 records from table 'photo_album_types'
+2025-06-12 01:16:30,928 - INFO - Saved 15 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011630/photo_album_types.json
+2025-06-12 01:16:30,928 - INFO - Exporting table: patient_photos
+2025-06-12 01:16:30,928 - INFO - Exported 0 records from table 'patient_photos'
+2025-06-12 01:16:30,928 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011630/patient_photos.json
+2025-06-12 01:16:30,928 - INFO - Exporting table: agencies
+2025-06-12 01:16:30,928 - INFO - Exported 3 records from table 'agencies'
+2025-06-12 01:16:30,928 - INFO - Saved 3 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011630/agencies.json
+2025-06-12 01:16:30,928 - INFO - Exporting table: invitations
+2025-06-12 01:16:30,929 - INFO - Exported 0 records from table 'invitations'
+2025-06-12 01:16:30,929 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011630/invitations.json
+2025-06-12 01:16:30,930 - INFO - Exporting table: interview_invitations
+2025-06-12 01:16:30,930 - INFO - Exported 1 records from table 'interview_invitations'
+2025-06-12 01:16:30,931 - INFO - Saved 1 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011630/interview_invitations.json
+2025-06-12 01:16:30,931 - INFO - Exporting table: rooms
+2025-06-12 01:16:30,931 - INFO - Exported 5 records from table 'rooms'
+2025-06-12 01:16:30,931 - INFO - Saved 5 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011630/rooms.json
+2025-06-12 01:16:30,931 - INFO - Exporting table: room_reservations
+2025-06-12 01:16:30,931 - INFO - Exported 0 records from table 'room_reservations'
+2025-06-12 01:16:30,932 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011630/room_reservations.json
+2025-06-12 01:16:30,932 - INFO - Exporting table: technicians
+2025-06-12 01:16:30,932 - INFO - Exported 14 records from table 'technicians'
+2025-06-12 01:16:30,932 - INFO - Saved 14 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011630/technicians.json
+2025-06-12 01:16:30,932 - INFO - Exporting table: technician_availability
+2025-06-12 01:16:30,932 - INFO - Exported 0 records from table 'technician_availability'
+2025-06-12 01:16:30,932 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011630/technician_availability.json
+2025-06-12 01:16:30,932 - INFO - Exporting table: surgery_technicians
+2025-06-12 01:16:30,932 - INFO - Exported 0 records from table 'surgery_technicians'
+2025-06-12 01:16:30,932 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011630/surgery_technicians.json
+2025-06-12 01:16:30,932 - INFO - Exporting table: procedures
+2025-06-12 01:16:30,932 - INFO - Exported 22 records from table 'procedures'
+2025-06-12 01:16:30,933 - INFO - Saved 22 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011630/procedures.json
+2025-06-12 01:16:30,933 - INFO - Exporting table: settings
+2025-06-12 01:16:30,933 - INFO - Exported 3 records from table 'settings'
+2025-06-12 01:16:30,933 - INFO - Saved 3 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011630/settings.json
+2025-06-12 01:16:30,933 - INFO - Exporting table: job_candidates
+2025-06-12 01:16:30,934 - INFO - Exported 2 records from table 'job_candidates'
+2025-06-12 01:16:30,934 - INFO - Saved 2 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011630/job_candidates.json
+2025-06-12 01:16:30,934 - INFO - Exporting table: candidate_notes
+2025-06-12 01:16:30,934 - INFO - Exported 0 records from table 'candidate_notes'
+2025-06-12 01:16:30,940 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011630/candidate_notes.json
+2025-06-12 01:16:30,940 - INFO - Created backup manifest: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011630/backup_manifest.json
+2025-06-12 01:16:30,958 - INFO - Added agencies.json to ZIP archive
+2025-06-12 01:16:30,959 - INFO - Added settings.json to ZIP archive
+2025-06-12 01:16:30,959 - INFO - Added backup_manifest.json to ZIP archive
+2025-06-12 01:16:30,959 - INFO - Added patients.json to ZIP archive
+2025-06-12 01:16:30,959 - INFO - Added appointments.json to ZIP archive
+2025-06-12 01:16:30,959 - INFO - Added candidate_notes.json to ZIP archive
+2025-06-12 01:16:30,960 - INFO - Added users.json to ZIP archive
+2025-06-12 01:16:30,960 - INFO - Added procedures.json to ZIP archive
+2025-06-12 01:16:30,960 - INFO - Added rooms.json to ZIP archive
+2025-06-12 01:16:30,960 - INFO - Added job_candidates.json to ZIP archive
+2025-06-12 01:16:30,960 - INFO - Added interview_invitations.json to ZIP archive
+2025-06-12 01:16:30,960 - INFO - Added invitations.json to ZIP archive
+2025-06-12 01:16:30,960 - INFO - Added technician_availability.json to ZIP archive
+2025-06-12 01:16:30,961 - INFO - Added patient_photos.json to ZIP archive
+2025-06-12 01:16:30,961 - INFO - Added photo_album_types.json to ZIP archive
+2025-06-12 01:16:30,961 - INFO - Added room_reservations.json to ZIP archive
+2025-06-12 01:16:30,961 - INFO - Added surgery_technicians.json to ZIP archive
+2025-06-12 01:16:30,961 - INFO - Added technicians.json to ZIP archive
+2025-06-12 01:16:30,961 - INFO - Added surgeries.json to ZIP archive
+2025-06-12 01:16:30,961 - INFO - Created ZIP backup: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011630.zip (10.87 KB)
+2025-06-12 01:16:30,961 - INFO - Export completed: 18/18 tables exported successfully
+2025-06-12 01:16:30,961 - INFO - Total records exported: 69
+2025-06-12 01:16:30,961 - INFO - Backup saved to: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011630
+2025-06-12 01:16:30,961 - INFO - ZIP backup created: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011630.zip
+2025-06-12 01:16:30,961 - INFO - Database export completed successfully
+2025-06-12 01:16:48,309 - INFO - Starting database export process
+2025-06-12 01:16:48,310 - INFO - Initialized exporter for database: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/database.sqlite
+2025-06-12 01:16:48,310 - INFO - Backup directory: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011648
+2025-06-12 01:16:48,311 - INFO - Found 18 tables: users, surgeries, appointments, patients, photo_album_types, patient_photos, agencies, invitations, interview_invitations, rooms, room_reservations, technicians, technician_availability, surgery_technicians, procedures, settings, job_candidates, candidate_notes
+2025-06-12 01:16:48,311 - INFO - Exporting table: users
+2025-06-12 01:16:48,311 - INFO - Exported 4 records from table 'users'
+2025-06-12 01:16:48,311 - INFO - Saved 4 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011648/users.json
+2025-06-12 01:16:48,311 - INFO - Exporting table: surgeries
+2025-06-12 01:16:48,311 - INFO - Exported 0 records from table 'surgeries'
+2025-06-12 01:16:48,311 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011648/surgeries.json
+2025-06-12 01:16:48,311 - INFO - Exporting table: appointments
+2025-06-12 01:16:48,312 - INFO - Exported 0 records from table 'appointments'
+2025-06-12 01:16:48,312 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011648/appointments.json
+2025-06-12 01:16:48,312 - INFO - Exporting table: patients
+2025-06-12 01:16:48,312 - INFO - Exported 0 records from table 'patients'
+2025-06-12 01:16:48,312 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011648/patients.json
+2025-06-12 01:16:48,312 - INFO - Exporting table: photo_album_types
+2025-06-12 01:16:48,312 - INFO - Exported 15 records from table 'photo_album_types'
+2025-06-12 01:16:48,312 - INFO - Saved 15 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011648/photo_album_types.json
+2025-06-12 01:16:48,312 - INFO - Exporting table: patient_photos
+2025-06-12 01:16:48,312 - INFO - Exported 0 records from table 'patient_photos'
+2025-06-12 01:16:48,313 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011648/patient_photos.json
+2025-06-12 01:16:48,313 - INFO - Exporting table: agencies
+2025-06-12 01:16:48,313 - INFO - Exported 3 records from table 'agencies'
+2025-06-12 01:16:48,313 - INFO - Saved 3 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011648/agencies.json
+2025-06-12 01:16:48,313 - INFO - Exporting table: invitations
+2025-06-12 01:16:48,313 - INFO - Exported 0 records from table 'invitations'
+2025-06-12 01:16:48,313 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011648/invitations.json
+2025-06-12 01:16:48,313 - INFO - Exporting table: interview_invitations
+2025-06-12 01:16:48,313 - INFO - Exported 1 records from table 'interview_invitations'
+2025-06-12 01:16:48,313 - INFO - Saved 1 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011648/interview_invitations.json
+2025-06-12 01:16:48,313 - INFO - Exporting table: rooms
+2025-06-12 01:16:48,313 - INFO - Exported 5 records from table 'rooms'
+2025-06-12 01:16:48,314 - INFO - Saved 5 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011648/rooms.json
+2025-06-12 01:16:48,314 - INFO - Exporting table: room_reservations
+2025-06-12 01:16:48,314 - INFO - Exported 0 records from table 'room_reservations'
+2025-06-12 01:16:48,314 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011648/room_reservations.json
+2025-06-12 01:16:48,314 - INFO - Exporting table: technicians
+2025-06-12 01:16:48,314 - INFO - Exported 14 records from table 'technicians'
+2025-06-12 01:16:48,314 - INFO - Saved 14 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011648/technicians.json
+2025-06-12 01:16:48,314 - INFO - Exporting table: technician_availability
+2025-06-12 01:16:48,314 - INFO - Exported 0 records from table 'technician_availability'
+2025-06-12 01:16:48,314 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011648/technician_availability.json
+2025-06-12 01:16:48,314 - INFO - Exporting table: surgery_technicians
+2025-06-12 01:16:48,314 - INFO - Exported 0 records from table 'surgery_technicians'
+2025-06-12 01:16:48,315 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011648/surgery_technicians.json
+2025-06-12 01:16:48,315 - INFO - Exporting table: procedures
+2025-06-12 01:16:48,315 - INFO - Exported 22 records from table 'procedures'
+2025-06-12 01:16:48,315 - INFO - Saved 22 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011648/procedures.json
+2025-06-12 01:16:48,315 - INFO - Exporting table: settings
+2025-06-12 01:16:48,315 - INFO - Exported 3 records from table 'settings'
+2025-06-12 01:16:48,315 - INFO - Saved 3 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011648/settings.json
+2025-06-12 01:16:48,315 - INFO - Exporting table: job_candidates
+2025-06-12 01:16:48,315 - INFO - Exported 2 records from table 'job_candidates'
+2025-06-12 01:16:48,315 - INFO - Saved 2 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011648/job_candidates.json
+2025-06-12 01:16:48,315 - INFO - Exporting table: candidate_notes
+2025-06-12 01:16:48,315 - INFO - Exported 0 records from table 'candidate_notes'
+2025-06-12 01:16:48,316 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011648/candidate_notes.json
+2025-06-12 01:16:48,316 - INFO - Created backup manifest: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011648/backup_manifest.json
+2025-06-12 01:16:48,316 - INFO - Added agencies.json to ZIP archive
+2025-06-12 01:16:48,316 - INFO - Added settings.json to ZIP archive
+2025-06-12 01:16:48,316 - INFO - Added backup_manifest.json to ZIP archive
+2025-06-12 01:16:48,316 - INFO - Added patients.json to ZIP archive
+2025-06-12 01:16:48,316 - INFO - Added appointments.json to ZIP archive
+2025-06-12 01:16:48,317 - INFO - Added candidate_notes.json to ZIP archive
+2025-06-12 01:16:48,317 - INFO - Added users.json to ZIP archive
+2025-06-12 01:16:48,317 - INFO - Added procedures.json to ZIP archive
+2025-06-12 01:16:48,317 - INFO - Added rooms.json to ZIP archive
+2025-06-12 01:16:48,317 - INFO - Added job_candidates.json to ZIP archive
+2025-06-12 01:16:48,317 - INFO - Added interview_invitations.json to ZIP archive
+2025-06-12 01:16:48,317 - INFO - Added invitations.json to ZIP archive
+2025-06-12 01:16:48,317 - INFO - Added technician_availability.json to ZIP archive
+2025-06-12 01:16:48,317 - INFO - Added patient_photos.json to ZIP archive
+2025-06-12 01:16:48,317 - INFO - Added photo_album_types.json to ZIP archive
+2025-06-12 01:16:48,318 - INFO - Added room_reservations.json to ZIP archive
+2025-06-12 01:16:48,318 - INFO - Added surgery_technicians.json to ZIP archive
+2025-06-12 01:16:48,318 - INFO - Added technicians.json to ZIP archive
+2025-06-12 01:16:48,318 - INFO - Added surgeries.json to ZIP archive
+2025-06-12 01:16:48,318 - INFO - Created ZIP backup: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011648.zip (10.87 KB)
+2025-06-12 01:16:48,318 - INFO - Export completed: 18/18 tables exported successfully
+2025-06-12 01:16:48,318 - INFO - Total records exported: 69
+2025-06-12 01:16:48,318 - INFO - Backup saved to: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011648
+2025-06-12 01:16:48,318 - INFO - ZIP backup created: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011648.zip
+2025-06-12 01:16:48,318 - INFO - Database export completed successfully
+2025-06-12 01:16:49,370 - INFO - Starting database export process
+2025-06-12 01:16:49,370 - INFO - Initialized exporter for database: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/database.sqlite
+2025-06-12 01:16:49,370 - INFO - Backup directory: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011649
+2025-06-12 01:16:49,371 - INFO - Found 18 tables: users, surgeries, appointments, patients, photo_album_types, patient_photos, agencies, invitations, interview_invitations, rooms, room_reservations, technicians, technician_availability, surgery_technicians, procedures, settings, job_candidates, candidate_notes
+2025-06-12 01:16:49,371 - INFO - Exporting table: users
+2025-06-12 01:16:49,371 - INFO - Exported 4 records from table 'users'
+2025-06-12 01:16:49,372 - INFO - Saved 4 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011649/users.json
+2025-06-12 01:16:49,372 - INFO - Exporting table: surgeries
+2025-06-12 01:16:49,372 - INFO - Exported 0 records from table 'surgeries'
+2025-06-12 01:16:49,372 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011649/surgeries.json
+2025-06-12 01:16:49,372 - INFO - Exporting table: appointments
+2025-06-12 01:16:49,372 - INFO - Exported 0 records from table 'appointments'
+2025-06-12 01:16:49,372 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011649/appointments.json
+2025-06-12 01:16:49,372 - INFO - Exporting table: patients
+2025-06-12 01:16:49,372 - INFO - Exported 0 records from table 'patients'
+2025-06-12 01:16:49,372 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011649/patients.json
+2025-06-12 01:16:49,372 - INFO - Exporting table: photo_album_types
+2025-06-12 01:16:49,372 - INFO - Exported 15 records from table 'photo_album_types'
+2025-06-12 01:16:49,373 - INFO - Saved 15 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011649/photo_album_types.json
+2025-06-12 01:16:49,373 - INFO - Exporting table: patient_photos
+2025-06-12 01:16:49,373 - INFO - Exported 0 records from table 'patient_photos'
+2025-06-12 01:16:49,373 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011649/patient_photos.json
+2025-06-12 01:16:49,373 - INFO - Exporting table: agencies
+2025-06-12 01:16:49,373 - INFO - Exported 3 records from table 'agencies'
+2025-06-12 01:16:49,373 - INFO - Saved 3 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011649/agencies.json
+2025-06-12 01:16:49,373 - INFO - Exporting table: invitations
+2025-06-12 01:16:49,373 - INFO - Exported 0 records from table 'invitations'
+2025-06-12 01:16:49,373 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011649/invitations.json
+2025-06-12 01:16:49,373 - INFO - Exporting table: interview_invitations
+2025-06-12 01:16:49,373 - INFO - Exported 1 records from table 'interview_invitations'
+2025-06-12 01:16:49,373 - INFO - Saved 1 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011649/interview_invitations.json
+2025-06-12 01:16:49,373 - INFO - Exporting table: rooms
+2025-06-12 01:16:49,373 - INFO - Exported 5 records from table 'rooms'
+2025-06-12 01:16:49,374 - INFO - Saved 5 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011649/rooms.json
+2025-06-12 01:16:49,374 - INFO - Exporting table: room_reservations
+2025-06-12 01:16:49,374 - INFO - Exported 0 records from table 'room_reservations'
+2025-06-12 01:16:49,374 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011649/room_reservations.json
+2025-06-12 01:16:49,374 - INFO - Exporting table: technicians
+2025-06-12 01:16:49,374 - INFO - Exported 14 records from table 'technicians'
+2025-06-12 01:16:49,374 - INFO - Saved 14 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011649/technicians.json
+2025-06-12 01:16:49,374 - INFO - Exporting table: technician_availability
+2025-06-12 01:16:49,374 - INFO - Exported 0 records from table 'technician_availability'
+2025-06-12 01:16:49,375 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011649/technician_availability.json
+2025-06-12 01:16:49,375 - INFO - Exporting table: surgery_technicians
+2025-06-12 01:16:49,375 - INFO - Exported 0 records from table 'surgery_technicians'
+2025-06-12 01:16:49,375 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011649/surgery_technicians.json
+2025-06-12 01:16:49,375 - INFO - Exporting table: procedures
+2025-06-12 01:16:49,375 - INFO - Exported 22 records from table 'procedures'
+2025-06-12 01:16:49,375 - INFO - Saved 22 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011649/procedures.json
+2025-06-12 01:16:49,375 - INFO - Exporting table: settings
+2025-06-12 01:16:49,375 - INFO - Exported 3 records from table 'settings'
+2025-06-12 01:16:49,376 - INFO - Saved 3 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011649/settings.json
+2025-06-12 01:16:49,376 - INFO - Exporting table: job_candidates
+2025-06-12 01:16:49,376 - INFO - Exported 2 records from table 'job_candidates'
+2025-06-12 01:16:49,376 - INFO - Saved 2 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011649/job_candidates.json
+2025-06-12 01:16:49,376 - INFO - Exporting table: candidate_notes
+2025-06-12 01:16:49,376 - INFO - Exported 0 records from table 'candidate_notes'
+2025-06-12 01:16:49,376 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011649/candidate_notes.json
+2025-06-12 01:16:49,377 - INFO - Created backup manifest: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011649/backup_manifest.json
+2025-06-12 01:16:49,377 - INFO - Added agencies.json to ZIP archive
+2025-06-12 01:16:49,377 - INFO - Added settings.json to ZIP archive
+2025-06-12 01:16:49,377 - INFO - Added backup_manifest.json to ZIP archive
+2025-06-12 01:16:49,378 - INFO - Added patients.json to ZIP archive
+2025-06-12 01:16:49,378 - INFO - Added appointments.json to ZIP archive
+2025-06-12 01:16:49,378 - INFO - Added candidate_notes.json to ZIP archive
+2025-06-12 01:16:49,378 - INFO - Added users.json to ZIP archive
+2025-06-12 01:16:49,378 - INFO - Added procedures.json to ZIP archive
+2025-06-12 01:16:49,378 - INFO - Added rooms.json to ZIP archive
+2025-06-12 01:16:49,378 - INFO - Added job_candidates.json to ZIP archive
+2025-06-12 01:16:49,379 - INFO - Added interview_invitations.json to ZIP archive
+2025-06-12 01:16:49,379 - INFO - Added invitations.json to ZIP archive
+2025-06-12 01:16:49,379 - INFO - Added technician_availability.json to ZIP archive
+2025-06-12 01:16:49,379 - INFO - Added patient_photos.json to ZIP archive
+2025-06-12 01:16:49,379 - INFO - Added photo_album_types.json to ZIP archive
+2025-06-12 01:16:49,379 - INFO - Added room_reservations.json to ZIP archive
+2025-06-12 01:16:49,379 - INFO - Added surgery_technicians.json to ZIP archive
+2025-06-12 01:16:49,379 - INFO - Added technicians.json to ZIP archive
+2025-06-12 01:16:49,379 - INFO - Added surgeries.json to ZIP archive
+2025-06-12 01:16:49,380 - INFO - Created ZIP backup: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011649.zip (10.88 KB)
+2025-06-12 01:16:49,380 - INFO - Export completed: 18/18 tables exported successfully
+2025-06-12 01:16:49,380 - INFO - Total records exported: 69
+2025-06-12 01:16:49,380 - INFO - Backup saved to: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011649
+2025-06-12 01:16:49,380 - INFO - ZIP backup created: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_011649.zip
+2025-06-12 01:16:49,380 - INFO - Database export completed successfully
+2025-06-12 01:20:42,701 - INFO - Starting database export process
+2025-06-12 01:20:42,702 - INFO - Initialized exporter for database: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/database.sqlite
+2025-06-12 01:20:42,702 - INFO - Backup directory: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012042
+2025-06-12 01:20:42,703 - INFO - Found 18 tables: users, surgeries, appointments, patients, photo_album_types, patient_photos, agencies, invitations, interview_invitations, rooms, room_reservations, technicians, technician_availability, surgery_technicians, procedures, settings, job_candidates, candidate_notes
+2025-06-12 01:20:42,703 - INFO - Exporting table: users
+2025-06-12 01:20:42,703 - INFO - Exported 4 records from table 'users'
+2025-06-12 01:20:42,703 - INFO - Saved 4 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012042/users.json
+2025-06-12 01:20:42,703 - INFO - Exporting table: surgeries
+2025-06-12 01:20:42,703 - INFO - Exported 0 records from table 'surgeries'
+2025-06-12 01:20:42,704 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012042/surgeries.json
+2025-06-12 01:20:42,704 - INFO - Exporting table: appointments
+2025-06-12 01:20:42,704 - INFO - Exported 0 records from table 'appointments'
+2025-06-12 01:20:42,704 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012042/appointments.json
+2025-06-12 01:20:42,704 - INFO - Exporting table: patients
+2025-06-12 01:20:42,704 - INFO - Exported 0 records from table 'patients'
+2025-06-12 01:20:42,704 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012042/patients.json
+2025-06-12 01:20:42,704 - INFO - Exporting table: photo_album_types
+2025-06-12 01:20:42,704 - INFO - Exported 15 records from table 'photo_album_types'
+2025-06-12 01:20:42,704 - INFO - Saved 15 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012042/photo_album_types.json
+2025-06-12 01:20:42,704 - INFO - Exporting table: patient_photos
+2025-06-12 01:20:42,705 - INFO - Exported 0 records from table 'patient_photos'
+2025-06-12 01:20:42,705 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012042/patient_photos.json
+2025-06-12 01:20:42,705 - INFO - Exporting table: agencies
+2025-06-12 01:20:42,705 - INFO - Exported 3 records from table 'agencies'
+2025-06-12 01:20:42,705 - INFO - Saved 3 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012042/agencies.json
+2025-06-12 01:20:42,705 - INFO - Exporting table: invitations
+2025-06-12 01:20:42,705 - INFO - Exported 0 records from table 'invitations'
+2025-06-12 01:20:42,705 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012042/invitations.json
+2025-06-12 01:20:42,705 - INFO - Exporting table: interview_invitations
+2025-06-12 01:20:42,705 - INFO - Exported 1 records from table 'interview_invitations'
+2025-06-12 01:20:42,706 - INFO - Saved 1 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012042/interview_invitations.json
+2025-06-12 01:20:42,706 - INFO - Exporting table: rooms
+2025-06-12 01:20:42,706 - INFO - Exported 5 records from table 'rooms'
+2025-06-12 01:20:42,706 - INFO - Saved 5 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012042/rooms.json
+2025-06-12 01:20:42,706 - INFO - Exporting table: room_reservations
+2025-06-12 01:20:42,706 - INFO - Exported 0 records from table 'room_reservations'
+2025-06-12 01:20:42,706 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012042/room_reservations.json
+2025-06-12 01:20:42,706 - INFO - Exporting table: technicians
+2025-06-12 01:20:42,706 - INFO - Exported 14 records from table 'technicians'
+2025-06-12 01:20:42,707 - INFO - Saved 14 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012042/technicians.json
+2025-06-12 01:20:42,707 - INFO - Exporting table: technician_availability
+2025-06-12 01:20:42,707 - INFO - Exported 0 records from table 'technician_availability'
+2025-06-12 01:20:42,707 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012042/technician_availability.json
+2025-06-12 01:20:42,707 - INFO - Exporting table: surgery_technicians
+2025-06-12 01:20:42,707 - INFO - Exported 0 records from table 'surgery_technicians'
+2025-06-12 01:20:42,707 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012042/surgery_technicians.json
+2025-06-12 01:20:42,707 - INFO - Exporting table: procedures
+2025-06-12 01:20:42,707 - INFO - Exported 22 records from table 'procedures'
+2025-06-12 01:20:42,708 - INFO - Saved 22 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012042/procedures.json
+2025-06-12 01:20:42,708 - INFO - Exporting table: settings
+2025-06-12 01:20:42,708 - INFO - Exported 3 records from table 'settings'
+2025-06-12 01:20:42,708 - INFO - Saved 3 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012042/settings.json
+2025-06-12 01:20:42,708 - INFO - Exporting table: job_candidates
+2025-06-12 01:20:42,708 - INFO - Exported 2 records from table 'job_candidates'
+2025-06-12 01:20:42,708 - INFO - Saved 2 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012042/job_candidates.json
+2025-06-12 01:20:42,708 - INFO - Exporting table: candidate_notes
+2025-06-12 01:20:42,708 - INFO - Exported 0 records from table 'candidate_notes'
+2025-06-12 01:20:42,709 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012042/candidate_notes.json
+2025-06-12 01:20:42,709 - INFO - Created backup manifest: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012042/backup_manifest.json
+2025-06-12 01:20:42,709 - INFO - Added agencies.json to ZIP archive
+2025-06-12 01:20:42,709 - INFO - Added settings.json to ZIP archive
+2025-06-12 01:20:42,710 - INFO - Added backup_manifest.json to ZIP archive
+2025-06-12 01:20:42,710 - INFO - Added patients.json to ZIP archive
+2025-06-12 01:20:42,710 - INFO - Added appointments.json to ZIP archive
+2025-06-12 01:20:42,710 - INFO - Added candidate_notes.json to ZIP archive
+2025-06-12 01:20:42,710 - INFO - Added users.json to ZIP archive
+2025-06-12 01:20:42,710 - INFO - Added procedures.json to ZIP archive
+2025-06-12 01:20:42,710 - INFO - Added rooms.json to ZIP archive
+2025-06-12 01:20:42,710 - INFO - Added job_candidates.json to ZIP archive
+2025-06-12 01:20:42,710 - INFO - Added interview_invitations.json to ZIP archive
+2025-06-12 01:20:42,710 - INFO - Added invitations.json to ZIP archive
+2025-06-12 01:20:42,711 - INFO - Added technician_availability.json to ZIP archive
+2025-06-12 01:20:42,711 - INFO - Added patient_photos.json to ZIP archive
+2025-06-12 01:20:42,711 - INFO - Added photo_album_types.json to ZIP archive
+2025-06-12 01:20:42,711 - INFO - Added room_reservations.json to ZIP archive
+2025-06-12 01:20:42,711 - INFO - Added surgery_technicians.json to ZIP archive
+2025-06-12 01:20:42,711 - INFO - Added technicians.json to ZIP archive
+2025-06-12 01:20:42,711 - INFO - Added surgeries.json to ZIP archive
+2025-06-12 01:20:42,711 - INFO - Created ZIP backup: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012042.zip (10.87 KB)
+2025-06-12 01:20:42,711 - INFO - Export completed: 18/18 tables exported successfully
+2025-06-12 01:20:42,711 - INFO - Total records exported: 69
+2025-06-12 01:20:42,711 - INFO - Backup saved to: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012042
+2025-06-12 01:20:42,711 - INFO - ZIP backup created: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012042.zip
+2025-06-12 01:20:42,711 - INFO - Database export completed successfully
+2025-06-12 01:21:10,516 - INFO - Starting database export process
+2025-06-12 01:21:10,516 - INFO - Initialized exporter for database: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/database.sqlite
+2025-06-12 01:21:10,516 - INFO - Backup directory: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012110
+2025-06-12 01:21:10,517 - INFO - Found 18 tables: users, surgeries, appointments, patients, photo_album_types, patient_photos, agencies, invitations, interview_invitations, rooms, room_reservations, technicians, technician_availability, surgery_technicians, procedures, settings, job_candidates, candidate_notes
+2025-06-12 01:21:10,517 - INFO - Exporting table: users
+2025-06-12 01:21:10,517 - INFO - Exported 4 records from table 'users'
+2025-06-12 01:21:10,518 - INFO - Saved 4 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012110/users.json
+2025-06-12 01:21:10,518 - INFO - Exporting table: surgeries
+2025-06-12 01:21:10,518 - INFO - Exported 0 records from table 'surgeries'
+2025-06-12 01:21:10,518 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012110/surgeries.json
+2025-06-12 01:21:10,518 - INFO - Exporting table: appointments
+2025-06-12 01:21:10,518 - INFO - Exported 0 records from table 'appointments'
+2025-06-12 01:21:10,518 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012110/appointments.json
+2025-06-12 01:21:10,518 - INFO - Exporting table: patients
+2025-06-12 01:21:10,518 - INFO - Exported 0 records from table 'patients'
+2025-06-12 01:21:10,518 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012110/patients.json
+2025-06-12 01:21:10,518 - INFO - Exporting table: photo_album_types
+2025-06-12 01:21:10,518 - INFO - Exported 15 records from table 'photo_album_types'
+2025-06-12 01:21:10,519 - INFO - Saved 15 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012110/photo_album_types.json
+2025-06-12 01:21:10,519 - INFO - Exporting table: patient_photos
+2025-06-12 01:21:10,519 - INFO - Exported 0 records from table 'patient_photos'
+2025-06-12 01:21:10,519 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012110/patient_photos.json
+2025-06-12 01:21:10,519 - INFO - Exporting table: agencies
+2025-06-12 01:21:10,519 - INFO - Exported 3 records from table 'agencies'
+2025-06-12 01:21:10,520 - INFO - Saved 3 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012110/agencies.json
+2025-06-12 01:21:10,520 - INFO - Exporting table: invitations
+2025-06-12 01:21:10,520 - INFO - Exported 0 records from table 'invitations'
+2025-06-12 01:21:10,520 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012110/invitations.json
+2025-06-12 01:21:10,520 - INFO - Exporting table: interview_invitations
+2025-06-12 01:21:10,520 - INFO - Exported 1 records from table 'interview_invitations'
+2025-06-12 01:21:10,520 - INFO - Saved 1 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012110/interview_invitations.json
+2025-06-12 01:21:10,520 - INFO - Exporting table: rooms
+2025-06-12 01:21:10,520 - INFO - Exported 5 records from table 'rooms'
+2025-06-12 01:21:10,520 - INFO - Saved 5 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012110/rooms.json
+2025-06-12 01:21:10,520 - INFO - Exporting table: room_reservations
+2025-06-12 01:21:10,520 - INFO - Exported 0 records from table 'room_reservations'
+2025-06-12 01:21:10,521 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012110/room_reservations.json
+2025-06-12 01:21:10,521 - INFO - Exporting table: technicians
+2025-06-12 01:21:10,521 - INFO - Exported 14 records from table 'technicians'
+2025-06-12 01:21:10,521 - INFO - Saved 14 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012110/technicians.json
+2025-06-12 01:21:10,521 - INFO - Exporting table: technician_availability
+2025-06-12 01:21:10,521 - INFO - Exported 0 records from table 'technician_availability'
+2025-06-12 01:21:10,522 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012110/technician_availability.json
+2025-06-12 01:21:10,522 - INFO - Exporting table: surgery_technicians
+2025-06-12 01:21:10,522 - INFO - Exported 0 records from table 'surgery_technicians'
+2025-06-12 01:21:10,522 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012110/surgery_technicians.json
+2025-06-12 01:21:10,522 - INFO - Exporting table: procedures
+2025-06-12 01:21:10,522 - INFO - Exported 22 records from table 'procedures'
+2025-06-12 01:21:10,522 - INFO - Saved 22 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012110/procedures.json
+2025-06-12 01:21:10,522 - INFO - Exporting table: settings
+2025-06-12 01:21:10,522 - INFO - Exported 3 records from table 'settings'
+2025-06-12 01:21:10,522 - INFO - Saved 3 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012110/settings.json
+2025-06-12 01:21:10,522 - INFO - Exporting table: job_candidates
+2025-06-12 01:21:10,523 - INFO - Exported 2 records from table 'job_candidates'
+2025-06-12 01:21:10,523 - INFO - Saved 2 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012110/job_candidates.json
+2025-06-12 01:21:10,523 - INFO - Exporting table: candidate_notes
+2025-06-12 01:21:10,523 - INFO - Exported 0 records from table 'candidate_notes'
+2025-06-12 01:21:10,523 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012110/candidate_notes.json
+2025-06-12 01:21:10,523 - INFO - Created backup manifest: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012110/backup_manifest.json
+2025-06-12 01:21:10,524 - INFO - Added agencies.json to ZIP archive
+2025-06-12 01:21:10,524 - INFO - Added settings.json to ZIP archive
+2025-06-12 01:21:10,524 - INFO - Added backup_manifest.json to ZIP archive
+2025-06-12 01:21:10,524 - INFO - Added patients.json to ZIP archive
+2025-06-12 01:21:10,524 - INFO - Added appointments.json to ZIP archive
+2025-06-12 01:21:10,524 - INFO - Added candidate_notes.json to ZIP archive
+2025-06-12 01:21:10,525 - INFO - Added users.json to ZIP archive
+2025-06-12 01:21:10,525 - INFO - Added procedures.json to ZIP archive
+2025-06-12 01:21:10,525 - INFO - Added rooms.json to ZIP archive
+2025-06-12 01:21:10,525 - INFO - Added job_candidates.json to ZIP archive
+2025-06-12 01:21:10,525 - INFO - Added interview_invitations.json to ZIP archive
+2025-06-12 01:21:10,525 - INFO - Added invitations.json to ZIP archive
+2025-06-12 01:21:10,526 - INFO - Added technician_availability.json to ZIP archive
+2025-06-12 01:21:10,526 - INFO - Added patient_photos.json to ZIP archive
+2025-06-12 01:21:10,526 - INFO - Added photo_album_types.json to ZIP archive
+2025-06-12 01:21:10,526 - INFO - Added room_reservations.json to ZIP archive
+2025-06-12 01:21:10,526 - INFO - Added surgery_technicians.json to ZIP archive
+2025-06-12 01:21:10,526 - INFO - Added technicians.json to ZIP archive
+2025-06-12 01:21:10,526 - INFO - Added surgeries.json to ZIP archive
+2025-06-12 01:21:10,527 - INFO - Created ZIP backup: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012110.zip (10.87 KB)
+2025-06-12 01:21:10,527 - INFO - Export completed: 18/18 tables exported successfully
+2025-06-12 01:21:10,527 - INFO - Total records exported: 69
+2025-06-12 01:21:10,527 - INFO - Backup saved to: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012110
+2025-06-12 01:21:10,527 - INFO - ZIP backup created: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012110.zip
+2025-06-12 01:21:10,527 - INFO - Database export completed successfully
+2025-06-12 01:21:20,997 - INFO - Starting database export process
+2025-06-12 01:21:20,997 - INFO - Initialized exporter for database: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/database.sqlite
+2025-06-12 01:21:20,997 - INFO - Backup directory: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012120
+2025-06-12 01:21:20,998 - INFO - Found 18 tables: users, surgeries, appointments, patients, photo_album_types, patient_photos, agencies, invitations, interview_invitations, rooms, room_reservations, technicians, technician_availability, surgery_technicians, procedures, settings, job_candidates, candidate_notes
+2025-06-12 01:21:20,998 - INFO - Exporting table: users
+2025-06-12 01:21:20,998 - INFO - Exported 4 records from table 'users'
+2025-06-12 01:21:20,999 - INFO - Saved 4 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012120/users.json
+2025-06-12 01:21:20,999 - INFO - Exporting table: surgeries
+2025-06-12 01:21:20,999 - INFO - Exported 0 records from table 'surgeries'
+2025-06-12 01:21:20,999 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012120/surgeries.json
+2025-06-12 01:21:20,999 - INFO - Exporting table: appointments
+2025-06-12 01:21:20,999 - INFO - Exported 0 records from table 'appointments'
+2025-06-12 01:21:20,999 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012120/appointments.json
+2025-06-12 01:21:20,999 - INFO - Exporting table: patients
+2025-06-12 01:21:20,999 - INFO - Exported 0 records from table 'patients'
+2025-06-12 01:21:21,000 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012120/patients.json
+2025-06-12 01:21:21,000 - INFO - Exporting table: photo_album_types
+2025-06-12 01:21:21,000 - INFO - Exported 15 records from table 'photo_album_types'
+2025-06-12 01:21:21,000 - INFO - Saved 15 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012120/photo_album_types.json
+2025-06-12 01:21:21,000 - INFO - Exporting table: patient_photos
+2025-06-12 01:21:21,000 - INFO - Exported 0 records from table 'patient_photos'
+2025-06-12 01:21:21,000 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012120/patient_photos.json
+2025-06-12 01:21:21,000 - INFO - Exporting table: agencies
+2025-06-12 01:21:21,000 - INFO - Exported 3 records from table 'agencies'
+2025-06-12 01:21:21,000 - INFO - Saved 3 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012120/agencies.json
+2025-06-12 01:21:21,000 - INFO - Exporting table: invitations
+2025-06-12 01:21:21,000 - INFO - Exported 0 records from table 'invitations'
+2025-06-12 01:21:21,000 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012120/invitations.json
+2025-06-12 01:21:21,000 - INFO - Exporting table: interview_invitations
+2025-06-12 01:21:21,000 - INFO - Exported 1 records from table 'interview_invitations'
+2025-06-12 01:21:21,001 - INFO - Saved 1 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012120/interview_invitations.json
+2025-06-12 01:21:21,001 - INFO - Exporting table: rooms
+2025-06-12 01:21:21,001 - INFO - Exported 5 records from table 'rooms'
+2025-06-12 01:21:21,001 - INFO - Saved 5 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012120/rooms.json
+2025-06-12 01:21:21,001 - INFO - Exporting table: room_reservations
+2025-06-12 01:21:21,001 - INFO - Exported 0 records from table 'room_reservations'
+2025-06-12 01:21:21,001 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012120/room_reservations.json
+2025-06-12 01:21:21,001 - INFO - Exporting table: technicians
+2025-06-12 01:21:21,001 - INFO - Exported 14 records from table 'technicians'
+2025-06-12 01:21:21,001 - INFO - Saved 14 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012120/technicians.json
+2025-06-12 01:21:21,001 - INFO - Exporting table: technician_availability
+2025-06-12 01:21:21,001 - INFO - Exported 0 records from table 'technician_availability'
+2025-06-12 01:21:21,002 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012120/technician_availability.json
+2025-06-12 01:21:21,002 - INFO - Exporting table: surgery_technicians
+2025-06-12 01:21:21,002 - INFO - Exported 0 records from table 'surgery_technicians'
+2025-06-12 01:21:21,002 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012120/surgery_technicians.json
+2025-06-12 01:21:21,002 - INFO - Exporting table: procedures
+2025-06-12 01:21:21,002 - INFO - Exported 22 records from table 'procedures'
+2025-06-12 01:21:21,002 - INFO - Saved 22 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012120/procedures.json
+2025-06-12 01:21:21,002 - INFO - Exporting table: settings
+2025-06-12 01:21:21,002 - INFO - Exported 3 records from table 'settings'
+2025-06-12 01:21:21,002 - INFO - Saved 3 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012120/settings.json
+2025-06-12 01:21:21,002 - INFO - Exporting table: job_candidates
+2025-06-12 01:21:21,002 - INFO - Exported 2 records from table 'job_candidates'
+2025-06-12 01:21:21,003 - INFO - Saved 2 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012120/job_candidates.json
+2025-06-12 01:21:21,003 - INFO - Exporting table: candidate_notes
+2025-06-12 01:21:21,003 - INFO - Exported 0 records from table 'candidate_notes'
+2025-06-12 01:21:21,003 - INFO - Saved 0 records to /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012120/candidate_notes.json
+2025-06-12 01:21:21,003 - INFO - Created backup manifest: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012120/backup_manifest.json
+2025-06-12 01:21:21,003 - INFO - Added agencies.json to ZIP archive
+2025-06-12 01:21:21,003 - INFO - Added settings.json to ZIP archive
+2025-06-12 01:21:21,004 - INFO - Added backup_manifest.json to ZIP archive
+2025-06-12 01:21:21,004 - INFO - Added patients.json to ZIP archive
+2025-06-12 01:21:21,004 - INFO - Added appointments.json to ZIP archive
+2025-06-12 01:21:21,004 - INFO - Added candidate_notes.json to ZIP archive
+2025-06-12 01:21:21,004 - INFO - Added users.json to ZIP archive
+2025-06-12 01:21:21,004 - INFO - Added procedures.json to ZIP archive
+2025-06-12 01:21:21,004 - INFO - Added rooms.json to ZIP archive
+2025-06-12 01:21:21,004 - INFO - Added job_candidates.json to ZIP archive
+2025-06-12 01:21:21,004 - INFO - Added interview_invitations.json to ZIP archive
+2025-06-12 01:21:21,005 - INFO - Added invitations.json to ZIP archive
+2025-06-12 01:21:21,005 - INFO - Added technician_availability.json to ZIP archive
+2025-06-12 01:21:21,005 - INFO - Added patient_photos.json to ZIP archive
+2025-06-12 01:21:21,005 - INFO - Added photo_album_types.json to ZIP archive
+2025-06-12 01:21:21,005 - INFO - Added room_reservations.json to ZIP archive
+2025-06-12 01:21:21,005 - INFO - Added surgery_technicians.json to ZIP archive
+2025-06-12 01:21:21,005 - INFO - Added technicians.json to ZIP archive
+2025-06-12 01:21:21,005 - INFO - Added surgeries.json to ZIP archive
+2025-06-12 01:21:21,005 - INFO - Created ZIP backup: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012120.zip (10.84 KB)
+2025-06-12 01:21:21,006 - INFO - Export completed: 18/18 tables exported successfully
+2025-06-12 01:21:21,006 - INFO - Total records exported: 69
+2025-06-12 01:21:21,006 - INFO - Backup saved to: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012120
+2025-06-12 01:21:21,006 - INFO - ZIP backup created: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012120.zip
+2025-06-12 01:21:21,006 - INFO - Database export completed successfully
+2025-06-12 01:29:31,204 - INFO - Starting database export process
+2025-06-12 01:29:31,205 - INFO - Initialized exporter for database: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/database.sqlite
+2025-06-12 01:29:31,205 - INFO - Temporary backup directory: /tmp/backup_20250612_012931_p59jhz01
+2025-06-12 01:29:31,205 - INFO - Found 0 backup files, no cleanup needed
+2025-06-12 01:29:31,207 - INFO - Found 18 tables: users, surgeries, appointments, patients, photo_album_types, patient_photos, agencies, invitations, interview_invitations, rooms, room_reservations, technicians, technician_availability, surgery_technicians, procedures, settings, job_candidates, candidate_notes
+2025-06-12 01:29:31,207 - INFO - Exporting table: users
+2025-06-12 01:29:31,207 - INFO - Exported 4 records from table 'users'
+2025-06-12 01:29:31,207 - INFO - Saved 4 records to /tmp/backup_20250612_012931_p59jhz01/users.json
+2025-06-12 01:29:31,207 - INFO - Exporting table: surgeries
+2025-06-12 01:29:31,207 - INFO - Exported 0 records from table 'surgeries'
+2025-06-12 01:29:31,207 - INFO - Saved 0 records to /tmp/backup_20250612_012931_p59jhz01/surgeries.json
+2025-06-12 01:29:31,207 - INFO - Exporting table: appointments
+2025-06-12 01:29:31,207 - INFO - Exported 0 records from table 'appointments'
+2025-06-12 01:29:31,207 - INFO - Saved 0 records to /tmp/backup_20250612_012931_p59jhz01/appointments.json
+2025-06-12 01:29:31,207 - INFO - Exporting table: patients
+2025-06-12 01:29:31,208 - INFO - Exported 0 records from table 'patients'
+2025-06-12 01:29:31,208 - INFO - Saved 0 records to /tmp/backup_20250612_012931_p59jhz01/patients.json
+2025-06-12 01:29:31,208 - INFO - Exporting table: photo_album_types
+2025-06-12 01:29:31,208 - INFO - Exported 15 records from table 'photo_album_types'
+2025-06-12 01:29:31,208 - INFO - Saved 15 records to /tmp/backup_20250612_012931_p59jhz01/photo_album_types.json
+2025-06-12 01:29:31,208 - INFO - Exporting table: patient_photos
+2025-06-12 01:29:31,208 - INFO - Exported 0 records from table 'patient_photos'
+2025-06-12 01:29:31,208 - INFO - Saved 0 records to /tmp/backup_20250612_012931_p59jhz01/patient_photos.json
+2025-06-12 01:29:31,208 - INFO - Exporting table: agencies
+2025-06-12 01:29:31,208 - INFO - Exported 3 records from table 'agencies'
+2025-06-12 01:29:31,208 - INFO - Saved 3 records to /tmp/backup_20250612_012931_p59jhz01/agencies.json
+2025-06-12 01:29:31,208 - INFO - Exporting table: invitations
+2025-06-12 01:29:31,208 - INFO - Exported 0 records from table 'invitations'
+2025-06-12 01:29:31,209 - INFO - Saved 0 records to /tmp/backup_20250612_012931_p59jhz01/invitations.json
+2025-06-12 01:29:31,209 - INFO - Exporting table: interview_invitations
+2025-06-12 01:29:31,209 - INFO - Exported 1 records from table 'interview_invitations'
+2025-06-12 01:29:31,209 - INFO - Saved 1 records to /tmp/backup_20250612_012931_p59jhz01/interview_invitations.json
+2025-06-12 01:29:31,209 - INFO - Exporting table: rooms
+2025-06-12 01:29:31,209 - INFO - Exported 5 records from table 'rooms'
+2025-06-12 01:29:31,209 - INFO - Saved 5 records to /tmp/backup_20250612_012931_p59jhz01/rooms.json
+2025-06-12 01:29:31,209 - INFO - Exporting table: room_reservations
+2025-06-12 01:29:31,209 - INFO - Exported 0 records from table 'room_reservations'
+2025-06-12 01:29:31,209 - INFO - Saved 0 records to /tmp/backup_20250612_012931_p59jhz01/room_reservations.json
+2025-06-12 01:29:31,209 - INFO - Exporting table: technicians
+2025-06-12 01:29:31,209 - INFO - Exported 14 records from table 'technicians'
+2025-06-12 01:29:31,210 - INFO - Saved 14 records to /tmp/backup_20250612_012931_p59jhz01/technicians.json
+2025-06-12 01:29:31,210 - INFO - Exporting table: technician_availability
+2025-06-12 01:29:31,210 - INFO - Exported 0 records from table 'technician_availability'
+2025-06-12 01:29:31,210 - INFO - Saved 0 records to /tmp/backup_20250612_012931_p59jhz01/technician_availability.json
+2025-06-12 01:29:31,210 - INFO - Exporting table: surgery_technicians
+2025-06-12 01:29:31,210 - INFO - Exported 0 records from table 'surgery_technicians'
+2025-06-12 01:29:31,210 - INFO - Saved 0 records to /tmp/backup_20250612_012931_p59jhz01/surgery_technicians.json
+2025-06-12 01:29:31,210 - INFO - Exporting table: procedures
+2025-06-12 01:29:31,210 - INFO - Exported 22 records from table 'procedures'
+2025-06-12 01:29:31,210 - INFO - Saved 22 records to /tmp/backup_20250612_012931_p59jhz01/procedures.json
+2025-06-12 01:29:31,210 - INFO - Exporting table: settings
+2025-06-12 01:29:31,210 - INFO - Exported 3 records from table 'settings'
+2025-06-12 01:29:31,210 - INFO - Saved 3 records to /tmp/backup_20250612_012931_p59jhz01/settings.json
+2025-06-12 01:29:31,210 - INFO - Exporting table: job_candidates
+2025-06-12 01:29:31,211 - INFO - Exported 2 records from table 'job_candidates'
+2025-06-12 01:29:31,211 - INFO - Saved 2 records to /tmp/backup_20250612_012931_p59jhz01/job_candidates.json
+2025-06-12 01:29:31,211 - INFO - Exporting table: candidate_notes
+2025-06-12 01:29:31,211 - INFO - Exported 0 records from table 'candidate_notes'
+2025-06-12 01:29:31,211 - INFO - Saved 0 records to /tmp/backup_20250612_012931_p59jhz01/candidate_notes.json
+2025-06-12 01:29:31,211 - INFO - Created backup manifest: /tmp/backup_20250612_012931_p59jhz01/backup_manifest.json
+2025-06-12 01:29:31,211 - INFO - Added agencies.json to ZIP archive
+2025-06-12 01:29:31,211 - INFO - Added settings.json to ZIP archive
+2025-06-12 01:29:31,212 - INFO - Added backup_manifest.json to ZIP archive
+2025-06-12 01:29:31,212 - INFO - Added patients.json to ZIP archive
+2025-06-12 01:29:31,212 - INFO - Added appointments.json to ZIP archive
+2025-06-12 01:29:31,212 - INFO - Added candidate_notes.json to ZIP archive
+2025-06-12 01:29:31,212 - INFO - Added users.json to ZIP archive
+2025-06-12 01:29:31,212 - INFO - Added procedures.json to ZIP archive
+2025-06-12 01:29:31,212 - INFO - Added rooms.json to ZIP archive
+2025-06-12 01:29:31,212 - INFO - Added job_candidates.json to ZIP archive
+2025-06-12 01:29:31,212 - INFO - Added interview_invitations.json to ZIP archive
+2025-06-12 01:29:31,212 - INFO - Added invitations.json to ZIP archive
+2025-06-12 01:29:31,213 - INFO - Added technician_availability.json to ZIP archive
+2025-06-12 01:29:31,213 - INFO - Added patient_photos.json to ZIP archive
+2025-06-12 01:29:31,213 - INFO - Added photo_album_types.json to ZIP archive
+2025-06-12 01:29:31,213 - INFO - Added room_reservations.json to ZIP archive
+2025-06-12 01:29:31,213 - INFO - Added surgery_technicians.json to ZIP archive
+2025-06-12 01:29:31,213 - INFO - Added technicians.json to ZIP archive
+2025-06-12 01:29:31,213 - INFO - Added surgeries.json to ZIP archive
+2025-06-12 01:29:31,213 - INFO - Created ZIP backup: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012931.zip (10.88 KB)
+2025-06-12 01:29:31,214 - INFO - Cleaned up temporary directory: /tmp/backup_20250612_012931_p59jhz01
+2025-06-12 01:29:31,214 - INFO - Export completed: 18/18 tables exported successfully
+2025-06-12 01:29:31,214 - INFO - Total records exported: 69
+2025-06-12 01:29:31,214 - INFO - Backup saved to: /tmp/backup_20250612_012931_p59jhz01
+2025-06-12 01:29:31,214 - INFO - ZIP backup created: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_012931.zip
+2025-06-12 01:29:31,214 - INFO - Database export completed successfully
+2025-06-12 01:35:30,068 - INFO - Starting database export process
+2025-06-12 01:35:30,069 - INFO - Initialized exporter for database: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/database.sqlite
+2025-06-12 01:35:30,069 - INFO - Temporary backup directory: /tmp/backup_20250612_013530_8nvk040v
+2025-06-12 01:35:30,069 - INFO - Found 0 backup files, no cleanup needed
+2025-06-12 01:35:30,070 - INFO - Found 18 tables: users, surgeries, appointments, patients, photo_album_types, patient_photos, agencies, invitations, interview_invitations, rooms, room_reservations, technicians, technician_availability, surgery_technicians, procedures, settings, job_candidates, candidate_notes
+2025-06-12 01:35:30,070 - INFO - Exporting table: users
+2025-06-12 01:35:30,070 - INFO - Exported 4 records from table 'users'
+2025-06-12 01:35:30,070 - INFO - Saved 4 records to /tmp/backup_20250612_013530_8nvk040v/users.json
+2025-06-12 01:35:30,070 - INFO - Exporting table: surgeries
+2025-06-12 01:35:30,070 - INFO - Exported 0 records from table 'surgeries'
+2025-06-12 01:35:30,071 - INFO - Saved 0 records to /tmp/backup_20250612_013530_8nvk040v/surgeries.json
+2025-06-12 01:35:30,071 - INFO - Exporting table: appointments
+2025-06-12 01:35:30,071 - INFO - Exported 0 records from table 'appointments'
+2025-06-12 01:35:30,071 - INFO - Saved 0 records to /tmp/backup_20250612_013530_8nvk040v/appointments.json
+2025-06-12 01:35:30,071 - INFO - Exporting table: patients
+2025-06-12 01:35:30,071 - INFO - Exported 0 records from table 'patients'
+2025-06-12 01:35:30,071 - INFO - Saved 0 records to /tmp/backup_20250612_013530_8nvk040v/patients.json
+2025-06-12 01:35:30,071 - INFO - Exporting table: photo_album_types
+2025-06-12 01:35:30,071 - INFO - Exported 15 records from table 'photo_album_types'
+2025-06-12 01:35:30,071 - INFO - Saved 15 records to /tmp/backup_20250612_013530_8nvk040v/photo_album_types.json
+2025-06-12 01:35:30,071 - INFO - Exporting table: patient_photos
+2025-06-12 01:35:30,071 - INFO - Exported 0 records from table 'patient_photos'
+2025-06-12 01:35:30,071 - INFO - Saved 0 records to /tmp/backup_20250612_013530_8nvk040v/patient_photos.json
+2025-06-12 01:35:30,071 - INFO - Exporting table: agencies
+2025-06-12 01:35:30,071 - INFO - Exported 3 records from table 'agencies'
+2025-06-12 01:35:30,071 - INFO - Saved 3 records to /tmp/backup_20250612_013530_8nvk040v/agencies.json
+2025-06-12 01:35:30,072 - INFO - Exporting table: invitations
+2025-06-12 01:35:30,072 - INFO - Exported 0 records from table 'invitations'
+2025-06-12 01:35:30,072 - INFO - Saved 0 records to /tmp/backup_20250612_013530_8nvk040v/invitations.json
+2025-06-12 01:35:30,072 - INFO - Exporting table: interview_invitations
+2025-06-12 01:35:30,072 - INFO - Exported 1 records from table 'interview_invitations'
+2025-06-12 01:35:30,072 - INFO - Saved 1 records to /tmp/backup_20250612_013530_8nvk040v/interview_invitations.json
+2025-06-12 01:35:30,072 - INFO - Exporting table: rooms
+2025-06-12 01:35:30,072 - INFO - Exported 5 records from table 'rooms'
+2025-06-12 01:35:30,072 - INFO - Saved 5 records to /tmp/backup_20250612_013530_8nvk040v/rooms.json
+2025-06-12 01:35:30,072 - INFO - Exporting table: room_reservations
+2025-06-12 01:35:30,072 - INFO - Exported 0 records from table 'room_reservations'
+2025-06-12 01:35:30,072 - INFO - Saved 0 records to /tmp/backup_20250612_013530_8nvk040v/room_reservations.json
+2025-06-12 01:35:30,072 - INFO - Exporting table: technicians
+2025-06-12 01:35:30,072 - INFO - Exported 14 records from table 'technicians'
+2025-06-12 01:35:30,073 - INFO - Saved 14 records to /tmp/backup_20250612_013530_8nvk040v/technicians.json
+2025-06-12 01:35:30,073 - INFO - Exporting table: technician_availability
+2025-06-12 01:35:30,073 - INFO - Exported 0 records from table 'technician_availability'
+2025-06-12 01:35:30,073 - INFO - Saved 0 records to /tmp/backup_20250612_013530_8nvk040v/technician_availability.json
+2025-06-12 01:35:30,073 - INFO - Exporting table: surgery_technicians
+2025-06-12 01:35:30,073 - INFO - Exported 0 records from table 'surgery_technicians'
+2025-06-12 01:35:30,073 - INFO - Saved 0 records to /tmp/backup_20250612_013530_8nvk040v/surgery_technicians.json
+2025-06-12 01:35:30,073 - INFO - Exporting table: procedures
+2025-06-12 01:35:30,073 - INFO - Exported 22 records from table 'procedures'
+2025-06-12 01:35:30,073 - INFO - Saved 22 records to /tmp/backup_20250612_013530_8nvk040v/procedures.json
+2025-06-12 01:35:30,073 - INFO - Exporting table: settings
+2025-06-12 01:35:30,073 - INFO - Exported 3 records from table 'settings'
+2025-06-12 01:35:30,073 - INFO - Saved 3 records to /tmp/backup_20250612_013530_8nvk040v/settings.json
+2025-06-12 01:35:30,073 - INFO - Exporting table: job_candidates
+2025-06-12 01:35:30,073 - INFO - Exported 2 records from table 'job_candidates'
+2025-06-12 01:35:30,074 - INFO - Saved 2 records to /tmp/backup_20250612_013530_8nvk040v/job_candidates.json
+2025-06-12 01:35:30,074 - INFO - Exporting table: candidate_notes
+2025-06-12 01:35:30,074 - INFO - Exported 0 records from table 'candidate_notes'
+2025-06-12 01:35:30,074 - INFO - Saved 0 records to /tmp/backup_20250612_013530_8nvk040v/candidate_notes.json
+2025-06-12 01:35:30,074 - INFO - Created backup manifest: /tmp/backup_20250612_013530_8nvk040v/backup_manifest.json
+2025-06-12 01:35:30,074 - INFO - Added agencies.json to ZIP archive
+2025-06-12 01:35:30,074 - INFO - Added settings.json to ZIP archive
+2025-06-12 01:35:30,075 - INFO - Added backup_manifest.json to ZIP archive
+2025-06-12 01:35:30,075 - INFO - Added patients.json to ZIP archive
+2025-06-12 01:35:30,075 - INFO - Added appointments.json to ZIP archive
+2025-06-12 01:35:30,075 - INFO - Added candidate_notes.json to ZIP archive
+2025-06-12 01:35:30,075 - INFO - Added users.json to ZIP archive
+2025-06-12 01:35:30,075 - INFO - Added procedures.json to ZIP archive
+2025-06-12 01:35:30,075 - INFO - Added rooms.json to ZIP archive
+2025-06-12 01:35:30,075 - INFO - Added job_candidates.json to ZIP archive
+2025-06-12 01:35:30,075 - INFO - Added interview_invitations.json to ZIP archive
+2025-06-12 01:35:30,075 - INFO - Added invitations.json to ZIP archive
+2025-06-12 01:35:30,075 - INFO - Added technician_availability.json to ZIP archive
+2025-06-12 01:35:30,075 - INFO - Added patient_photos.json to ZIP archive
+2025-06-12 01:35:30,076 - INFO - Added photo_album_types.json to ZIP archive
+2025-06-12 01:35:30,076 - INFO - Added room_reservations.json to ZIP archive
+2025-06-12 01:35:30,076 - INFO - Added surgery_technicians.json to ZIP archive
+2025-06-12 01:35:30,076 - INFO - Added technicians.json to ZIP archive
+2025-06-12 01:35:30,076 - INFO - Added surgeries.json to ZIP archive
+2025-06-12 01:35:30,076 - INFO - Created ZIP backup: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_013530.zip (10.88 KB)
+2025-06-12 01:35:30,077 - INFO - Cleaned up temporary directory: /tmp/backup_20250612_013530_8nvk040v
+2025-06-12 01:35:30,077 - INFO - Export completed: 18/18 tables exported successfully
+2025-06-12 01:35:30,077 - INFO - Total records exported: 69
+2025-06-12 01:35:30,077 - INFO - Backup saved to: /tmp/backup_20250612_013530_8nvk040v
+2025-06-12 01:35:30,077 - INFO - ZIP backup created: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_013530.zip
+2025-06-12 01:35:30,077 - INFO - Database export completed successfully
+2025-06-12 01:41:45,935 - INFO - Starting database export process
+2025-06-12 01:41:45,935 - INFO - Initialized exporter for database: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/database.sqlite
+2025-06-12 01:41:45,935 - INFO - Temporary backup directory: /tmp/backup_20250612_014145_esofj9b_
+2025-06-12 01:41:45,936 - INFO - Found 1 backup files, no cleanup needed
+2025-06-12 01:41:45,937 - INFO - Found 18 tables: users, surgeries, appointments, patients, photo_album_types, patient_photos, agencies, invitations, interview_invitations, rooms, room_reservations, technicians, technician_availability, surgery_technicians, procedures, settings, job_candidates, candidate_notes
+2025-06-12 01:41:45,937 - INFO - Exporting table: users
+2025-06-12 01:41:45,937 - INFO - Exported 4 records from table 'users'
+2025-06-12 01:41:45,937 - INFO - Saved 4 records to /tmp/backup_20250612_014145_esofj9b_/users.json
+2025-06-12 01:41:45,937 - INFO - Exporting table: surgeries
+2025-06-12 01:41:45,937 - INFO - Exported 0 records from table 'surgeries'
+2025-06-12 01:41:45,937 - INFO - Saved 0 records to /tmp/backup_20250612_014145_esofj9b_/surgeries.json
+2025-06-12 01:41:45,937 - INFO - Exporting table: appointments
+2025-06-12 01:41:45,937 - INFO - Exported 0 records from table 'appointments'
+2025-06-12 01:41:45,938 - INFO - Saved 0 records to /tmp/backup_20250612_014145_esofj9b_/appointments.json
+2025-06-12 01:41:45,938 - INFO - Exporting table: patients
+2025-06-12 01:41:45,938 - INFO - Exported 0 records from table 'patients'
+2025-06-12 01:41:45,938 - INFO - Saved 0 records to /tmp/backup_20250612_014145_esofj9b_/patients.json
+2025-06-12 01:41:45,938 - INFO - Exporting table: photo_album_types
+2025-06-12 01:41:45,938 - INFO - Exported 15 records from table 'photo_album_types'
+2025-06-12 01:41:45,938 - INFO - Saved 15 records to /tmp/backup_20250612_014145_esofj9b_/photo_album_types.json
+2025-06-12 01:41:45,938 - INFO - Exporting table: patient_photos
+2025-06-12 01:41:45,938 - INFO - Exported 0 records from table 'patient_photos'
+2025-06-12 01:41:45,938 - INFO - Saved 0 records to /tmp/backup_20250612_014145_esofj9b_/patient_photos.json
+2025-06-12 01:41:45,938 - INFO - Exporting table: agencies
+2025-06-12 01:41:45,938 - INFO - Exported 3 records from table 'agencies'
+2025-06-12 01:41:45,938 - INFO - Saved 3 records to /tmp/backup_20250612_014145_esofj9b_/agencies.json
+2025-06-12 01:41:45,938 - INFO - Exporting table: invitations
+2025-06-12 01:41:45,938 - INFO - Exported 0 records from table 'invitations'
+2025-06-12 01:41:45,939 - INFO - Saved 0 records to /tmp/backup_20250612_014145_esofj9b_/invitations.json
+2025-06-12 01:41:45,939 - INFO - Exporting table: interview_invitations
+2025-06-12 01:41:45,939 - INFO - Exported 1 records from table 'interview_invitations'
+2025-06-12 01:41:45,939 - INFO - Saved 1 records to /tmp/backup_20250612_014145_esofj9b_/interview_invitations.json
+2025-06-12 01:41:45,939 - INFO - Exporting table: rooms
+2025-06-12 01:41:45,939 - INFO - Exported 5 records from table 'rooms'
+2025-06-12 01:41:45,939 - INFO - Saved 5 records to /tmp/backup_20250612_014145_esofj9b_/rooms.json
+2025-06-12 01:41:45,939 - INFO - Exporting table: room_reservations
+2025-06-12 01:41:45,939 - INFO - Exported 0 records from table 'room_reservations'
+2025-06-12 01:41:45,939 - INFO - Saved 0 records to /tmp/backup_20250612_014145_esofj9b_/room_reservations.json
+2025-06-12 01:41:45,939 - INFO - Exporting table: technicians
+2025-06-12 01:41:45,939 - INFO - Exported 14 records from table 'technicians'
+2025-06-12 01:41:45,940 - INFO - Saved 14 records to /tmp/backup_20250612_014145_esofj9b_/technicians.json
+2025-06-12 01:41:45,940 - INFO - Exporting table: technician_availability
+2025-06-12 01:41:45,940 - INFO - Exported 0 records from table 'technician_availability'
+2025-06-12 01:41:45,940 - INFO - Saved 0 records to /tmp/backup_20250612_014145_esofj9b_/technician_availability.json
+2025-06-12 01:41:45,940 - INFO - Exporting table: surgery_technicians
+2025-06-12 01:41:45,940 - INFO - Exported 0 records from table 'surgery_technicians'
+2025-06-12 01:41:45,940 - INFO - Saved 0 records to /tmp/backup_20250612_014145_esofj9b_/surgery_technicians.json
+2025-06-12 01:41:45,940 - INFO - Exporting table: procedures
+2025-06-12 01:41:45,940 - INFO - Exported 22 records from table 'procedures'
+2025-06-12 01:41:45,940 - INFO - Saved 22 records to /tmp/backup_20250612_014145_esofj9b_/procedures.json
+2025-06-12 01:41:45,940 - INFO - Exporting table: settings
+2025-06-12 01:41:45,940 - INFO - Exported 3 records from table 'settings'
+2025-06-12 01:41:45,940 - INFO - Saved 3 records to /tmp/backup_20250612_014145_esofj9b_/settings.json
+2025-06-12 01:41:45,940 - INFO - Exporting table: job_candidates
+2025-06-12 01:41:45,941 - INFO - Exported 2 records from table 'job_candidates'
+2025-06-12 01:41:45,941 - INFO - Saved 2 records to /tmp/backup_20250612_014145_esofj9b_/job_candidates.json
+2025-06-12 01:41:45,941 - INFO - Exporting table: candidate_notes
+2025-06-12 01:41:45,941 - INFO - Exported 0 records from table 'candidate_notes'
+2025-06-12 01:41:45,941 - INFO - Saved 0 records to /tmp/backup_20250612_014145_esofj9b_/candidate_notes.json
+2025-06-12 01:41:45,941 - INFO - Created backup manifest: /tmp/backup_20250612_014145_esofj9b_/backup_manifest.json
+2025-06-12 01:41:45,941 - INFO - Added agencies.json to ZIP archive
+2025-06-12 01:41:45,942 - INFO - Added settings.json to ZIP archive
+2025-06-12 01:41:45,942 - INFO - Added backup_manifest.json to ZIP archive
+2025-06-12 01:41:45,942 - INFO - Added patients.json to ZIP archive
+2025-06-12 01:41:45,942 - INFO - Added appointments.json to ZIP archive
+2025-06-12 01:41:45,942 - INFO - Added candidate_notes.json to ZIP archive
+2025-06-12 01:41:45,942 - INFO - Added users.json to ZIP archive
+2025-06-12 01:41:45,942 - INFO - Added procedures.json to ZIP archive
+2025-06-12 01:41:45,942 - INFO - Added rooms.json to ZIP archive
+2025-06-12 01:41:45,942 - INFO - Added job_candidates.json to ZIP archive
+2025-06-12 01:41:45,943 - INFO - Added interview_invitations.json to ZIP archive
+2025-06-12 01:41:45,943 - INFO - Added invitations.json to ZIP archive
+2025-06-12 01:41:45,943 - INFO - Added technician_availability.json to ZIP archive
+2025-06-12 01:41:45,943 - INFO - Added patient_photos.json to ZIP archive
+2025-06-12 01:41:45,943 - INFO - Added photo_album_types.json to ZIP archive
+2025-06-12 01:41:45,943 - INFO - Added room_reservations.json to ZIP archive
+2025-06-12 01:41:45,943 - INFO - Added surgery_technicians.json to ZIP archive
+2025-06-12 01:41:45,943 - INFO - Added technicians.json to ZIP archive
+2025-06-12 01:41:45,943 - INFO - Added surgeries.json to ZIP archive
+2025-06-12 01:41:45,943 - INFO - Created ZIP backup: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_014145.zip (10.88 KB)
+2025-06-12 01:41:45,944 - INFO - Cleaned up temporary directory: /tmp/backup_20250612_014145_esofj9b_
+2025-06-12 01:41:45,944 - INFO - Export completed: 18/18 tables exported successfully
+2025-06-12 01:41:45,944 - INFO - Total records exported: 69
+2025-06-12 01:41:45,944 - INFO - Backup saved to: /tmp/backup_20250612_014145_esofj9b_
+2025-06-12 01:41:45,944 - INFO - ZIP backup created: /Users/drascom/Documents/Projects/yedek/public/admin/../../db/backups/backup_20250612_014145.zip
+2025-06-12 01:41:45,944 - INFO - Database export completed successfully

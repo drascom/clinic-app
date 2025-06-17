@@ -1,0 +1,123 @@
+2025-06-12 00:57:35,685 - INFO - Starting database import process
+2025-06-12 00:57:35,685 - INFO - Initialized importer for database: /Users/drascom/Documents/Projects/yedek/db/database.sqlite
+2025-06-12 00:57:35,685 - INFO - Backup directory: backups/backup_20250612_005729
+2025-06-12 00:57:35,685 - INFO - Backup manifest loaded successfully
+2025-06-12 00:57:35,686 - INFO - Importing table: agencies
+2025-06-12 00:57:35,687 - INFO - Table 'agencies': 0 new records, 3 updated, 0 errors
+2025-06-12 00:57:35,687 - INFO - Successfully imported table 'agencies'
+2025-06-12 00:57:35,687 - INFO - Importing table: users
+2025-06-12 00:57:35,687 - INFO - Table 'users': 0 new records, 4 updated, 0 errors
+2025-06-12 00:57:35,687 - INFO - Successfully imported table 'users'
+2025-06-12 00:57:35,687 - INFO - Importing table: photo_album_types
+2025-06-12 00:57:35,687 - INFO - Table 'photo_album_types': 0 new records, 15 updated, 0 errors
+2025-06-12 00:57:35,687 - INFO - Successfully imported table 'photo_album_types'
+2025-06-12 00:57:35,687 - INFO - Importing table: rooms
+2025-06-12 00:57:35,687 - INFO - Table 'rooms': 0 new records, 5 updated, 0 errors
+2025-06-12 00:57:35,687 - INFO - Successfully imported table 'rooms'
+2025-06-12 00:57:35,687 - INFO - Importing table: procedures
+2025-06-12 00:57:35,687 - INFO - Table 'procedures': 0 new records, 22 updated, 0 errors
+2025-06-12 00:57:35,687 - INFO - Successfully imported table 'procedures'
+2025-06-12 00:57:35,687 - INFO - Importing table: technicians
+2025-06-12 00:57:35,688 - INFO - Table 'technicians': 0 new records, 14 updated, 0 errors
+2025-06-12 00:57:35,688 - INFO - Successfully imported table 'technicians'
+2025-06-12 00:57:35,688 - INFO - Importing table: patients
+2025-06-12 00:57:35,688 - INFO - No records to import for table 'patients'
+2025-06-12 00:57:35,688 - INFO - Successfully imported table 'patients'
+2025-06-12 00:57:35,688 - INFO - Importing table: job_candidates
+2025-06-12 00:57:35,688 - INFO - Table 'job_candidates': 0 new records, 2 updated, 0 errors
+2025-06-12 00:57:35,688 - INFO - Successfully imported table 'job_candidates'
+2025-06-12 00:57:35,688 - INFO - Importing table: surgeries
+2025-06-12 00:57:35,688 - INFO - No records to import for table 'surgeries'
+2025-06-12 00:57:35,688 - INFO - Successfully imported table 'surgeries'
+2025-06-12 00:57:35,688 - INFO - Importing table: appointments
+2025-06-12 00:57:35,688 - INFO - No records to import for table 'appointments'
+2025-06-12 00:57:35,688 - INFO - Successfully imported table 'appointments'
+2025-06-12 00:57:35,688 - INFO - Importing table: patient_photos
+2025-06-12 00:57:35,688 - INFO - No records to import for table 'patient_photos'
+2025-06-12 00:57:35,688 - INFO - Successfully imported table 'patient_photos'
+2025-06-12 00:57:35,688 - INFO - Importing table: invitations
+2025-06-12 00:57:35,689 - INFO - No records to import for table 'invitations'
+2025-06-12 00:57:35,689 - INFO - Successfully imported table 'invitations'
+2025-06-12 00:57:35,689 - INFO - Importing table: interview_invitations
+2025-06-12 00:57:35,689 - INFO - Table 'interview_invitations': 0 new records, 1 updated, 0 errors
+2025-06-12 00:57:35,689 - INFO - Successfully imported table 'interview_invitations'
+2025-06-12 00:57:35,689 - INFO - Importing table: candidate_notes
+2025-06-12 00:57:35,689 - INFO - No records to import for table 'candidate_notes'
+2025-06-12 00:57:35,689 - INFO - Successfully imported table 'candidate_notes'
+2025-06-12 00:57:35,689 - INFO - Importing table: room_reservations
+2025-06-12 00:57:35,689 - INFO - No records to import for table 'room_reservations'
+2025-06-12 00:57:35,689 - INFO - Successfully imported table 'room_reservations'
+2025-06-12 00:57:35,689 - INFO - Importing table: technician_availability
+2025-06-12 00:57:35,689 - INFO - No records to import for table 'technician_availability'
+2025-06-12 00:57:35,689 - INFO - Successfully imported table 'technician_availability'
+2025-06-12 00:57:35,689 - INFO - Importing table: surgery_technicians
+2025-06-12 00:57:35,689 - INFO - No records to import for table 'surgery_technicians'
+2025-06-12 00:57:35,689 - INFO - Successfully imported table 'surgery_technicians'
+2025-06-12 00:57:35,689 - INFO - Importing table: settings
+2025-06-12 00:57:35,689 - INFO - Table 'settings': 0 new records, 3 updated, 0 errors
+2025-06-12 00:57:35,689 - INFO - Successfully imported table 'settings'
+2025-06-12 00:57:35,690 - INFO - Import completed: 18 tables imported successfully, 0 failed
+2025-06-12 00:57:35,690 - INFO - Database import completed successfully
+2025-06-12 01:16:00,386 - INFO - Starting database import process
+2025-06-12 01:16:00,387 - INFO - Initialized importer for database: /Users/drascom/Documents/Projects/yedek/db/database.sqlite
+2025-06-12 01:16:00,387 - INFO - Backup source: backups/backup_20250612_010729.zip
+2025-06-12 01:16:00,387 - INFO - Extracting ZIP file: backups/backup_20250612_010729.zip
+2025-06-12 01:16:00,391 - INFO - Extracted to temporary directory: /var/folders/c3/zpjjk0b94610bfl0bhsv3t9m0000gn/T/backup_import_36iu9a3y/backup_20250612_010729
+2025-06-12 01:16:00,391 - INFO - Backup manifest loaded successfully
+2025-06-12 01:16:00,391 - INFO - Importing table: agencies
+2025-06-12 01:16:00,392 - INFO - Table 'agencies': 0 new records, 3 updated, 0 errors
+2025-06-12 01:16:00,392 - INFO - Successfully imported table 'agencies'
+2025-06-12 01:16:00,392 - INFO - Importing table: users
+2025-06-12 01:16:00,392 - INFO - Table 'users': 0 new records, 4 updated, 0 errors
+2025-06-12 01:16:00,392 - INFO - Successfully imported table 'users'
+2025-06-12 01:16:00,392 - INFO - Importing table: photo_album_types
+2025-06-12 01:16:00,392 - INFO - Table 'photo_album_types': 0 new records, 15 updated, 0 errors
+2025-06-12 01:16:00,392 - INFO - Successfully imported table 'photo_album_types'
+2025-06-12 01:16:00,393 - INFO - Importing table: rooms
+2025-06-12 01:16:00,393 - INFO - Table 'rooms': 0 new records, 5 updated, 0 errors
+2025-06-12 01:16:00,393 - INFO - Successfully imported table 'rooms'
+2025-06-12 01:16:00,393 - INFO - Importing table: procedures
+2025-06-12 01:16:00,393 - INFO - Table 'procedures': 0 new records, 22 updated, 0 errors
+2025-06-12 01:16:00,393 - INFO - Successfully imported table 'procedures'
+2025-06-12 01:16:00,393 - INFO - Importing table: technicians
+2025-06-12 01:16:00,394 - INFO - Table 'technicians': 0 new records, 14 updated, 0 errors
+2025-06-12 01:16:00,394 - INFO - Successfully imported table 'technicians'
+2025-06-12 01:16:00,394 - INFO - Importing table: patients
+2025-06-12 01:16:00,394 - INFO - No records to import for table 'patients'
+2025-06-12 01:16:00,394 - INFO - Successfully imported table 'patients'
+2025-06-12 01:16:00,394 - INFO - Importing table: job_candidates
+2025-06-12 01:16:00,394 - INFO - Table 'job_candidates': 0 new records, 2 updated, 0 errors
+2025-06-12 01:16:00,394 - INFO - Successfully imported table 'job_candidates'
+2025-06-12 01:16:00,395 - INFO - Importing table: surgeries
+2025-06-12 01:16:00,395 - INFO - No records to import for table 'surgeries'
+2025-06-12 01:16:00,395 - INFO - Successfully imported table 'surgeries'
+2025-06-12 01:16:00,395 - INFO - Importing table: appointments
+2025-06-12 01:16:00,395 - INFO - No records to import for table 'appointments'
+2025-06-12 01:16:00,395 - INFO - Successfully imported table 'appointments'
+2025-06-12 01:16:00,395 - INFO - Importing table: patient_photos
+2025-06-12 01:16:00,395 - INFO - No records to import for table 'patient_photos'
+2025-06-12 01:16:00,395 - INFO - Successfully imported table 'patient_photos'
+2025-06-12 01:16:00,395 - INFO - Importing table: invitations
+2025-06-12 01:16:00,395 - INFO - No records to import for table 'invitations'
+2025-06-12 01:16:00,395 - INFO - Successfully imported table 'invitations'
+2025-06-12 01:16:00,395 - INFO - Importing table: interview_invitations
+2025-06-12 01:16:00,395 - INFO - Table 'interview_invitations': 0 new records, 1 updated, 0 errors
+2025-06-12 01:16:00,395 - INFO - Successfully imported table 'interview_invitations'
+2025-06-12 01:16:00,395 - INFO - Importing table: candidate_notes
+2025-06-12 01:16:00,395 - INFO - No records to import for table 'candidate_notes'
+2025-06-12 01:16:00,396 - INFO - Successfully imported table 'candidate_notes'
+2025-06-12 01:16:00,396 - INFO - Importing table: room_reservations
+2025-06-12 01:16:00,396 - INFO - No records to import for table 'room_reservations'
+2025-06-12 01:16:00,396 - INFO - Successfully imported table 'room_reservations'
+2025-06-12 01:16:00,396 - INFO - Importing table: technician_availability
+2025-06-12 01:16:00,396 - INFO - No records to import for table 'technician_availability'
+2025-06-12 01:16:00,396 - INFO - Successfully imported table 'technician_availability'
+2025-06-12 01:16:00,396 - INFO - Importing table: surgery_technicians
+2025-06-12 01:16:00,396 - INFO - No records to import for table 'surgery_technicians'
+2025-06-12 01:16:00,396 - INFO - Successfully imported table 'surgery_technicians'
+2025-06-12 01:16:00,396 - INFO - Importing table: settings
+2025-06-12 01:16:00,396 - INFO - Table 'settings': 0 new records, 3 updated, 0 errors
+2025-06-12 01:16:00,396 - INFO - Successfully imported table 'settings'
+2025-06-12 01:16:00,396 - INFO - Import completed: 18 tables imported successfully, 0 failed
+2025-06-12 01:16:00,398 - INFO - Cleaned up temporary files
+2025-06-12 01:16:00,398 - INFO - Database import completed successfully
