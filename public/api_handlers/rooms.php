@@ -10,7 +10,7 @@ function handle_rooms($action, $method, $db, $input = [])
                     return ['success' => false, 'error' => 'Room ID is required.'];
                 }
 
-                $stmt = $db->prepare("SELECT id, name, types, is_active FROM rooms WHERE id = ?");
+                $stmt = $db->prepare("SELECT id, name, type, is_active FROM rooms WHERE id = ?");
                 $stmt->execute([$id]);
                 $room = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -29,7 +29,7 @@ function handle_rooms($action, $method, $db, $input = [])
                 if ($date) {
                     // Get only available rooms for the specified date
                     $stmt = $db->prepare("
-                        SELECT r.id, r.name,r.types, r.is_active,
+                        SELECT r.id, r.name,r.type, r.is_active,
                                CASE WHEN rr.id IS NOT NULL THEN 1 ELSE 0 END as is_booked
                         FROM rooms r
                         LEFT JOIN room_reservations rr ON r.id = rr.room_id AND rr.reserved_date = ?
@@ -40,7 +40,7 @@ function handle_rooms($action, $method, $db, $input = [])
                 } else {
                     // Get all rooms
                     $stmt = $db->prepare("SELECT id, name,
-                     types, is_active FROM rooms ORDER BY name");
+                     type, is_active FROM rooms ORDER BY name");
                     $stmt->execute();
                 }
 
@@ -53,19 +53,19 @@ function handle_rooms($action, $method, $db, $input = [])
         case 'add':
             if ($method === 'POST') {
                 $name = trim($_POST['name'] ?? '');
-                $types = trim($_POST['types'] ?? '');
+                $type = trim($_POST['type'] ?? '');
 
                 if (empty($name)) {
                     return ['success' => false, 'error' => 'Room name is required.'];
                 }
 
                 try {
-                    $stmt = $db->prepare("INSERT INTO rooms (name, types, created_at, updated_at) VALUES (?, ?, datetime('now'), datetime('now'))");
-                    $stmt->execute([$name, $types]);
+                    $stmt = $db->prepare("INSERT INTO rooms (name, type, created_at, updated_at) VALUES (?, ?, datetime('now'), datetime('now'))");
+                    $stmt->execute([$name, $type]);
                     $room_id = $db->lastInsertId();
 
                     // Fetch the created room
-                    $stmt = $db->prepare("SELECT id, name, types, is_active FROM rooms WHERE id = ?");
+                    $stmt = $db->prepare("SELECT id, name, type, is_active FROM rooms WHERE id = ?");
                     $stmt->execute([$room_id]);
                     $room = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -84,15 +84,15 @@ function handle_rooms($action, $method, $db, $input = [])
             if ($method === 'POST' || $method === 'PUT') {
                 $id = $_POST['id'] ?? $input['id'] ?? null;
                 $name = trim($_POST['name'] ?? $input['name'] ?? '');
-                $types = trim($_POST['types'] ?? $input['types'] ?? '');
+                $type = trim($_POST['type'] ?? $input['type'] ?? '');
 
                 if (!$id || empty($name)) {
                     return ['success' => false, 'error' => 'Room ID and name are required.'];
                 }
 
                 try {
-                    $stmt = $db->prepare("UPDATE rooms SET name = ?, types = ?, updated_at = datetime('now') WHERE id = ?");
-                    $stmt->execute([$name, $types, $id]);
+                    $stmt = $db->prepare("UPDATE rooms SET name = ?, type = ?, updated_at = datetime('now') WHERE id = ?");
+                    $stmt->execute([$name, $type, $id]);
 
                     if ($stmt->rowCount() === 0) {
                         return ['success' => false, 'error' => 'Room not found.'];
@@ -127,40 +127,39 @@ function handle_rooms($action, $method, $db, $input = [])
                     }
                     if ($status === 0) {
                         return ['success' => true, 'message' => 'Room archived successfully.'];
-                    }else{
+                    } else {
                         return ['success' => true, 'message' => 'Room activated successfully.'];
                     }
-                    
                 } catch (PDOException $e) {
                     return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
                 }
             }
             break;
-           
-            case 'delete':
-                if ($method === 'POST' || $method === 'DELETE') {
-                    $id = $_POST['id'] ?? $input['id'] ?? null;
-    
-                    if (!$id) {
-                        return ['success' => false, 'error' => 'Room ID is required.'];
-                    }
-    
-                    try {
-                        // Soft delete - set is_active to 0
-                        $stmt = $db->prepare("DELETE FROM rooms WHERE id = ?");
-                        $stmt->execute([$id]);
-    
-                        if ($stmt->rowCount() === 0) {
-                            return ['success' => false, 'error' => 'Room not found.'];
-                        }
-    
-                        return ['success' => true, 'message' => 'Room archived successfully.'];
-                    } catch (PDOException $e) {
-                        return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
-                    }
+
+        case 'delete':
+            if ($method === 'POST' || $method === 'DELETE') {
+                $id = $_POST['id'] ?? $input['id'] ?? null;
+
+                if (!$id) {
+                    return ['success' => false, 'error' => 'Room ID is required.'];
                 }
-                break;
-       default:
+
+                try {
+                    // Soft delete - set is_active to 0
+                    $stmt = $db->prepare("DELETE FROM rooms WHERE id = ?");
+                    $stmt->execute([$id]);
+
+                    if ($stmt->rowCount() === 0) {
+                        return ['success' => false, 'error' => 'Room not found.'];
+                    }
+
+                    return ['success' => true, 'message' => 'Room archived successfully.'];
+                } catch (PDOException $e) {
+                    return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
+                }
+            }
+            break;
+        default:
             return ['success' => false, 'error' => 'Invalid action for rooms entity.'];
     }
 

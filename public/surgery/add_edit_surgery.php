@@ -156,7 +156,7 @@ require_once __DIR__ . '/../includes/header.php';
                                     <label for="patient_id" class="form-label">Patient <span
                                             class="text-danger">*</span></label>
                                     <div class="input-group">
-                                        <select class="form-select" id="patient_id" name="patient_id" required>
+                                        <select class="form-select select2-enable" id="patient_id" name="patient_id" required>
                                             <option value="">Select Patient</option>
                                         </select>
                                         <button type="button" class="btn btn-text text-primary" data-bs-toggle="modal"

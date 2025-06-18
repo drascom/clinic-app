@@ -37,6 +37,8 @@ if (
 
     <!-- Tom-Select CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <!-- Custom CSS -->
 
     <?php if (is_staff()): ?>
@@ -53,6 +55,11 @@ if (
 </head>
 
 <body>
+    <?php
+    if (is_admin() || is_editor()) {
+        echo '<script>document.body.classList.add("is-admin-editor");</script>';
+    }
+    ?>
     <!-- Navigation -->
     <?php if (is_staff()): ?>
         <?php $current_user_id = isset($_SESSION['user_id']) ? htmlspecialchars($_SESSION['user_id']) : ''; ?>
@@ -152,6 +159,13 @@ if (
                                                 </a>
                                             </li>
                                             <li>
+                                                <a class="dropdown-item" href="/staff/staff-availability.php">
+                                                    <i class="fas fa-users me-1"></i>
+                                                    <span class="d-lg-inline">Staff Calendar</span>
+                                                </a>
+                                            </li>
+
+                                            <li>
                                                 <a class="dropdown-item" href="/staff/interview_invitations.php">
                                                     <i class="fas fa-paper-plane me-1"></i>
                                                     Interview Invitations
@@ -224,67 +238,67 @@ if (
                                             Database Import
                                         </a>
                                     </li>
-                                </ul>
-                                </li>
-                            <?php endif; ?>
-                        <?php endif; ?>
                         </ul>
-
-                        <ul class="navbar-nav">
-                            <?php
-                            // Fetch username for the logged-in user
-                            $user_id = get_user_id();
-                            $stmt = $pdo->prepare("SELECT username FROM users WHERE id = ?");
-                            $stmt->execute([$user_id]);
-                            $user = $stmt->fetch(PDO::FETCH_ASSOC);
-                            $username = $user['username'] ?? 'User';
-                            ?>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
-                                    data-bs-toggle="dropdown" aria-expanded="false" style=" color: mediumblue;">
-                                    <i class="fas fa-user-circle me-1"></i>
-                                    <span class="d-none d-md-inline"><?php echo htmlspecialchars($username); ?></span>
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
-                                    <li>
-                                        <a class="dropdown-item"
-                                            href="/profile/profile.php?user_id=<?php echo $_SESSION['user_id']; ?>">
-                                            <i class="fas fa-user-cog me-2"></i>Profile
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <hr class="dropdown-divider">
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="/logout.php">
-                                            <i class="fas fa-sign-out-alt me-2"></i>Logout
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-
-                    <?php else: ?>
-                        <ul class="navbar-nav ms-auto">
-                            <li class="nav-item">
-                                <a class="nav-link" href="/auth/login.php">
-                                    <i class="fas fa-sign-in-alt me-1"></i>Login
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="/auth/signup.php">
-                                    <i class="fas fa-user-plus me-1"></i>Sign Up
-                                </a>
-                            </li>
-                        </ul>
-                    <?php endif; ?>
-                    <ul class="navbar-nav">
-                        <li>
-                            <a id="theme-btn" class="nav-link" href="">
-                                <i class="fas fa-moon"></i>
-                            </a>
                         </li>
-                    </ul>
+                    <?php endif; ?>
+                <?php endif; ?>
+                </ul>
+
+                <ul class="navbar-nav">
+                    <?php
+                        // Fetch username for the logged-in user
+                        $user_id = get_user_id();
+                        $stmt = $pdo->prepare("SELECT username FROM users WHERE id = ?");
+                        $stmt->execute([$user_id]);
+                        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                        $username = $user['username'] ?? 'User';
+                    ?>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false" style=" color: mediumblue;">
+                            <i class="fas fa-user-circle me-1"></i>
+                            <span class="d-none d-md-inline"><?php echo htmlspecialchars($username); ?></span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
+                            <li>
+                                <a class="dropdown-item"
+                                    href="/profile/profile.php?user_id=<?php echo $_SESSION['user_id']; ?>">
+                                    <i class="fas fa-user-cog me-2"></i>Profile
+                                </a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="/logout.php">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+
+            <?php else: ?>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/auth/login.php">
+                            <i class="fas fa-sign-in-alt me-1"></i>Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/auth/signup.php">
+                            <i class="fas fa-user-plus me-1"></i>Sign Up
+                        </a>
+                    </li>
+                </ul>
+            <?php endif; ?>
+            <ul class="navbar-nav">
+                <li>
+                    <a id="theme-btn" class="nav-link" href="">
+                        <i class="fas fa-moon"></i>
+                    </a>
+                </li>
+            </ul>
                 </div>
             </div>
         </nav>

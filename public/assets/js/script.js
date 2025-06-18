@@ -106,3 +106,5 @@ document.addEventListener('DOMContentLoaded', function () {
         return new bootstrap.Toast(toastEl)
     })
 });
+
+// The Select2 initialization has been moved to the specific pages that use it.

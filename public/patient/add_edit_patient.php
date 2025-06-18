@@ -1,12 +1,4 @@
 <?php
-require_once __DIR__ . '/../includes/db.php';
-require_once __DIR__ . '/../auth/auth.php';
-
-// Ensure user is logged in
-if (!is_logged_in()) {
-    header('Location: ../auth/login.php');
-    exit();
-}
 
 $patient = null;
 $errors = [];
@@ -192,7 +184,7 @@ require_once '../includes/header.php';
 <?php require_once '../includes/footer.php'; ?>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const patientForm = document.getElementById('patient-form');
         const patientIdInput = document.querySelector('#patient-form input[name="id"]');
         const isEditing = patientIdInput !== null;
@@ -256,7 +248,7 @@ require_once '../includes/header.php';
                 editButton.className = 'btn btn-sm btn-outline-warning ms-2';
                 editButton.innerHTML = '<i class="fas fa-edit"></i>';
                 editButton.title = 'Enable agency editing';
-                editButton.onclick = function () {
+                editButton.onclick = function() {
                     agencySelect.disabled = false;
                     editButton.style.display = 'none';
                     warningText.style.display = 'block';
@@ -279,7 +271,9 @@ require_once '../includes/header.php';
 
         // Fetch patient data if editing
         if (isEditing) {
-            apiRequest('patients', 'get', { id: patientId })
+            apiRequest('patients', 'get', {
+                    id: patientId
+                })
                 .then(data => {
                     if (data.success) {
                         const patient = data.patient;
@@ -322,12 +316,12 @@ require_once '../includes/header.php';
 
             inputs.forEach(input => {
                 // Real-time validation on blur
-                input.addEventListener('blur', function () {
+                input.addEventListener('blur', function() {
                     validateField(this);
                 });
 
                 // Clear validation on input
-                input.addEventListener('input', function () {
+                input.addEventListener('input', function() {
                     if (this.classList.contains('is-invalid')) {
                         this.classList.remove('is-invalid');
                         const feedback = this.parentNode.querySelector('.invalid-feedback');
@@ -470,7 +464,7 @@ require_once '../includes/header.php';
                 headers: {
                     // Add any necessary headers, e.g., for authentication if your API requires it
                 },
-                init: function () {
+                init: function() {
                     const myDropzone = this;
                     // let currentPatientId = patientId; // Capture the initial patientId
 
@@ -490,7 +484,7 @@ require_once '../includes/header.php';
                     // and this closure should capture that update when processQueue is called.
 
                     // Log when a file is about to be sent
-                    myDropzone.on("sending", function (file, xhr, formData) {
+                    myDropzone.on("sending", function(file, xhr, formData) {
                         console.log("Dropzone 'sending' event triggered.");
                         // Manually append parameters to the formData
                         formData.append('entity', 'patients');
@@ -506,7 +500,7 @@ require_once '../includes/header.php';
                     });
 
                     // Handle successful upload
-                    myDropzone.on("success", function (file, response) {
+                    myDropzone.on("success", function(file, response) {
                         console.log("Avatar upload successful:", response);
                         if (response.success) {
                             // Check if HEIC conversion occurred and show appropriate message
@@ -530,14 +524,15 @@ require_once '../includes/header.php';
                     });
 
                     // Handle upload error
-                    myDropzone.on("error", function (file, message) {
+                    myDropzone.on("error", function(file, message) {
                         console.error("Avatar upload error:", message);
 
                         let errorMessage = message;
 
                         // Check for file size errors
                         if (file.size > myDropzone.options.maxFilesize * 1024 * 1024) {
-                            errorMessage = `File too large. Maximum size is ${myDropzone.options.maxFilesize}MB. Your file is ${Math.round(file.size / 1024 / 1024 * 100) / 100}MB.`;
+                            errorMessage =
+                                `File too large. Maximum size is ${myDropzone.options.maxFilesize}MB. Your file is ${Math.round(file.size / 1024 / 1024 * 100) / 100}MB.`;
                         }
 
                         showToast(`Avatar upload failed: ${errorMessage}`, 'danger');
@@ -546,7 +541,7 @@ require_once '../includes/header.php';
                     });
 
                     // Handle file removal (for existing avatars or newly added ones before upload)
-                    myDropzone.on("removedfile", function (file) {
+                    myDropzone.on("removedfile", function(file) {
                         console.log("File removed:", file);
                         // If this is an existing avatar (mock file), trigger deletion via API
                         if (file.isMockFile && file.avatarId) {
@@ -562,9 +557,9 @@ require_once '../includes/header.php';
                                 .dataURL); // Send avatar URL as identifier
 
                             fetch('/api.php', {
-                                method: 'POST',
-                                body: deleteFormData
-                            })
+                                    method: 'POST',
+                                    body: deleteFormData
+                                })
                                 .then(response => response.json())
                                 .then(data => {
                                     if (data.success) {
@@ -594,7 +589,9 @@ require_once '../includes/header.php';
 
                     // When in editing mode, add existing avatar as a mock file
                     if (isEditing && patientId) {
-                        apiRequest('patients', 'get', { id: patientId })
+                        apiRequest('patients', 'get', {
+                                id: patientId
+                            })
                             .then(data => {
                                 if (data.success && data.patient && data.patient.avatar) {
                                     const avatarUrl = data.patient.avatar;
@@ -638,7 +635,7 @@ require_once '../includes/header.php';
             });
 
             // Handle form submission - Trigger Dropzone upload if files are added
-            patientForm.addEventListener('submit', function (event) {
+            patientForm.addEventListener('submit', function(event) {
                 event.preventDefault(); // Prevent default form submission
 
                 // Clear previous messages
@@ -663,7 +660,7 @@ require_once '../includes/header.php';
                                 patientId = data.patient.id;
 
                                 // Listen for Dropzone completion after processing the queue
-                                const queueCompleteHandler = function () {
+                                const queueCompleteHandler = function() {
                                     // Redirect after a short delay on success
                                     setTimeout(() => {
                                         window.location.href = 'patients.php';
@@ -688,7 +685,8 @@ require_once '../includes/header.php';
                                 }, 500);
                             } else {
                                 // Handle main form submission error
-                                showFormError(data.error || data.message || 'An error occurred while creating the patient.');
+                                showFormError(data.error || data.message ||
+                                    'An error occurred while creating the patient.');
                             }
                         })
                         .catch(error => {
@@ -700,7 +698,7 @@ require_once '../includes/header.php';
                     // If editing and a new avatar is uploaded, process it first
                     console.log("Processing Dropzone queue for existing patient update...");
                     // Listen for Dropzone completion before submitting the main form
-                    const queueCompleteHandler = function () {
+                    const queueCompleteHandler = function() {
                         console.log("Dropzone queue complete for update. Submitting main form.");
                         // Submit the main form data (avatar update is handled by upload_avatar action)
                         submitPatientForm();
@@ -748,9 +746,9 @@ require_once '../includes/header.php';
                 // For 'update', the avatar is handled by the 'upload_avatar' action triggered by Dropzone
 
                 return fetch('/api.php', { // Return the fetch promise
-                    method: 'POST',
-                    body: formData
-                })
+                        method: 'POST',
+                        body: formData
+                    })
                     .then(response => response.json())
                     .then(data => {
                         // Handle success/error messages for the main form submission
@@ -762,7 +760,8 @@ require_once '../includes/header.php';
                                     window.location.href = 'patients.php';
                                 }, 500);
                             } else {
-                                showFormError(data.error || data.message || 'An error occurred while saving patient data.');
+                                showFormError(data.error || data.message ||
+                                    'An error occurred while saving patient data.');
                             }
                         }
                         return data; // Return data for chaining

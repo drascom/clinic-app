@@ -142,7 +142,7 @@ CREATE TABLE IF NOT EXISTS interview_invitations (
 CREATE TABLE rooms (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL UNIQUE,
-    types TEXT,
+    type TEXT,
     is_active INTEGER DEFAULT 1,
     updated_by INTEGER NULL,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
@@ -183,7 +183,7 @@ CREATE TABLE IF NOT EXISTS staff_details (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     staff_id INTEGER NOT NULL,
     speciality TEXT,
-    experience_level TEXT CHECK (experience_level IN ('entry level', 'junior', 'mid Level', 'senior', 'expert')),
+    experience_level TEXT CHECK (experience_level IN ('entry level', 'junior', 'mid-level', 'senior', 'expert')),
     current_company TEXT,
     linkedin_profile TEXT,
     source TEXT CHECK (source IN ('Website', 'LinkedIn', 'Indeed', 'Referral', 'Agency', 'Other')),
@@ -200,13 +200,13 @@ CREATE TABLE IF NOT EXISTS staff_availability (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     staff_id INTEGER NOT NULL,
     available_on DATE NOT NULL,
-    period TEXT DEFAULT 'full' CHECK (period IN ('am','pm','full')),
+    status TEXT NOT NULL DEFAULT 'available' CHECK (status IN ('available', 'not_available')),
     updated_by INTEGER NULL,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE CASCADE,
     FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
-    UNIQUE (staff_id, available_on, period)
+    UNIQUE (staff_id, available_on)
 );
 
 
@@ -292,7 +292,7 @@ CREATE INDEX IF NOT EXISTS idx_room_reservations_date ON room_reservations(reser
 CREATE INDEX IF NOT EXISTS idx_rooms_active ON rooms(is_active);
 CREATE INDEX IF NOT EXISTS idx_staff_availability_staff_id ON staff_availability(staff_id);
 CREATE INDEX IF NOT EXISTS idx_staff_availability_date ON staff_availability(available_on);
-CREATE INDEX IF NOT EXISTS idx_staff_availability_period ON staff_availability(period);
+CREATE INDEX IF NOT EXISTS idx_staff_availability_status ON staff_availability(status);
 CREATE INDEX IF NOT EXISTS idx_staff_active ON staff(is_active);
 
 -- Indexes for interview_invitations table
@@ -304,7 +304,7 @@ CREATE INDEX IF NOT EXISTS idx_interview_invitations_sent_at ON interview_invita
 
 
 -- Insert sample rooms for testing
-INSERT INTO rooms (name, types, is_active, updated_by) VALUES
+INSERT INTO rooms (name, type, is_active, updated_by) VALUES
 ('Surgery 1',  'surgery', 1, 1),
 ('Surgery 2',  'surgery', 0, 1),
 ('Surgery 3',  'surgery', 0, 1),

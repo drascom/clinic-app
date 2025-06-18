@@ -6,7 +6,9 @@
         "-y",
         "@modelcontextprotocol/server-filesystem",
         "/Users/drascom/MCP SERVERS"
-      ]
+      ],
+      "disabled": true,
+      "alwaysAllow": []
     },
     "sequentialthinking": {
       "command": "npx",

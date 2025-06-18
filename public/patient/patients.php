@@ -20,7 +20,7 @@ $page_title = "Patients";
                     Patients
                 </h4>
                 <div class="btn-group" role="group">
-                    <a href="add_patient.php" class="btn  btn-outline-success">
+                    <a href="add_edit_patient.php" class="btn  btn-outline-success">
                         <i class="fas fa-plus me-1"></i>
                         <span class="d-none d-sm-inline">Add Patient</span>
                         <span class="d-inline d-sm-none">Add</span>
@@ -38,7 +38,7 @@ $page_title = "Patients";
                         <i class="fas fa-search"></i>
                     </span>
                     <input type="text" class="form-control" id="search-input"
-                        placeholder="Search patients by name, date of birth<?php echo (is_admin() || is_editor()) ? ', or agency' : ''; ?>...">
+                        placeholder="Search patients by name, date of birth, or agency...">
                     <button class="btn btn-outline-secondary" type="button" id="clear-search" title="Clear search">
                         <i class="fas fa-times"></i>
                     </button>
@@ -57,9 +57,7 @@ $page_title = "Patients";
                         <tr>
                             <th>Avatar</th>
                             <th>Name</th>
-                            <?php if (is_admin() || is_editor()): ?>
-                                <th>Agency</th>
-                            <?php endif; ?>
+                            <th>Agency</th>
                             <th>Date of Birth</th>
                             <th>Phone</th>
                             <th>Email</th>
@@ -78,7 +76,7 @@ $page_title = "Patients";
 
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const patientsTable = document.getElementById('patients-table');
 
 
@@ -113,10 +111,8 @@ $page_title = "Patients";
                                 `<img src="../assets/avatar.png" alt="Default Avatar" class="avatar">`;
 
                             // Build agency column for admin/editor users
-                            const userRole = '<?php echo get_user_role(); ?>';
-                            const showAgencyColumn = userRole === 'admin' || userRole === 'editor';
-                            const agencyColumnHtml = showAgencyColumn ?
-                                `<td><span class="text-truncate-mobile badge bg-secondary">${patient.agency_name || 'No Agency'}</span></td>` : '';
+                            const agencyColumnHtml =
+                                `<td><span class="text-truncate-mobile badge bg-secondary">${patient.agency_name || 'No Agency'}</span></td>`;
 
                             tableRows += `
                             <tr data-patient-id="${patient.id}"
@@ -193,7 +189,7 @@ $page_title = "Patients";
         }
 
         // Delete patient function
-        patientsTable.addEventListener('click', function (event) {
+        patientsTable.addEventListener('click', function(event) {
             if (event.target.classList.contains('delete-patient-btn')) {
                 const patientId = event.target.dataset.patientId;
                 if (confirm('Are you sure you want to delete this patient?')) {
@@ -203,9 +199,9 @@ $page_title = "Patients";
                     formData.append('id', patientId);
 
                     fetch('/api.php', {
-                        method: 'POST',
-                        body: formData
-                    })
+                            method: 'POST',
+                            body: formData
+                        })
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
@@ -241,7 +237,8 @@ $page_title = "Patients";
                 const email = row.dataset.patientName.toLowerCase();
                 const phone = row.dataset.patientPhone.toLowerCase();
 
-                if (name.includes(searchTerm) || dob.includes(searchTerm) || phone.includes(searchTerm) || email.includes(searchTerm)) {
+                if (name.includes(searchTerm) || dob.includes(searchTerm) || phone.includes(searchTerm) ||
+                    email.includes(searchTerm)) {
                     row.style.display = '';
                 } else {
                     row.style.display = 'none';
@@ -250,14 +247,14 @@ $page_title = "Patients";
         }
 
 
-        searchInput.addEventListener('keyup', function (event) {
+        searchInput.addEventListener('keyup', function(event) {
             const searchTerm = searchInput.value;
             if (searchTerm.length >= 2 || searchTerm.length === 0) {
                 filterPatients();
             }
         });
         if (searchInput && clearSearchBtn) {
-            clearSearchBtn.addEventListener('click', function () {
+            clearSearchBtn.addEventListener('click', function() {
                 searchInput.value = '';
                 fetchAndDisplayPatients();
             });
@@ -266,7 +263,7 @@ $page_title = "Patients";
         // but might need adjustments to use the new API for fetching surgery data.
         const surgeriesModal = document.getElementById('surgeriesModal');
         if (surgeriesModal) {
-            surgeriesModal.addEventListener('show.bs.modal', function (event) {
+            surgeriesModal.addEventListener('show.bs.modal', function(event) {
                 const link = event.relatedTarget; // Button or link that triggered the modal
                 const patientId = link.getAttribute('data-patient-id');
                 const surgeriesListDiv = document.getElementById('surgeries-list');
@@ -276,8 +273,8 @@ $page_title = "Patients";
 
                 // Fetch surgeries via AJAX
                 apiRequest('surgeries', 'list', {
-                    patient_id: patientId
-                })
+                        patient_id: patientId
+                    })
                     .then(data => {
                         surgeriesListDiv.innerHTML = ''; // Clear loading message
 
@@ -336,15 +333,12 @@ $page_title = "Patients";
         }
 
         /* Ensure agency column is visible on mobile for admin/editor */
-        <?php if (is_admin() || is_editor()): ?>
-            #patients-table th:nth-child(3),
-            /* Agency */
-            #patients-table td:nth-child(3) {
-                display: table-cell;
-            }
-
-        <?php endif; ?>
+        body.is-admin-editor #patients-table th:nth-child(3),
+        body.is-admin-editor #patients-table td:nth-child(3) {
+            display: table-cell;
+        }
     }
+
 
     @media (max-width: 576px) {
 

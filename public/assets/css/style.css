@@ -78,7 +78,7 @@ body {
 .navbar-nav .nav-link {
     font-size: 1rem !important;
     font-weight: 500;
-    padding: 0.5rem 1rem;
+    padding: 0.4rem 0.8rem;
     border-radius: var(--border-radius-sm);
     transition: all 0.3s ease;
 
@@ -142,9 +142,12 @@ body {
 /* Button Enhancements */
 .btn {
     border-radius: var(--border-radius-sm);
-    /* font-weight: 500; */
-    /* padding: 0.5rem 1rem; */
+    padding: 0.375rem 0.75rem; /* Reduced padding */
     transition: all 0.3s ease;
+}
+
+.btn i { /* Added rule for icons within buttons */
+    font-size: 0.8em; /* Smaller icon size */
 }
 
 .btn:hover {
@@ -199,13 +202,13 @@ body {
     border-bottom: 2px solid var(--color-border);
     font-weight: 600;
     color: var(--color-text);
-    padding: 1rem 0.75rem;
+    padding: 0.75rem 0.5rem; /* Reduced padding */
     white-space: nowrap;
     position: relative;
 }
 
 .table tbody td {
-    padding: 0.75rem;
+    padding: 0.5rem; /* Reduced padding */
     vertical-align: middle;
     border-top: 1px solid var(--color-border);
     position: relative;
@@ -583,7 +586,7 @@ table.table {
 /* Mobile Navigation Improvements */
 @media (max-width: 991px) {
     .navbar-nav .nav-link {
-        padding: 0.75rem 1rem;
+        padding: 0.5rem 0.8rem; /* Reduced padding for mobile */
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
@@ -949,7 +952,7 @@ table.table {
 
 .mobile-nav-item i {
     font-size: 1.2rem;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.15rem; /* Reduced margin */
     display: block;
 }
 

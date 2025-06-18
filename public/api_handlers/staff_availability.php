@@ -48,14 +48,14 @@ function handle_staff_availability($action, $method, $db, $input = [])
                             sa.id,
                             sa.id,
                             sa.available_on as date,
-                            sa.period,
+                            sa.status,
                             s.name as staff_name
                         FROM staff_availability sa
                         JOIN staff s ON sa.staff_id = s.id
                         WHERE sa.staff_id = ?
                         AND sa.available_on BETWEEN ? AND ?
                         AND s.is_active = 1
-                        ORDER BY sa.available_on, s.name, sa.period
+                        ORDER BY sa.available_on, s.name, sa.status
                     ";
 
                     $stmt = $db->prepare($sql);
@@ -91,29 +91,30 @@ function handle_staff_availability($action, $method, $db, $input = [])
 
                 try {
                     // Check if 'full' day availability exists for this staff and date
-                    $stmt = $db->prepare("SELECT id FROM staff_availability WHERE staff_id = ? AND available_on = ? AND period = 'full'");
+                    $stmt = $db->prepare("SELECT id, status FROM staff_availability WHERE staff_id = ? AND available_on = ?");
                     $stmt->execute([$staff_id, $date]);
                     $existing_availability = $stmt->fetch(PDO::FETCH_ASSOC);
 
-                    $is_available = false;
+                    $new_status = 'unselected';
 
-                    if ($existing_availability) {
-                        // If 'full' day exists, delete it
+                    if (!$existing_availability) {
+                        // From unselected to available
+                        $stmt = $db->prepare("INSERT INTO staff_availability (staff_id, available_on, status, updated_by) VALUES (?, ?, 'available', ?)");
+                        $stmt->execute([$staff_id, $date, get_user_id()]);
+                        $new_status = 'available';
+                    } elseif ($existing_availability['status'] === 'available') {
+                        // From available to not_available
+                        $stmt = $db->prepare("UPDATE staff_availability SET status = 'not_available', updated_by = ? WHERE id = ?");
+                        $stmt->execute([get_user_id(), $existing_availability['id']]);
+                        $new_status = 'not_available';
+                    } else {
+                        // From not_available to unselected (delete)
                         $stmt = $db->prepare("DELETE FROM staff_availability WHERE id = ?");
                         $stmt->execute([$existing_availability['id']]);
-                        $is_available = false; // Now not available
-                    } else {
-                        // If 'full' day doesn't exist, insert it
-                        // First, remove any existing am/pm entries for this date to ensure 'full' is the only entry
-                        $stmt = $db->prepare("DELETE FROM staff_availability WHERE staff_id = ? AND available_on = ? AND period IN ('am', 'pm')");
-                        $stmt->execute([$staff_id, $date]);
-
-                        $stmt = $db->prepare("INSERT INTO staff_availability (staff_id, available_on, period, created_at) VALUES (?, ?, 'full', datetime('now'))");
-                        $stmt->execute([$staff_id, $date]);
-                        $is_available = true; // Now available
+                        $new_status = 'unselected';
                     }
 
-                    return ['success' => true, 'isAvailable' => $is_available];
+                    return ['success' => true, 'newStatus' => $new_status];
                 } catch (PDOException $e) {
                     return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
                 }
@@ -144,13 +145,13 @@ function handle_staff_availability($action, $method, $db, $input = [])
                         SELECT
                             sa.staff_id,
                             sa.available_on as date,
-                            sa.period,
+                            sa.status,
                             s.name as staff_name
                         FROM staff_availability sa
                         JOIN staff s ON sa.staff_id = s.id
                         WHERE sa.available_on BETWEEN ? AND ?
                         AND s.is_active = 1
-                        ORDER BY s.name, sa.available_on
+                        ORDER BY s.name, sa.available_on, sa.status
                     ";
 
                     $stmt = $db->prepare($sql);
@@ -177,33 +178,36 @@ function handle_staff_availability($action, $method, $db, $input = [])
                 if (!$staff_id || !$date) {
                     return ['success' => false, 'error' => 'Staff ID and date are required.'];
                 }
-                // return ['success' => true, 'message' => 'Staff ID: ' . $staff_id];
-                // Validate date format
+
                 if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
                     return ['success' => false, 'error' => 'Invalid date format. Use YYYY-MM-DD.'];
                 }
 
                 try {
-                    // Check if any availability exists for this staff and date
-                    $stmt = $db->prepare("SELECT id FROM staff_availability WHERE staff_id = ? AND available_on = ?");
+                    $stmt = $db->prepare("SELECT id, status FROM staff_availability WHERE staff_id = ? AND available_on = ?");
                     $stmt->execute([$staff_id, $date]);
-                    $existing_availability = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    $existing = $stmt->fetch(PDO::FETCH_ASSOC);
 
-                    $is_available = false;
+                    $new_status = 'unselected';
 
-                    if (!empty($existing_availability)) {
-                        // If any availability exists, remove all for this date
-                        $stmt = $db->prepare("DELETE FROM staff_availability WHERE staff_id = ? AND available_on = ?");
-                        $stmt->execute([$staff_id, $date]);
-                        $is_available = false; // Now not available
-                    } else {
-                        // If no availability exists, add full day availability
-                        $stmt = $db->prepare("INSERT INTO staff_availability (staff_id, available_on, period, updated_by, created_at) VALUES (?, ?, 'full', ?, datetime('now'))");
+                    if (!$existing) {
+                        // 1. From unselected to available
+                        $stmt = $db->prepare("INSERT INTO staff_availability (staff_id, available_on, status, updated_by) VALUES (?, ?, 'available', ?)");
                         $stmt->execute([$staff_id, $date, get_user_id()]);
-                        $is_available = true; // Now available
+                        $new_status = 'available';
+                    } elseif ($existing['status'] === 'available') {
+                        // 2. From available to not_available
+                        $stmt = $db->prepare("UPDATE staff_availability SET status = 'not_available', updated_by = ? WHERE id = ?");
+                        $stmt->execute([get_user_id(), $existing['id']]);
+                        $new_status = 'not_available';
+                    } else {
+                        // 3. From not_available to unselected (delete)
+                        $stmt = $db->prepare("DELETE FROM staff_availability WHERE id = ?");
+                        $stmt->execute([$existing['id']]);
+                        $new_status = 'unselected';
                     }
 
-                    return ['success' => true, 'isAvailable' => $is_available];
+                    return ['success' => true, 'newStatus' => $new_status];
                 } catch (PDOException $e) {
                     return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
                 }
@@ -213,7 +217,7 @@ function handle_staff_availability($action, $method, $db, $input = [])
         case 'byDate':
             if ($method === 'POST') {
                 $date = $input['date'] ?? null;
-                $period = $input['period'] ?? null; // Optional period filter for surgery scheduling
+                $status_filter = $input['status'] ?? 'available'; // Default to available
 
                 if (!$date) {
                     return ['success' => false, 'error' => 'Date is required.'];
@@ -224,9 +228,9 @@ function handle_staff_availability($action, $method, $db, $input = [])
                     return ['success' => false, 'error' => 'Invalid date format. Use YYYY-MM-DD.'];
                 }
 
-                // Validate period if provided
-                if ($period && !in_array($period, ['am', 'pm', 'full'])) {
-                    return ['success' => false, 'error' => 'Period must be am, pm, or full.'];
+                // Validate status filter
+                if (!in_array($status_filter, ['available', 'not_available', 'all'])) {
+                    return ['success' => false, 'error' => 'Status filter must be available, not_available, or all.'];
                 }
 
                 try {
@@ -237,7 +241,7 @@ function handle_staff_availability($action, $method, $db, $input = [])
                             s.phone,
                             s.staff_type,
                             s.is_active,
-                            sa.period,
+                            sa.status,
                             sd.speciality as speciality,
                             sd.experience_level as experience,
                             sa.id as availability_id
@@ -250,44 +254,33 @@ function handle_staff_availability($action, $method, $db, $input = [])
 
                     $params = [$date];
 
-                    // Add period filtering for surgery scheduling
-                    if ($period) {
-                        $sql .= " AND (sa.period = ? OR sa.period = 'full')";
-                        $params[] = $period;
+                    if ($status_filter !== 'all') {
+                        $sql .= " AND sa.status = ?";
+                        $params[] = $status_filter;
                     }
 
-                    $sql .= " ORDER BY s.name, sa.period";
+                    $sql .= " ORDER BY s.name, sa.status";
 
                     $stmt = $db->prepare($sql);
                     $stmt->execute($params);
                     $staff_members = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                    // Group staff members by ID to handle multiple periods
-                    $grouped_staff = [];
+
+                    // For byDate, we now return staff with their specific status for that day
+                    // No grouping by periods needed as 'period' column is removed.
+                    $result_staff = [];
                     foreach ($staff_members as $staff) {
-                        $staff_id = $staff['id'];
-                        if (!isset($grouped_staff[$staff_id])) {
-                            $grouped_staff[$staff_id] = [
-                                'id' => $staff['id'],
-                                'name' => $staff['name'],
-                                'specialty' => $staff['specialty'],
-                                'periods' => []
-                            ];
-                        }
-                        $grouped_staff[$staff_id]['periods'][] = $staff['period'];
-
-                    }
-
-                    // Convert back to indexed array and add period display
-                    $result_staff = array_values($grouped_staff);
-                    foreach ($result_staff as &$staff) {
-                        $staff['period'] = implode(', ', $staff['periods']);
-                        $staff['available_periods'] = $staff['periods'];
+                        $result_staff[] = [
+                            'id' => $staff['id'],
+                            'name' => $staff['name'],
+                            'specialty' => $staff['specialty'],
+                            'status' => $staff['status'] // Now directly use status
+                        ];
                     }
 
                     return [
                         'success' => true,
                         'date' => $date,
-                        'period' => $period,
+                        'status_filter' => $status_filter,
                         'technicians' => $result_staff,
                         'count' => count($result_staff)
                     ];
@@ -302,10 +295,10 @@ function handle_staff_availability($action, $method, $db, $input = [])
             if ($method === 'POST') {
                 $staff_id = $_POST['staff_id'] ?? $input['staff_id'] ?? null;
                 $date = $_POST['available_on'] ?? $_POST['date'] ?? $input['available_on'] ?? $input['date'] ?? null;
-                $period = $_POST['period'] ?? $input['period'] ?? null;
+                $status = $_POST['status'] ?? $input['status'] ?? 'available'; // Default to 'available'
 
-                if (!$staff_id || !$date || !$period) {
-                    return ['success' => false, 'error' => 'Staff ID, date, and period are required.'];
+                if (!$staff_id || !$date) {
+                    return ['success' => false, 'error' => 'Staff ID and date are required.'];
                 }
 
                 // Validate date format
@@ -313,51 +306,39 @@ function handle_staff_availability($action, $method, $db, $input = [])
                     return ['success' => false, 'error' => 'Invalid date format. Use YYYY-MM-DD.'];
                 }
 
-                // Validate period
-                if (!in_array($period, ['am', 'pm', 'full'])) {
-                    return ['success' => false, 'error' => 'Period must be am, pm, or full.'];
+                // Validate status
+                if (!in_array($status, ['available', 'not_available'])) {
+                    return ['success' => false, 'error' => 'Status must be available or not_available.'];
                 }
 
                 try {
-                    // Check if staff exists and is active
-                    $stmt = $db->prepare("SELECT id, name, is_active FROM staff WHERE id = ?");
-                    $stmt->execute([$staff_id]);
-                    $staff = $stmt->fetch(PDO::FETCH_ASSOC);
+                    // Check if availability record already exists for this staff and date
+                    $stmt = $db->prepare("SELECT id FROM staff_availability WHERE staff_id = ? AND available_on = ?");
+                    $stmt->execute([$staff_id, $date]);
+                    $existing_availability = $stmt->fetch(PDO::FETCH_ASSOC);
 
-                    if (!$staff) {
-                        return ['success' => false, 'error' => 'Staff not found.'];
-                    }
-
-                    if (!$staff['is_active']) {
-                        http_response_code(400);
-                        return ['success' => false, 'error' => 'Cannot mark an archived staff as available.'];
-                    }
-
-                    // Handle full day availability - remove existing am/pm entries for this date
-                    if ($period === 'full') {
-                        $stmt = $db->prepare("DELETE FROM staff_availability WHERE staff_id = ? AND available_on = ? AND period IN ('am', 'pm')");
-                        $stmt->execute([$staff_id, $date]);
+                    if ($existing_availability) {
+                        // Update existing availability
+                        $stmt = $db->prepare("UPDATE staff_availability SET status = ?, updated_by = ? WHERE id = ?");
+                        $stmt->execute([$status, get_user_id(), $existing_availability['id']]);
+                        $availability_id = $existing_availability['id'];
                     } else {
-                        // Remove full day entry if setting specific period
-                        $stmt = $db->prepare("DELETE FROM staff_availability WHERE staff_id = ? AND available_on = ? AND period = 'full'");
-                        $stmt->execute([$staff_id, $date]);
+                        // Insert new availability
+                        $stmt = $db->prepare("INSERT INTO staff_availability (staff_id, available_on, status, updated_by) VALUES (?, ?, ?, ?)");
+                        $stmt->execute([$staff_id, $date, $status, get_user_id()]);
+                        $availability_id = $db->lastInsertId();
                     }
 
-                    // Insert new availability
-                    $stmt = $db->prepare("INSERT INTO staff_availability (staff_id, available_on, period, created_at) VALUES (?, ?, ?, datetime('now'))");
-                    $stmt->execute([$staff_id, $date, $period]);
-                    $availability_id = $db->lastInsertId();
-
-                    // Fetch the created availability with details
+                    // Fetch the created/updated availability with details
                     $stmt = $db->prepare("
                         SELECT
                             sa.id,
                             sa.staff_id,
                             sa.available_on as date,
-                            sa.period,
+                            sa.status,
                             s.name as staff_name,
                             s.specialty
-                        FROM staff sa
+                        FROM staff_availability sa
                         JOIN staff s ON sa.staff_id = s.id
                         WHERE sa.id = ?
                     ");
@@ -366,9 +347,9 @@ function handle_staff_availability($action, $method, $db, $input = [])
 
                     return ['success' => true, 'message' => 'Availability set successfully.', 'availability' => $availability];
                 } catch (PDOException $e) {
-                    if ($e->getCode() == 23000) { // UNIQUE constraint violation
+                    if ($e->getCode() == 23000) { // UNIQUE constraint violation (should be less common now with status update)
                         http_response_code(409);
-                        return ['success' => false, 'error' => 'Staff is already available for this period.'];
+                        return ['success' => false, 'error' => 'A record for this staff and date already exists.'];
                     }
                     return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
                 }
@@ -380,10 +361,10 @@ function handle_staff_availability($action, $method, $db, $input = [])
                 $id = $_POST['id'] ?? $input['id'] ?? null;
                 $staff_id = $_POST['staff_id'] ?? $input['staff_id'] ?? null;
                 $date = $_POST['available_on'] ?? $_POST['date'] ?? $input['available_on'] ?? $input['date'] ?? null;
-                $period = $_POST['period'] ?? $input['period'] ?? null;
+                $status = $_POST['status'] ?? $input['status'] ?? null; // Status is now required for edit
 
-                if (!$id || !$staff_id || !$date || !$period) {
-                    return ['success' => false, 'error' => 'ID, staff ID, date, and period are required.'];
+                if (!$id || !$staff_id || !$date || !$status) {
+                    return ['success' => false, 'error' => 'ID, staff ID, date, and status are required.'];
                 }
 
                 // Validate date format
@@ -391,9 +372,9 @@ function handle_staff_availability($action, $method, $db, $input = [])
                     return ['success' => false, 'error' => 'Invalid date format. Use YYYY-MM-DD.'];
                 }
 
-                // Validate period
-                if (!in_array($period, ['am', 'pm', 'full'])) {
-                    return ['success' => false, 'error' => 'Period must be am, pm, or full.'];
+                // Validate status
+                if (!in_array($status, ['available', 'not_available'])) {
+                    return ['success' => false, 'error' => 'Status must be available or not_available.'];
                 }
 
                 try {
@@ -405,13 +386,13 @@ function handle_staff_availability($action, $method, $db, $input = [])
                     }
 
                     // Update the availability
-                    $stmt = $db->prepare("UPDATE staff_availability SET staff_id = ?, available_on = ?, period = ? WHERE id = ?");
-                    $stmt->execute([$staff_id, $date, $period, $id]);
+                    $stmt = $db->prepare("UPDATE staff_availability SET staff_id = ?, available_on = ?, status = ?, updated_by = ? WHERE id = ?");
+                    $stmt->execute([$staff_id, $date, $status, get_user_id(), $id]);
 
                     return ['success' => true, 'message' => 'Availability updated successfully.'];
                 } catch (PDOException $e) {
-                    if ($e->getCode() == 23000) { // UNIQUE constraint violation
-                        return ['success' => false, 'error' => 'Staff is already available for this period.'];
+                    if ($e->getCode() == 23000) { // UNIQUE constraint violation (if staff_id, available_on, status combination is unique)
+                        return ['success' => false, 'error' => 'A record for this staff, date, and status already exists.'];
                     }
                     return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
                 }
@@ -434,8 +415,8 @@ function handle_staff_availability($action, $method, $db, $input = [])
                             sa.id,
                             s.name as staff_name,
                             sa.available_on as date,
-                            sa.period
-                        FROM staff sa
+                            sa.status
+                        FROM staff_availability sa
                         JOIN staff s ON sa.staff_id = s.id
                         WHERE sa.id = ?
                     ");
@@ -467,10 +448,10 @@ function handle_staff_availability($action, $method, $db, $input = [])
                         sa.id,
                         sa.staff_id,
                         sa.available_on as date,
-                        sa.period,
+                        sa.status,
                         s.name as staff_name,
                         s.specialty
-                    FROM staff sa
+                    FROM staff_availability sa
                     JOIN staff s ON sa.staff_id = s.id
                     WHERE s.is_active = 1
                 ";
@@ -487,7 +468,7 @@ function handle_staff_availability($action, $method, $db, $input = [])
                     $params[] = $date;
                 }
 
-                $sql .= " ORDER BY sa.available_on DESC, s.name, sa.period";
+                $sql .= " ORDER BY sa.available_on DESC, s.name, sa.status";
 
                 try {
                     $stmt = $db->prepare($sql);
@@ -526,7 +507,8 @@ function handle_staff_availability($action, $method, $db, $input = [])
 
                     $sql = "
                         SELECT
-                            available_on as date
+                            available_on as date,
+                            status
                         FROM staff_availability
                         WHERE staff_id = ?
                         AND available_on BETWEEN ? AND ?
@@ -539,10 +521,10 @@ function handle_staff_availability($action, $method, $db, $input = [])
                     // Format for app.js: { 'YYYY-MM-DD': true/false, ... }
                     $available_days = [];
                     foreach ($availability_records as $record) {
-                        // Since app.js only cares if *any* availability exists for the day,
-                        // we just mark the day as true if there's at least one entry.
-                        // If we needed to handle am/pm/full separately, this logic would change.
-                        $available_days[$record['date']] = true;
+                        // Mark the day as true only if the status is 'available'
+                        if ($record['status'] === 'available') {
+                            $available_days[$record['date']] = true;
+                        }
                     }
 
                     return ['success' => true, 'availability' => $available_days];

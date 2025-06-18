@@ -226,7 +226,7 @@ $page_title = "Staff Management";
                             <select class="form-select" id="experience_level" name="experience_level" required>
                                 <option value="entry level">Entry Level</option>
                                 <option value="junior">Junior</option>
-                                <option value="mid level">Mid Level</option>
+                                <option value="mid-level">Mid level</option>
                                 <option value="senior">Senior</option>
                                 <option value="expert">Expert</option>
                             </select>
@@ -355,7 +355,7 @@ $page_title = "Staff Management";
 <script src="/assets/js/api-helper.js"></script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         // Global variables
         let currentPage = 1;
         let currentSearch = '';
@@ -393,7 +393,7 @@ $page_title = "Staff Management";
             staffForm.addEventListener('submit', handleFormSubmit);
 
             // Confirm action button
-            confirmActionBtn.addEventListener('click', function () {
+            confirmActionBtn.addEventListener('click', function() {
                 if (confirmationCallback) {
                     confirmationCallback();
                     confirmationCallback = null;
@@ -406,7 +406,7 @@ $page_title = "Staff Management";
             const clearSearchBtn = document.getElementById('clear-search');
 
             if (searchInput) {
-                searchInput.addEventListener('input', function () {
+                searchInput.addEventListener('input', function() {
                     const searchTerm = this.value.trim();
 
                     // Clear previous timeout
@@ -425,7 +425,7 @@ $page_title = "Staff Management";
 
 
             if (clearSearchBtn) {
-                clearSearchBtn.addEventListener('click', function () {
+                clearSearchBtn.addEventListener('click', function() {
                     searchInput.value = '';
                     currentSearch = '';
                     loadStaff(1);
@@ -433,10 +433,11 @@ $page_title = "Staff Management";
             }
 
             // Reset form and reload staff list when modal is hidden
-            document.getElementById('staffModal').addEventListener('hidden.bs.modal', function () {
+            document.getElementById('staffModal').addEventListener('hidden.bs.modal', function() {
                 resetForm();
                 loadStaff(); // Reload staff list after modal is fully hidden
-                removeModalBackdrops(); // Ensure any lingering backdrops are removed - Let Bootstrap handle this
+                removeModalBackdrops
+                    (); // Ensure any lingering backdrops are removed - Let Bootstrap handle this
                 document.activeElement.blur(); // Remove focus from any element inside the hidden modal
             });
 
@@ -444,20 +445,20 @@ $page_title = "Staff Management";
             staffTypeSelect.addEventListener('change', toggleStaffDetails);
 
             // Edit button from view modal
-            editStaffFromViewBtn.addEventListener('click', function () {
+            editStaffFromViewBtn.addEventListener('click', function() {
                 const staffId = this.dataset.staffId;
                 bootstrap.Modal.getInstance(document.getElementById('viewStaffModal')).hide();
                 editStaff(staffId);
             });
 
             // Tab switching
-            document.getElementById('candidates-tab').addEventListener('shown.bs.tab', function (event) {
+            document.getElementById('candidates-tab').addEventListener('shown.bs.tab', function(event) {
                 console.log('Tab clicked:', event.target.id); // Log the ID of the activated tab
                 currentStaffTypeFilter = 'candidate';
                 loadStaff(1, currentStaffTypeFilter);
             });
 
-            document.getElementById('staff-tab').addEventListener('shown.bs.tab', function (event) {
+            document.getElementById('staff-tab').addEventListener('shown.bs.tab', function(event) {
                 console.log('Tab clicked:', event.target.id); // Log the ID of the activated tab
                 currentStaffTypeFilter = 'staff';
                 loadStaff(1, currentStaffTypeFilter);
@@ -501,12 +502,12 @@ $page_title = "Staff Management";
 
             inputs.forEach(input => {
                 // Real-time validation on blur
-                input.addEventListener('blur', function () {
+                input.addEventListener('blur', function() {
                     validateField(this);
                 });
 
                 // Clear validation on input
-                input.addEventListener('input', function () {
+                input.addEventListener('input', function() {
                     if (this.classList.contains('is-invalid')) {
                         this.classList.remove('is-invalid');
                         const feedback = this.parentNode.querySelector('.invalid-feedback');
@@ -643,7 +644,8 @@ $page_title = "Staff Management";
 
                 if (response.success) {
                     showSuccessMessage(response.message);
-                    const staffModalInstance = bootstrap.Modal.getInstance(document.getElementById('staffModal'));
+                    const staffModalInstance = bootstrap.Modal.getInstance(document.getElementById(
+                        'staffModal'));
                     if (staffModalInstance) {
                         staffModalInstance.hide();
                     } else {
@@ -697,12 +699,20 @@ $page_title = "Staff Management";
                     updateStaffCount(response.pagination); // Pass the entire pagination object
                 } else {
                     showErrorMessage('Failed to load staff: ' + (response.error || 'Unknown error'));
-                    updateStaffCount({ total: 0, candidate_total: 0, staff_total: 0 }); // Pass default counts on error
+                    updateStaffCount({
+                        total: 0,
+                        candidate_total: 0,
+                        staff_total: 0
+                    }); // Pass default counts on error
                 }
             } catch (error) {
                 console.error('Error loading staff:', error);
                 showErrorMessage('An error occurred while loading staff.');
-                updateStaffCount({ total: 0, candidate_total: 0, staff_total: 0 }); // Pass default counts on error
+                updateStaffCount({
+                    total: 0,
+                    candidate_total: 0,
+                    staff_total: 0
+                }); // Pass default counts on error
             }
         }
 
@@ -725,12 +735,12 @@ $page_title = "Staff Management";
             }
 
             tableBody.innerHTML = staffMembers.map(staff => {
-                const staffTypeBadge = staff.staff_type === 'candidate'
-                    ? '<span class="badge bg-info">candidate</span>'
-                    : '<span class="badge bg-primary">Staff</span>'; // Changed 'Tech' to 'Staff'
-                const isActiveBadge = staff.is_active == 1
-                    ? '<span class="badge bg-success">Active</span>'
-                    : '<span class="badge bg-danger">Inactive</span>';
+                const staffTypeBadge = staff.staff_type === 'candidate' ?
+                    '<span class="badge bg-info">candidate</span>' :
+                    '<span class="badge bg-primary">Staff</span>'; // Changed 'Tech' to 'Staff'
+                const isActiveBadge = staff.is_active == 1 ?
+                    '<span class="badge bg-success">Active</span>' :
+                    '<span class="badge bg-danger">Inactive</span>';
 
                 return `
                     <tr>
@@ -784,18 +794,22 @@ $page_title = "Staff Management";
 
             // Previous button
             if (pagination.current_page > 1) {
-                paginationHtml += `<li class="page-item"><a class="page-link" href="#" onclick="window.loadStaff(${pagination.current_page - 1}, '${currentStaffTypeFilter}')">Previous</a></li>`;
+                paginationHtml +=
+                    `<li class="page-item"><a class="page-link" href="#" onclick="window.loadStaff(${pagination.current_page - 1}, '${currentStaffTypeFilter}')">Previous</a></li>`;
             }
 
             // Page numbers
-            for (let i = Math.max(1, pagination.current_page - 2); i <= Math.min(pagination.total_pages, pagination.current_page + 2); i++) {
+            for (let i = Math.max(1, pagination.current_page - 2); i <= Math.min(pagination.total_pages, pagination
+                    .current_page + 2); i++) {
                 const activeClass = i === pagination.current_page ? 'active' : '';
-                paginationHtml += `<li class="page-item ${activeClass}"><a class="page-link" href="#" onclick="window.loadStaff(${i}, '${currentStaffTypeFilter}')">${i}</a></li>`;
+                paginationHtml +=
+                    `<li class="page-item ${activeClass}"><a class="page-link" href="#" onclick="window.loadStaff(${i}, '${currentStaffTypeFilter}')">${i}</a></li>`;
             }
 
             // Next button
             if (pagination.current_page < pagination.total_pages) {
-                paginationHtml += `<li class="page-item"><a class="page-link" href="#" onclick="window.loadStaff(${pagination.current_page + 1}, '${currentStaffTypeFilter}')">Next</a></li>`;
+                paginationHtml +=
+                    `<li class="page-item"><a class="page-link" href="#" onclick="window.loadStaff(${pagination.current_page + 1}, '${currentStaffTypeFilter}')">Next</a></li>`;
             }
 
             paginationHtml += '</ul>';
@@ -877,7 +891,7 @@ $page_title = "Staff Management";
 
         // Global functions for onclick handlers
         window.loadStaff = loadStaff;
-        window.viewStaff = async function (id) {
+        window.viewStaff = async function(id) {
             console.log('viewStaff: Attempting to view staff with ID:', id);
             const modal = new bootstrap.Modal(document.getElementById('viewStaffModal'));
             const loadingDiv = document.getElementById('staff-loading');
@@ -921,20 +935,21 @@ $page_title = "Staff Management";
         function displayStaffDetails(staff) {
             const loadingDiv = document.getElementById('staff-loading');
             const contentDiv = document.getElementById('staff-details-content');
-            const viewStaffModalLabel = document.getElementById('viewStaffModalLabel'); // Get the modal title element
+            const viewStaffModalLabel = document.getElementById(
+                'viewStaffModalLabel'); // Get the modal title element
 
             // Set the modal title to the staff member's name
             viewStaffModalLabel.innerHTML = `<i class="fas fa-user me-2"></i>${escapeHtml(staff.name)}`;
 
-            const staffTypeBadge = staff.staff_type === 'candidate'
-                ? '<span class="badge bg-info fs-6">candidate</span>'
-                : '<span class="badge bg-primary fs-6">Tech</span>';
-            const isActiveBadge = staff.is_active == 1
-                ? '<span class="badge bg-success fs-6">Active</span>'
-                : '<span class="badge bg-danger fs-6">Inactive</span>';
-            const isWillingToMove = staff.willing_to_relocate == 1
-                ? '<span class="badge bg-success fs-6">Yes</span>'
-                : '<span class="badge bg-danger fs-6">No</span>';
+            const staffTypeBadge = staff.staff_type === 'candidate' ?
+                '<span class="badge bg-info fs-6">candidate</span>' :
+                '<span class="badge bg-primary fs-6">Tech</span>';
+            const isActiveBadge = staff.is_active == 1 ?
+                '<span class="badge bg-success fs-6">Active</span>' :
+                '<span class="badge bg-danger fs-6">Inactive</span>';
+            const isWillingToMove = staff.willing_to_relocate == 1 ?
+                '<span class="badge bg-success fs-6">Yes</span>' :
+                '<span class="badge bg-danger fs-6">No</span>';
 
             let staffDetailsHtml = '';
             staffDetailsHtml = `
@@ -1049,7 +1064,7 @@ $page_title = "Staff Management";
             errorDiv.classList.remove('d-none');
         }
 
-        window.editStaff = async function (id) {
+        window.editStaff = async function(id) {
             console.log('editStaff: Attempting to edit staff with ID:', id);
             resetForm(); // Clear form and validation
             staffModalLabel.innerHTML = '<i class="fas fa-edit me-2"></i>Edit Staff'; // Change modal title
@@ -1082,34 +1097,42 @@ $page_title = "Staff Management";
                         document.getElementById('current_company').value = staff.current_company || '';
                         document.getElementById('linkedin_profile').value = staff.linkedin_profile || '';
                         document.getElementById('source').value = staff.source || '';
-                        document.getElementById('salary_expectation').value = staff.salary_expectation || '';
-                        document.getElementById('willing_to_relocate').value = staff.willing_to_relocate || '0';
+                        document.getElementById('salary_expectation').value = staff.salary_expectation ||
+                            '';
+                        document.getElementById('willing_to_relocate').value = staff.willing_to_relocate ||
+                            '0';
                     }
                     toggleStaffDetails(); // Ensure correct fields are shown/hidden
                 } else {
                     showErrorMessage(response.error || 'Failed to load staff for editing.');
-                    const staffModalInstance = bootstrap.Modal.getInstance(document.getElementById('staffModal'));
+                    const staffModalInstance = bootstrap.Modal.getInstance(document.getElementById(
+                        'staffModal'));
                     if (staffModalInstance) {
                         staffModalInstance.hide();
                     } else {
-                        console.warn('editStaff: staffModal instance not found when trying to hide on error.');
+                        console.warn(
+                            'editStaff: staffModal instance not found when trying to hide on error.');
                     }
                 }
             } catch (error) {
                 console.error('editStaff: An error occurred while loading staff for editing:', error);
                 showErrorMessage('An error occurred while loading staff for editing.');
-                const staffModalInstance = bootstrap.Modal.getInstance(document.getElementById('staffModal'));
+                const staffModalInstance = bootstrap.Modal.getInstance(document.getElementById(
+                    'staffModal'));
                 if (staffModalInstance) {
                     staffModalInstance.hide();
                 } else {
-                    console.warn('editStaff: staffModal instance not found when trying to hide on error in catch block.');
+                    console.warn(
+                        'editStaff: staffModal instance not found when trying to hide on error in catch block.'
+                    );
                 }
             }
         };
 
-        window.deleteStaff = function (id, staffName) {
-            const message = `Are you sure you want to delete staff member "${staffName}"? This action cannot be undone.`;
-            showConfirmation(message, async function () {
+        window.deleteStaff = function(id, staffName) {
+            const message =
+                `Are you sure you want to delete staff member "${staffName}"? This action cannot be undone.`;
+            showConfirmation(message, async function() {
                 try {
                     const response = await apiRequest('/api.php', 'POST', {
                         entity: 'staff',

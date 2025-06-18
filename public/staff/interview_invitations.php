@@ -12,77 +12,86 @@ $page_title = "Interview Invitations";
 include __DIR__ . '/../includes/header.php';
 ?>
 
-<div class="container py-4 emp">
-    <!-- Status Messages -->
-    <div id="status-messages">
-        <!-- Success or error messages will be displayed here -->
+<div class="container emp-10">
+    <!-- Loading Spinner -->
+    <div id="loading-spinner" class="text-center py-4" style="display: none;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
     </div>
 
-    <!-- Page Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="mb-0">
-            <i class="fas fa-envelope me-2 text-primary"></i>
-            Interview Invitations
-        </h4>
-        <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#invitationModal"
-            id="sendInvitationBtn">
-            <i class="fas fa-paper-plane me-1"></i>
-            <span class="d-none d-sm-inline">Send Invitation</span>
-        </button>
-    </div>
-
-    <!-- Search Section -->
-    <div class="search-section mb-4">
-        <div class="row align-items-center">
-            <div class="col-12">
+    <!-- Main Content Card -->
+    <div class="card">
+        <div class="card-header">
+            <!-- Page Header -->
+            <div class="d-flex justify-content-between align-items-center p-2">
+                <h4 class="mb-0">
+                    <i class="fas fa-envelope me-2 text-primary"></i>Interview Invitations
+                </h4>
+                <div class="btn-group" role="group">
+                    <a href="/staff/send_interview_invitation.php" class="btn btn-outline-success">
+                        <i class="fas fa-plus me-1"></i>
+                        <span class="d-none d-sm-inline">Send Invitation</span>
+                        <span class="d-inline d-sm-none">Send</span>
+                    </a>
+                </div>
+            </div>
+            <!-- Search Bar -->
+            <fieldset class="p-4 frosted">
                 <div class="input-group">
                     <span class="input-group-text">
                         <i class="fas fa-search"></i>
                     </span>
-                    <input type="text" id="invitation-search" class="form-control"
+                    <input type="text" class="form-control" id="invitation-search"
                         placeholder="Search invitations by candidate name, email, platform, date, or notes...">
                     <button class="btn btn-outline-secondary" type="button" id="clear-search" title="Clear search">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <div class="text-muted small mt-2">
+                <div class="text-muted small ms-4">
                     <i class="fas fa-info-circle me-1"></i>
-                    Total <span id="invitation-count">Loading...</span> invitations || <span
-                        id="waiting-invitations"></span>
-                    waiting
+                    <span id="invitation-count">Loading...</span> invitations found || <span
+                        id="waiting-invitations"></span> waiting
                 </div>
+            </fieldset>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-sm" id="invitationsTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Candidate</th>
+                            <th>Email</th>
+                            <th>Interview Date</th>
+                            <th>Time</th>
+                            <th>Platform</th>
+                            <th>Status</th>
+                            <th class="d-none d-lg-table-cell">Duration</th>
+                            <th class="d-none d-md-table-cell">Sent By</th>
+                            <th class="d-none d-lg-table-cell">Sent At</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Invitation rows will be populated by JavaScript -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 
-    <!-- Invitations Table -->
-    <div class="table-responsive">
-        <table class="table table-hover" id="invitationsTable">
-            <thead>
-                <tr>
-                    <th>Candidate</th>
-                    <th>Email</th>
-                    <th>Interview Date</th>
-                    <th>Time</th>
-                    <th>Platform</th>
-                    <th>Status</th>
-                    <th class="d-none d-lg-table-cell">Duration</th>
-                    <th class="d-none d-md-table-cell">Sent By</th>
-                    <th class="d-none d-lg-table-cell">Sent At</th>
-                    <th class="text-center">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Invitation rows will be populated by JavaScript -->
-            </tbody>
-        </table>
+    <!-- Optional: Modals for Add/Edit/View Details -->
+    <!-- Example: Edit Modal -->
+    <div class="modal fade" id="editInvitationModal" tabindex="-1" aria-labelledby="editInvitationModalLabel"
+        aria-hidden="true">
+        <!-- Modal content -->
     </div>
-
-    <!-- Pagination -->
-    <nav aria-label="Invitations pagination" id="pagination-container" class="mt-4">
-        <!-- Pagination will be populated by JavaScript -->
-    </nav>
 </div>
+
+<!-- Pagination -->
+<nav aria-label="Invitations pagination" id="pagination-container" class="mt-4">
+    <!-- Pagination will be populated by JavaScript -->
+</nav>
 
 <!-- Send Invitation Modal -->
 <div class="modal fade" id="invitationModal" tabindex="-1" aria-labelledby="invitationModalLabel" aria-hidden="true">
@@ -90,7 +99,7 @@ include __DIR__ . '/../includes/header.php';
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="invitationModalLabel">
-                    <i class="fas fa-paper-plane me-2"></i>Send Interview Invitation
+                    <i class="fas fa-paper-plane me-2"></i><span id="modal-title-text">Send Interview Invitation</span>
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -103,6 +112,7 @@ include __DIR__ . '/../includes/header.php';
                     </div>
 
                     <div class="row g-3">
+                        <input type="hidden" id="invitation_id" name="id">
                         <!-- Candidate Information -->
                         <div class="col-12">
                             <h6 class="text-muted mb-3">
@@ -309,7 +319,7 @@ include __DIR__ . '/../includes/header.php';
 <script src="/assets/js/api-helper.js"></script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         // Global variables
         let currentPage = 1;
         let currentSearch = '';
@@ -348,13 +358,13 @@ include __DIR__ . '/../includes/header.php';
             previewEmailBtn.addEventListener('click', showEmailPreview);
 
             // Confirm send button
-            confirmSendBtn.addEventListener('click', function () {
+            confirmSendBtn.addEventListener('click', function() {
                 bootstrap.Modal.getInstance(document.getElementById('emailPreviewModal')).hide();
                 submitInvitation();
             });
 
             // Confirm action button
-            confirmActionBtn.addEventListener('click', function () {
+            confirmActionBtn.addEventListener('click', function() {
                 if (confirmationCallback) {
                     confirmationCallback();
                     confirmationCallback = null;
@@ -366,7 +376,7 @@ include __DIR__ . '/../includes/header.php';
             const searchInput = document.getElementById('invitation-search');
             const clearSearchBtn = document.getElementById('clear-search');
 
-            searchInput.addEventListener('input', function () {
+            searchInput.addEventListener('input', function() {
                 const searchTerm = this.value.trim();
 
                 // Clear previous timeout
@@ -381,14 +391,14 @@ include __DIR__ . '/../includes/header.php';
                 }, 300);
             });
 
-            clearSearchBtn.addEventListener('click', function () {
+            clearSearchBtn.addEventListener('click', function() {
                 searchInput.value = '';
                 currentSearch = '';
                 loadInvitations(1);
             });
 
             // Reset form when modal is hidden
-            document.getElementById('invitationModal').addEventListener('hidden.bs.modal', function () {
+            document.getElementById('invitationModal').addEventListener('hidden.bs.modal', function() {
                 resetForm();
             });
 
@@ -406,12 +416,12 @@ include __DIR__ . '/../includes/header.php';
 
             inputs.forEach(input => {
                 // Real-time validation on blur
-                input.addEventListener('blur', function () {
+                input.addEventListener('blur', function() {
                     validateField(this);
                 });
 
                 // Clear validation on input
-                input.addEventListener('input', function () {
+                input.addEventListener('input', function() {
                     if (this.classList.contains('is-invalid')) {
                         this.classList.remove('is-invalid');
                         const feedback = this.parentNode.querySelector('.invalid-feedback');
@@ -806,7 +816,9 @@ include __DIR__ . '/../includes/header.php';
                     validateField(candidateSelect);
 
                     // Show success message
-                    showSuccessMessage(`Candidate "${option.textContent.split(' (')[0]}" has been pre-selected for the interview invitation.`);
+                    showSuccessMessage(
+                        `Candidate "${option.textContent.split(' (')[0]}" has been pre-selected for the interview invitation.`
+                    );
                 } else {
                     // Invalid candidate ID - show error message
                     showErrorMessage(`Invalid candidate ID provided. Please select a candidate from the dropdown.`);
@@ -857,20 +869,20 @@ include __DIR__ . '/../includes/header.php';
             invitationsTable.innerHTML = invitations.map(invitation => {
                 const sentDate = invitation.sent_at ? new Date(invitation.sent_at) : null;
                 const interviewDate = new Date(invitation.interview_date);
-                const senderName = invitation.sent_by_name && invitation.sent_by_surname
-                    ? `${invitation.sent_by_name} ${invitation.sent_by_surname}`
-                    : invitation.sent_by_username || 'Unknown';
+                const senderName = invitation.sent_by_name && invitation.sent_by_surname ?
+                    `${invitation.sent_by_name} ${invitation.sent_by_surname}` :
+                    invitation.sent_by_username || 'Unknown';
 
                 // Status badge
                 const status = invitation.status || 'sent';
-                const statusBadge = status === 'draft'
-                    ? '<span class="badge bg-warning text-dark">Draft</span>'
-                    : '<span class="badge bg-success">Sent</span>';
+                const statusBadge = status === 'draft' ?
+                    '<span class="badge bg-warning text-dark">Draft</span>' :
+                    '<span class="badge bg-success">Sent</span>';
 
                 // Sent date display
-                const sentDateDisplay = sentDate
-                    ? `${sentDate.toLocaleDateString()} ${sentDate.toLocaleTimeString()}`
-                    : '<span class="text-muted">Not sent</span>';
+                const sentDateDisplay = sentDate ?
+                    `${sentDate.toLocaleDateString()} ${sentDate.toLocaleTimeString()}` :
+                    '<span class="text-muted">Not sent</span>';
 
                 return `
                     <tr>
@@ -888,6 +900,10 @@ include __DIR__ . '/../includes/header.php';
                                 <button type="button" class="btn btn-sm btn-outline-primary" onclick="viewInvitation(${invitation.id})" title="View Details">
                                     <i class="fas fa-eye"></i>
                                 </button>
+                                <button type="button" class="btn btn-sm btn-outline-info" onclick="window.location.href='send_interview_invitation.php?invitation_id=${invitation.id}'" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+
                                 ${isAdmin ? `
                                 <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteInvitation(${invitation.id}, '${escapeHtml(invitation.candidate_name)}')" title="Delete">
                                     <i class="fas fa-trash"></i>
@@ -915,18 +931,22 @@ include __DIR__ . '/../includes/header.php';
 
             // Previous button
             if (pagination.page > 1) {
-                paginationHtml += `<li class="page-item"><a class="page-link" href="#" onclick="loadInvitations(${pagination.page - 1})">Previous</a></li>`;
+                paginationHtml +=
+                    `<li class="page-item"><a class="page-link" href="#" onclick="loadInvitations(${pagination.page - 1})">Previous</a></li>`;
             }
 
             // Page numbers
-            for (let i = Math.max(1, pagination.page - 2); i <= Math.min(pagination.pages, pagination.page + 2); i++) {
+            for (let i = Math.max(1, pagination.page - 2); i <= Math.min(pagination.pages, pagination.page +
+                    2); i++) {
                 const activeClass = i === pagination.page ? 'active' : '';
-                paginationHtml += `<li class="page-item ${activeClass}"><a class="page-link" href="#" onclick="loadInvitations(${i})">${i}</a></li>`;
+                paginationHtml +=
+                    `<li class="page-item ${activeClass}"><a class="page-link" href="#" onclick="loadInvitations(${i})">${i}</a></li>`;
             }
 
             // Next button
             if (pagination.page < pagination.pages) {
-                paginationHtml += `<li class="page-item"><a class="page-link" href="#" onclick="loadInvitations(${pagination.page + 1})">Next</a></li>`;
+                paginationHtml +=
+                    `<li class="page-item"><a class="page-link" href="#" onclick="loadInvitations(${pagination.page + 1})">Next</a></li>`;
             }
 
             paginationHtml += '</ul>';
@@ -987,7 +1007,9 @@ include __DIR__ . '/../includes/header.php';
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             `;
-            statusMessages.scrollIntoView({ behavior: 'smooth' });
+            statusMessages.scrollIntoView({
+                behavior: 'smooth'
+            });
         }
 
         /**
@@ -1000,7 +1022,9 @@ include __DIR__ . '/../includes/header.php';
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             `;
-            statusMessages.scrollIntoView({ behavior: 'smooth' });
+            statusMessages.scrollIntoView({
+                behavior: 'smooth'
+            });
         }
 
         /**
@@ -1013,7 +1037,7 @@ include __DIR__ . '/../includes/header.php';
         }
 
         // Global functions for onclick handlers
-        window.viewInvitation = async function (id) {
+        window.viewInvitation = async function(id) {
             const modal = new bootstrap.Modal(document.getElementById('viewInvitationModal'));
             const loadingDiv = document.getElementById('invitation-loading');
             const errorDiv = document.getElementById('invitation-error');
@@ -1065,11 +1089,12 @@ include __DIR__ . '/../includes/header.php';
                 day: 'numeric'
             });
 
-            const formattedInterviewTime = new Date(`2000-01-01T${invitation.interview_time}`).toLocaleTimeString('en-US', {
-                hour: 'numeric',
-                minute: '2-digit',
-                hour12: true
-            });
+            const formattedInterviewTime = new Date(`2000-01-01T${invitation.interview_time}`).toLocaleTimeString(
+                'en-US', {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true
+                });
 
             const formattedSentDate = sentDate.toLocaleDateString('en-US', {
                 year: 'numeric',
@@ -1084,9 +1109,9 @@ include __DIR__ . '/../includes/header.php';
             });
 
             // Format sender name
-            const senderName = invitation.sent_by_name && invitation.sent_by_surname
-                ? `${invitation.sent_by_name} ${invitation.sent_by_surname}`
-                : invitation.sent_by_username || 'Unknown';
+            const senderName = invitation.sent_by_name && invitation.sent_by_surname ?
+                `${invitation.sent_by_name} ${invitation.sent_by_surname}` :
+                invitation.sent_by_username || 'Unknown';
 
             const content = `
                 <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
@@ -1253,10 +1278,10 @@ include __DIR__ . '/../includes/header.php';
             // Show/hide Send Now button based on status
             if (invitation.status === 'draft') {
                 sendNowBtn.classList.remove('d-none');
-                sendNowBtn.onclick = function () {
+                sendNowBtn.onclick = function() {
                     showConfirmation(
                         `Are you sure you want to send the interview invitation to ${invitation.candidate_name}?`,
-                        function () {
+                        function() {
                             sendSavedInvitation(invitation.id);
                         }
                     );
@@ -1280,9 +1305,10 @@ include __DIR__ . '/../includes/header.php';
             errorDiv.classList.remove('d-none');
         }
 
-        window.deleteInvitation = function (id, candidateName) {
-            const message = `Are you sure you want to delete the invitation for "${candidateName}"? This action cannot be undone.`;
-            showConfirmation(message, async function () {
+        window.deleteInvitation = function(id, candidateName) {
+            const message =
+                `Are you sure you want to delete the invitation for "${candidateName}"? This action cannot be undone.`;
+            showConfirmation(message, async function() {
                 try {
                     const response = await apiRequest('/api.php', 'POST', {
                         entity: 'interview_invitations',

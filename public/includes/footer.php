@@ -37,7 +37,7 @@
 </footer>
 
 <!-- Mobile Bottom Navigation Menu - Visible on mobile/tablet, hidden on desktop -->
-<?php if (is_logged_in()): ?>
+<?php if (!is_logged_in()): ?>
     <nav class="mobile-bottom-nav d-xl-none">
         <div class="mobile-nav-container">
             <?php if (!is_staff()): ?>
@@ -91,15 +91,19 @@
 <!-- Bootstrap JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<!-- jQuery (required for Select2) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <!-- Custom JS -->
 <script src="/assets/js/script.js"></script>
 <!-- API Helper for secure POST requests -->
 <script src="/assets/js/api-helper.js"></script>
 <script>
     // Initialize all Bootstrap toasts
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         var toastElList = [].slice.call(document.querySelectorAll('.toast'))
-        var toastList = toastElList.map(function (toastEl) {
+        var toastList = toastElList.map(function(toastEl) {
             return new bootstrap.Toast(toastEl)
         })
     });

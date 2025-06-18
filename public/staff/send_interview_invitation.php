@@ -4,138 +4,137 @@ include __DIR__ . '/../includes/header.php';
 $page_title = "Send Interview Invitation";
 ?>
 
-<div class="container py-4 emp">
-    <!-- Page Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="mb-0">
-            <i class="fas fa-paper-plane me-2 text-primary"></i>
-            Send Interview Invitation
-        </h4>
-        <a href="/staff/interview_invitations.php" class="btn btn-sm btn-outline-secondary">
-            <i class="fas fa-list me-1"></i>
-            <span class="d-none d-sm-inline">View All Invitations</span>
-        </a>
-    </div>
-
-    <!-- Send Invitation Form -->
-    <div class="card p-4 shadow-sm">
-        <form id="invitation-form" novalidate>
-            <div class="card-body">
-                <!-- General Error Alert -->
-                <div class="alert alert-danger d-none" id="form-error-alert">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    <span id="form-error-message"></span>
-                </div>
-
-                <div class="row g-3">
-                    <!-- Candidate Information -->
-                    <div class="col-12">
-                        <h6 class="text-muted mb-3">
-                            <i class="fas fa-user me-1"></i>Candidate Information
-                        </h6>
-                    </div>
-
-                    <div class="col-12">
-                        <label for="candidate_id" class="form-label">Select Candidate <span
-                                class="text-danger">*</span></label>
-                        <select class="form-select" id="candidate_id" name="candidate_id" required>
-                            <option value="">Choose a candidate...</option>
-                            <!-- Options will be populated by JavaScript -->
-                        </select>
-                        <div class="invalid-feedback"></div>
-                        <small class="form-text text-muted">
-                            Can't find the candidate? <a href="/hr/candidates.php" target="_blank">Add them to the
-                                candidates database first</a>.
-                        </small>
-                    </div>
-
-                    <!-- Interview Details -->
-                    <div class="col-12 mt-4">
-                        <h6 class="text-muted mb-3">
-                            <i class="fas fa-calendar me-1"></i>Interview Details
-                        </h6>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label for="interview_date" class="form-label">Interview Date <span
-                                class="text-danger">*</span></label>
-                        <input type="date" class="form-control" id="interview_date" name="interview_date" required>
-                        <div class="invalid-feedback"></div>
-                        <small class="form-text text-muted">Date of the interview</small>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label for="interview_time" class="form-label">Interview Time <span
-                                class="text-danger">*</span></label>
-                        <input type="time" class="form-control" id="interview_time" name="interview_time" required>
-                        <div class="invalid-feedback"></div>
-                        <small class="form-text text-muted">Time of the interview</small>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label for="meeting_platform" class="form-label">Meeting Platform <span
-                                class="text-danger">*</span></label>
-                        <select class="form-select" id="meeting_platform" name="meeting_platform" required>
-                            <option value="">Select platform...</option>
-                            <option value="Zoom">Zoom</option>
-                            <option value="Google Meet">Google Meet</option>
-                            <option value="Microsoft Teams">Microsoft Teams</option>
-                            <option value="Other">Other</option>
-                        </select>
-                        <div class="invalid-feedback"></div>
-                        <small class="form-text text-muted">Video conferencing platform</small>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label for="interview_duration" class="form-label">Interview Duration</label>
-                        <select class="form-select" id="interview_duration" name="interview_duration">
-                            <option value="15 minutes">15 minutes</option>
-                            <option value="20 minutes" selected>20 minutes</option>
-                            <option value="30 minutes">30 minutes</option>
-                            <option value="45 minutes">45 minutes</option>
-                            <option value="60 minutes">60 minutes</option>
-                        </select>
-                        <small class="form-text text-muted">Expected duration of the interview</small>
-                    </div>
-
-                    <div class="col-12">
-                        <label for="meeting_link" class="form-label">Meeting Link <span
-                                class="text-danger">*</span></label>
-                        <input type="url" class="form-control" id="meeting_link" name="meeting_link" required
-                            placeholder="https://...">
-                        <div class="invalid-feedback"></div>
-                        <small class="form-text text-muted">Full URL to the meeting room</small>
-                    </div>
-
-                    <div class="col-12">
-                        <label for="video_upload_link" class="form-label">Video Upload Link</label>
-                        <input type="url" class="form-control" id="video_upload_link" name="video_upload_link"
-                            placeholder="https://...">
-                        <div class="invalid-feedback"></div>
-                        <small class="form-text text-muted">Optional: Link for candidate to upload introduction
-                            video</small>
-                    </div>
-
-                    <div class="col-12">
-                        <label for="notes" class="form-label">Additional Notes</label>
-                        <textarea class="form-control" id="notes" name="notes" rows="3"
-                            placeholder="Any additional information or special instructions..."></textarea>
-                        <small class="form-text text-muted">Optional notes for internal tracking</small>
-                    </div>
-                </div>
+<div class="container emp frosted">
+    <div class="card frosted">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center py-2">
+                <a href="/staff/interview_invitations.php" class="btn btn-outline">
+                    <i class="fas fa-arrow-left me-1"></i>
+                    <span class="d-none d-sm-inline">View All Invitations</span>
+                </a>
+                <h4 class="mb-0">
+                    <i class="fas fa-paper-plane me-2 text-primary"></i>Send Interview Invitation
+                </h4>
+                <!-- No secondary function button needed -->
             </div>
-            <div class="card-footer text-end">
-                <button type="button" class="btn btn-warning me-2" id="preview-email-btn">
-                    <i class="fas fa-eye me-1"></i>Preview Email
-                </button>
-                <button type="button" class="btn btn-outline-secondary me-2" id="save-draft-btn">
-                    <i class="fas fa-save me-1"></i>Save for Later
-                </button>
-                <button type="submit" class="btn btn-primary" id="send-invitation-btn">
-                    <i class="fas fa-paper-plane me-1"></i>Send Invitation
-                </button>
-            </div>
-        </form>
+        </div>
+
+        <div class="card-body">
+            <fieldset class="border rounded p-3 mb-3">
+                <legend class="w-auto px-2 mb-3" style="font-size: 1rem;">Interview Invitation Details</legend>
+                <form id="invitation-form" novalidate>
+                    <!-- General Error Alert -->
+                    <div class="alert alert-danger d-none" id="form-error-alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <span id="form-error-message"></span>
+                    </div>
+
+                    <div class="row g-3">
+                        <!-- Candidate Information -->
+                        <div class="col-12">
+                            <h6 class="text-muted mb-3">
+                                <i class="fas fa-user me-1"></i>Candidate Information
+                            </h6>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="candidate_id" class="form-label">Select Candidate <span
+                                    class="text-danger">*</span></label>
+                            <select class="form-select" id="candidate_id" name="candidate_id" required>
+                                <option value="">Choose a candidate...</option>
+                                <!-- Options will be populated by JavaScript -->
+                            </select>
+                            <div class="invalid-feedback"></div>
+                        </div>
+
+                        <!-- Interview Details -->
+                        <div class="col-12 mt-4">
+                            <h6 class="text-muted mb-3">
+                                <i class="fas fa-calendar me-1"></i>Interview Details
+                            </h6>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="interview_date" class="form-label">Interview Date <span
+                                    class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="interview_date" name="interview_date" required>
+                            <div class="invalid-feedback"></div>
+                            <small class="form-text text-muted">Date of the interview</small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="interview_time" class="form-label">Interview Time <span
+                                    class="text-danger">*</span></label>
+                            <input type="time" class="form-control" id="interview_time" name="interview_time" required>
+                            <div class="invalid-feedback"></div>
+                            <small class="form-text text-muted">Time of the interview</small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="meeting_platform" class="form-label">Meeting Platform <span
+                                    class="text-danger">*</span></label>
+                            <select class="form-select" id="meeting_platform" name="meeting_platform" required>
+                                <option value="">Select platform...</option>
+                                <option value="Zoom">Zoom</option>
+                                <option value="Google Meet">Google Meet</option>
+                                <option value="Microsoft Teams">Microsoft Teams</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <div class="invalid-feedback"></div>
+                            <small class="form-text text-muted">Video conferencing platform</small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="interview_duration" class="form-label">Interview Duration</label>
+                            <select class="form-select" id="interview_duration" name="interview_duration">
+                                <option value="15 minutes">15 minutes</option>
+                                <option value="20 minutes" selected>20 minutes</option>
+                                <option value="30 minutes">30 minutes</option>
+                                <option value="45 minutes">45 minutes</option>
+                                <option value="60 minutes">60 minutes</option>
+                            </select>
+                            <small class="form-text text-muted">Expected duration of the interview</small>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="meeting_link" class="form-label">Meeting Link <span
+                                    class="text-danger">*</span></label>
+                            <input type="url" class="form-control" id="meeting_link" name="meeting_link" required
+                                placeholder="https://...">
+                            <div class="invalid-feedback"></div>
+                            <small class="form-text text-muted">Full URL to the meeting room</small>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="video_upload_link" class="form-label">Video Upload Link</label>
+                            <input type="url" class="form-control" id="video_upload_link" name="video_upload_link"
+                                placeholder="https://...">
+                            <div class="invalid-feedback"></div>
+                            <small class="form-text text-muted">Optional: Link for candidate to upload introduction
+                                video</small>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="notes" class="form-label">Additional Notes</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="3"
+                                placeholder="Any additional information or special instructions..."></textarea>
+                            <small class="form-text text-muted">Optional notes for internal tracking</small>
+                        </div>
+                    </div>
+                </form>
+            </fieldset>
+        </div>
+        <div class="card-footer d-flex justify-content-end">
+            <button type="button" class="btn btn-warning me-2" id="preview-email-btn">
+                <i class="fas fa-eye me-1"></i>Preview Email
+            </button>
+            <button type="button" class="btn btn-outline-secondary me-2" id="save-draft-btn">
+                <i class="fas fa-save me-1"></i>Save for Later
+            </button>
+            <button type="submit" class="btn btn-primary" id="send-invitation-btn">
+                <i class="fas fa-paper-plane me-1"></i>Send Invitation
+            </button>
+        </div>
     </div>
 </div>
 
@@ -170,7 +169,7 @@ $page_title = "Send Interview Invitation";
 <script src="/assets/js/api-helper.js"></script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         // Global variables
         const isAdmin = <?php echo is_admin() ? 'true' : 'false'; ?>;
         const isEditor = <?php echo is_editor() ? 'true' : 'false'; ?>;
@@ -199,7 +198,7 @@ $page_title = "Send Interview Invitation";
             previewEmailBtn.addEventListener('click', showEmailPreview);
 
             // Confirm send button inside preview modal
-            document.getElementById('confirm-send-invitation-btn').addEventListener('click', async function () {
+            document.getElementById('confirm-send-invitation-btn').addEventListener('click', async function() {
                 const modal = bootstrap.Modal.getInstance(document.getElementById('emailPreviewModal'));
                 if (modal) {
                     modal.hide();
@@ -236,12 +235,12 @@ $page_title = "Send Interview Invitation";
 
             inputs.forEach(input => {
                 // Real-time validation on blur
-                input.addEventListener('blur', function () {
+                input.addEventListener('blur', function() {
                     validateField(this);
                 });
 
                 // Clear validation on input
-                input.addEventListener('input', function () {
+                input.addEventListener('input', function() {
                     if (this.classList.contains('is-invalid')) {
                         this.classList.remove('is-invalid');
                         const feedback = this.parentNode.querySelector('.invalid-feedback');
@@ -497,7 +496,14 @@ $page_title = "Send Interview Invitation";
                 const payload = {
                     entity: 'interview_invitations',
                     action: 'save_draft',
-                    ...data
+                    candidate_id: data.candidate_id, // Ensure candidate_id is explicitly passed
+                    interview_date: data.interview_date,
+                    interview_time: data.interview_time,
+                    meeting_platform: data.meeting_platform,
+                    meeting_link: data.meeting_link,
+                    interview_duration: data.interview_duration,
+                    video_upload_link: data.video_upload_link,
+                    notes: data.notes
                 };
 
                 // If we already have an ID, pass it to update the existing draft
@@ -511,6 +517,9 @@ $page_title = "Send Interview Invitation";
                     showToast(response.message, 'success');
                     saveDraftBtn.innerHTML = '<i class="fas fa-check me-1"></i>Saved';
                     invitation_id = response.invitation_id;
+                    setTimeout(() => {
+                        window.location.href = 'interview_invitations.php';
+                    }, 500);
                     return response.invitation_id;
                 } else {
                     showFormError(response.error || 'Failed to save invitation draft.');
@@ -531,8 +540,8 @@ $page_title = "Send Interview Invitation";
             }
         }
         /**
-              * Submit draft invitation
-              */
+         * Submit draft invitation
+         */
         async function send_saved_invitation(invitationId) {
             try {
                 const response = await apiRequest('/api.php', 'POST', {
@@ -552,7 +561,7 @@ $page_title = "Send Interview Invitation";
                     // Redirect after a short delay
                     setTimeout(() => {
                         window.location.href = '/staff/interview_invitations.php';
-                    }, 1000);
+                    }, 500);
                 } else {
                     showErrorMessage(response.error || 'Failed to send invitation.');
                 }
@@ -613,10 +622,90 @@ $page_title = "Send Interview Invitation";
         function handleCandidatePreSelection() {
             const urlParams = new URLSearchParams(window.location.search);
             const candidateId = urlParams.get('candidate_id');
+            const retrievedInvitationId = urlParams.get('invitation_id');
 
             if (candidateId) {
                 // Store the candidate ID for later use when dropdown is populated
                 window.preselectedCandidateId = candidateId;
+            }
+            if (retrievedInvitationId) {
+                // Store the candidate ID for later use when dropdown is populated
+                window.preselectedInviteId = retrievedInvitationId;
+            }
+            if (window.preselectedInviteId) {
+                invitation_id = window.preselectedInviteId; // Set global invitation_id
+                loadInvitationForEdit(invitation_id);
+                // Clear the stored ID after use
+                delete window.preselectedInviteId;
+            }
+        }
+
+        /**
+         * Load existing invitation data for editing
+         */
+        async function loadInvitationForEdit(id) {
+            try {
+                const response = await apiRequest('/api.php', 'POST', {
+                    entity: 'interview_invitations',
+                    action: 'get',
+                    id: id
+                });
+
+                if (response.success && response.invitation) {
+                    populateFormWithData(response.invitation);
+                    // Update page title and button text for edit mode
+                    document.querySelector('h4.mb-0').innerHTML =
+                        '<i class="fas fa-edit me-2 text-primary"></i>Edit Interview Invitation';
+                    sendInvitationBtn.innerHTML =
+                        '<i class="fas fa-paper-plane me-1"></i>Update & Send Invitation';
+                    saveDraftBtn.innerHTML = '<i class="fas fa-save me-1"></i>Update Draft';
+                    document.getElementById('confirm-send-invitation-btn').innerHTML =
+                        '<i class="fas fa-paper-plane me-1"></i>Confirm & Update';
+                    showToast('Invitation loaded for editing.', 'success');
+                } else {
+                    showToast(response.error || 'Failed to load invitation for editing.', 'danger');
+                    console.error('Failed to load invitation:', response.error);
+                    // Redirect to new invitation page if not found
+                    setTimeout(() => {
+                        window.location.href = '/staff/send_interview_invitation.php';
+                    }, 1500);
+                }
+            } catch (error) {
+                console.error('Error loading invitation for edit:', error);
+                showToast('An error occurred while loading invitation for editing.', 'danger');
+                // Redirect to new invitation page on error
+                setTimeout(() => {
+                    window.location.href = '/staff/send_interview_invitation.php';
+                }, 1500);
+            }
+        }
+
+        /**
+         * Populate form fields with invitation data
+         */
+        function populateFormWithData(invitation) {
+            document.getElementById('candidate_id').value = invitation.staff_id;
+            document.getElementById('interview_date').value = invitation.interview_date;
+            document.getElementById('interview_time').value = invitation.interview_time;
+            document.getElementById('meeting_platform').value = invitation.meeting_platform;
+            document.getElementById('interview_duration').value = invitation.interview_duration;
+            document.getElementById('meeting_link').value = invitation.meeting_link;
+            document.getElementById('video_upload_link').value = invitation.video_upload_link || '';
+            document.getElementById('notes').value = invitation.notes || '';
+
+            // Manually trigger validation for populated fields
+            const inputs = invitationForm.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                validateField(input);
+            });
+
+            // Pre-select candidate dropdown if it's already populated
+            if (document.getElementById('candidate_id').options.length > 1) {
+                document.getElementById('candidate_id').value = invitation.staff_id;
+                validateField(document.getElementById('candidate_id'));
+            } else {
+                // If dropdown not yet populated, store for pre-selection after loadCandidates
+                window.preselectedCandidateId = invitation.staff_id;
             }
         }
 
@@ -636,10 +725,13 @@ $page_title = "Send Interview Invitation";
                     validateField(candidateSelect);
 
                     // Show success message
-                    showToast(`Candidate "${option.textContent.split(' (')[0]}" has been pre-selected for the interview invitation.`, 'success');
+                    showToast(
+                        `Candidate "${option.textContent.split(' (')[0]}" has been pre-selected for the interview invitation.`,
+                        'success');
                 } else {
                     // Invalid candidate ID - show error message
-                    showToast(`Invalid candidate ID provided. Please select a candidate from the dropdown.`, 'danger');
+                    showToast(`Invalid candidate ID provided. Please select a candidate from the dropdown.`,
+                        'danger');
                 }
 
                 // Clear the stored ID
