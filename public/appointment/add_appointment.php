@@ -80,8 +80,9 @@ $page_title = 'Add Appointment';
                                 </button>
                             </div>
 
-                            <input class="form-control" id="procedure-id" name="procedure_id">
-                            </input>
+                            <select class="form-select select2-enable" id="procedure-id" name="procedure_id">
+                                <option value="">Select Procedure</option>
+                            </select>
                             <div class="invalid-feedback"></div>
 
                         </fieldset>
@@ -99,11 +100,11 @@ $page_title = 'Add Appointment';
                                 </button>
                             </div>
                             <div class="input-group">
-                                <select class="form-select" id="patient-id" name="patient_id">
+                                <select class="form-select select2-enable" id="patient-id" name="patient_id">
                                     <option value="">Select Patient<span class="text-danger">*</span></option>
                                 </select>
                             </div>
-                            <div class="invalid-feedback" style="display:none;"></div>
+                            <div class="invalid-feedback"></div>
                         </fieldset>
 
                         <fieldset class="border rounded p-3 mb-3 shadow-sm">
@@ -290,12 +291,33 @@ $page_title = 'Add Appointment';
         const form = document.getElementById('appointment-form');
         if (form) form.addEventListener('submit', onFormSubmit);
 
-        ['patient-id', 'start-time', 'end-time', 'procedure-id', 'appointment-date-input', 'room-id-input'].forEach(id => {
+        const submitButton = document.querySelector('#appointment-form button[type="submit"]');
+
+
+        // Attach blur listeners for standard input fields
+        ['start-time', 'end-time', 'appointment-date-input', 'room-id-input'].forEach(id => {
             const el = document.getElementById(id);
             if (el) {
-                el.addEventListener('change', () => { if (formWasSubmitted) validateSingleField(id); });
+                el.addEventListener('blur', () => {
+                    validateSingleField(id);
+                    updateSubmitButtonState(); // Update button state after single field validation
+                });
             }
         });
+
+        // Attach select2:close listeners for select2-enabled dropdowns
+        ['patient-id', 'procedure-id'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el && $(el).hasClass('select2-enable')) {
+                $(el).on('select2:close', function() {
+                    validateSingleField(id);
+                    updateSubmitButtonState(); // Update button state after single field validation
+                });
+            }
+        });
+
+        // Initial validation to set button state on page load
+        updateSubmitButtonState();
 
         if (!prefilled) {
             const dateInput = document.getElementById('appointment-date-input');
@@ -307,6 +329,15 @@ $page_title = 'Add Appointment';
 
     initPage();
 
+    // Function to update submit button state
+    function updateSubmitButtonState() {
+        const submitButton = document.querySelector('#appointment-form button[type="submit"]');
+        if (submitButton) {
+            // Call validateForm without showing errors to just get the validity state
+            submitButton.disabled = !validateForm(false);
+        }
+    }
+
     async function loadInitialData() {
         console.log('Loading initial data…');
         try {
@@ -317,7 +348,9 @@ $page_title = 'Add Appointment';
 
             let patientsRequest;
             if (userRole === 'agent' && userAgencyId) {
-                patientsRequest = apiRequest('patients', 'list', { agency: userAgencyId });
+                patientsRequest = apiRequest('patients', 'list', {
+                    agency: userAgencyId
+                });
             } else {
                 patientsRequest = apiRequest('patients', 'list');
             }
@@ -354,7 +387,9 @@ $page_title = 'Add Appointment';
             span.textContent = rm.name;
         } else if (roomId) {
             try {
-                const data = await apiRequest('rooms', 'get', { id: roomId });
+                const data = await apiRequest('rooms', 'get', {
+                    id: roomId
+                });
                 if (data.success && data.room) {
                     span.textContent = data.room.name;
                 } else {
@@ -373,7 +408,8 @@ $page_title = 'Add Appointment';
         const select = document.getElementById('room-id-input');
         if (!select) return;
         select.innerHTML = '<option value="">Select Room</option>';
-        rooms.filter(r => r.is_active).forEach(r => {
+        const surgeryRegex = /surgery/i; // Case-insensitive regex for "surgery"
+        rooms.filter(r => r.is_active && !surgeryRegex.test(r.name)).forEach(r => {
             const opt = new Option(r.name, r.id);
             select.appendChild(opt);
         });
@@ -382,15 +418,30 @@ $page_title = 'Add Appointment';
     function populatePatientSelect() {
         const select = document.getElementById('patient-id');
         if (!select) return;
+
+        // Destroy existing Select2 instance if it exists
+        if ($(select).data('select2')) {
+            $(select).select2('destroy');
+        }
+
         select.innerHTML = '<option value="">Select Patient</option>';
         patients.forEach(p => select.add(new Option(p.name, p.id)));
+
+        // Re-initialize Select2 with dropdownParent to avoid clipping issues
+        $(select).select2({
+            dropdownParent: $('body')
+        });
     }
 
     function populateProcedureSelect() {
         const selectElement = document.getElementById('procedure-id');
         if (!selectElement) return;
 
-        // Clear existing options
+        // Destroy existing Select2 instance if it exists
+        if ($(selectElement).data('select2')) {
+            $(selectElement).select2('destroy');
+        }
+
         selectElement.innerHTML = '<option value="">Select Procedure</option>';
 
         const requestType = '<?= $request_type ?? '' ?>';
@@ -414,21 +465,28 @@ $page_title = 'Add Appointment';
             selectElement.appendChild(option);
         });
 
-        // Set selected value if 'consultation' request type
         if (requestType.toLowerCase() === 'consultation') {
             selectElement.value = proceduresToDisplay.length > 0 ? proceduresToDisplay[0].id : '';
         }
+
+        // Re-initialize Select2 with dropdownParent to avoid clipping issues
+        $(selectElement).select2({
+            dropdownParent: $('body')
+        });
     }
 
     function onFormSubmit(e) {
         e.preventDefault();
         formWasSubmitted = true;
-        if (!validateForm()) return;
+        // On submit, call validateForm and show any errors
+        if (!validateForm(true)) return;
 
         const payload = {
             patient_id: document.getElementById('patient-id').value,
-            room_id: prefilled ? <?= $room_id ? (int) $room_id : 'null' ?> : document.getElementById('room-id-input').value,
-            appointment_date: prefilled ? '<?= $date ?? '' ?>' : document.getElementById('appointment-date-input').value,
+            room_id: prefilled ? <?= $room_id ? (int) $room_id : 'null' ?> : document.getElementById('room-id-input')
+                .value,
+            appointment_date: prefilled ? '<?= $date ?? '' ?>' : document.getElementById('appointment-date-input')
+                .value,
             start_time: document.getElementById('start-time').value,
             end_time: document.getElementById('end-time').value,
             procedure_id: document.getElementById('procedure-id') ? document.getElementById('procedure-id').value : null,
@@ -450,52 +508,142 @@ $page_title = 'Add Appointment';
             });
     }
 
-    function validateForm() {
-        document.querySelectorAll('#appointment-form .is-invalid').forEach(el => el.classList.remove('is-invalid'));
-        document.querySelectorAll('#appointment-form .invalid-feedback').forEach(el => el.textContent = '');
+    function validateForm(showUIErrors = false) {
+        if (showUIErrors) {
+            document.querySelectorAll('#appointment-form .is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            document.querySelectorAll('#appointment-form .invalid-feedback').forEach(el => el.textContent = '');
+        }
 
         let valid = true;
-        const requiredFields = [
-            { id: 'patient-id', msg: 'Please select a patient.' },
-            { id: 'start-time', msg: 'Start time required.' },
-            { id: 'end-time', msg: 'End time required.' },
-            { id: 'procedure-id', msg: 'Please select a procedure.' }
-        ];
-
-        if (!prefilled) {
-            requiredFields.push({ id: 'appointment-date-input', msg: 'Date required.' });
-            requiredFields.push({ id: 'room-id-input', msg: 'Room required.' });
-        }
+        const requiredFields = getFieldValidationRules();
 
         requiredFields.forEach(f => {
             const el = document.getElementById(f.id);
             if (el && !el.value.trim()) {
-                el.classList.add('is-invalid');
-                (el.nextElementSibling || {}).textContent = f.msg;
                 valid = false;
+                if (showUIErrors) {
+                    el.classList.add('is-invalid');
+                    let feedbackEl;
+                    if (el.parentElement.classList.contains('input-group')) {
+                        feedbackEl = el.parentElement.nextElementSibling;
+                    } else {
+                        feedbackEl = el.nextElementSibling;
+                    }
+                    if (feedbackEl && feedbackEl.classList.contains('invalid-feedback')) {
+                        feedbackEl.textContent = f.msg;
+                    }
+                }
             }
         });
 
-        const s = document.getElementById('start-time').value;
-        const e = document.getElementById('end-time').value;
-        if (s && e && s >= e) {
-            const endField = document.getElementById('end-time');
-            endField.classList.add('is-invalid');
-            endField.nextElementSibling.textContent = 'End time must be after start time.';
+        // Additional validation for start and end times
+        const startTime = document.getElementById('start-time').value;
+        const endTime = document.getElementById('end-time').value;
+        if (startTime && endTime && startTime >= endTime) {
             valid = false;
+            if (showUIErrors) {
+                const endField = document.getElementById('end-time');
+                endField.classList.add('is-invalid');
+                if (endField.nextElementSibling) {
+                    endField.nextElementSibling.textContent = 'End time must be after start time.';
+                }
+            }
         }
         return valid;
+    }
+
+    function getFieldValidationRules() {
+        const rules = [{
+                id: 'patient-id',
+                msg: 'Please select a patient.'
+            },
+            {
+                id: 'start-time',
+                msg: 'Start time required.'
+            },
+            {
+                id: 'end-time',
+                msg: 'End time required.'
+            },
+            {
+                id: 'procedure-id',
+                msg: 'Please select a procedure.'
+            }
+        ];
+
+        if (!prefilled) {
+            rules.push({
+                id: 'appointment-date-input',
+                msg: 'Date required.'
+            });
+            rules.push({
+                id: 'room-id-input',
+                msg: 'Room required.'
+            });
+        }
+        return rules;
     }
 
     function validateSingleField(id) {
         const el = document.getElementById(id);
         if (!el) return;
+
+        const fieldRule = getFieldValidationRules().find(f => f.id === id);
+        const msg = fieldRule ? fieldRule.msg : 'This field is required.';
+
+        let feedbackEl;
+        if (el.parentElement.classList.contains('input-group')) {
+            feedbackEl = el.parentElement.nextElementSibling;
+        } else {
+            feedbackEl = el.nextElementSibling;
+        }
+
         if (!el.value.trim()) {
             el.classList.add('is-invalid');
+            if (feedbackEl && feedbackEl.classList.contains('invalid-feedback')) {
+                feedbackEl.textContent = msg;
+            }
         } else {
             el.classList.remove('is-invalid');
-            if (el.nextElementSibling) el.nextElementSibling.textContent = '';
+            if (feedbackEl && feedbackEl.classList.contains('invalid-feedback')) {
+                feedbackEl.textContent = '';
+            }
         }
+
+        // Specific validation for start-time and end-time
+        if (id === 'start-time' || id === 'end-time') {
+            const startTime = document.getElementById('start-time').value;
+            const endTime = document.getElementById('end-time').value;
+
+            if (startTime && endTime && startTime >= endTime) {
+                const endField = document.getElementById('end-time');
+                endField.classList.add('is-invalid');
+                let endFeedbackEl;
+                if (endField.parentElement.classList.contains('input-group')) {
+                    endFeedbackEl = endField.parentElement.nextElementSibling;
+                } else {
+                    endFeedbackEl = endField.nextElementSibling;
+                }
+                if (endFeedbackEl && endFeedbackEl.classList.contains('invalid-feedback')) {
+                    endFeedbackEl.textContent = 'End time must be after start time.';
+                }
+            } else {
+                const endField = document.getElementById('end-time');
+                endField.classList.remove('is-invalid');
+                let endFeedbackEl;
+                if (endField.parentElement.classList.contains('input-group')) {
+                    endFeedbackEl = endField.parentElement.nextElementSibling;
+                } else {
+                    endFeedbackEl = endField.nextElementSibling;
+                }
+                if (endFeedbackEl && endFeedbackEl.classList.contains('invalid-feedback')) {
+                    endFeedbackEl.textContent = '';
+                }
+            }
+        }
+
+        // Re-evaluate the entire form's validity after a single field is validated
+        updateSubmitButtonState();
     }
 
     function setTimeSlot(start, end) {
@@ -597,7 +745,8 @@ $page_title = 'Add Appointment';
             const userRole = '<?php echo get_user_role(); ?>';
             const userAgencyId = '<?php echo get_user_agency_id(); ?>';
 
-            console.log('DEBUG: populateModalAgencyDropdown called. agencySelect:', agencySelect, 'allAgencies:', typeof allAgencies !== 'undefined' ? allAgencies.length : 'undefined');
+            console.log('DEBUG: populateModalAgencyDropdown called. agencySelect:', agencySelect, 'allAgencies:',
+                typeof allAgencies !== 'undefined' ? allAgencies.length : 'undefined');
 
             if (!agencySelect) {
                 console.warn('DEBUG: Agency select element not found.');
@@ -633,14 +782,14 @@ $page_title = 'Add Appointment';
     }
 
 
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const newPatientModal = document.getElementById('newPatientModal');
         const saveNewPatientButton = document.getElementById('save-new-patient');
         const newPatientForm = document.getElementById('new-patient-form');
         const newPatientStatusDiv = document.getElementById('new-patient-status');
 
         if (saveNewPatientButton) {
-            saveNewPatientButton.addEventListener('click', function () {
+            saveNewPatientButton.addEventListener('click', function() {
                 const formData = new FormData(newPatientForm);
                 formData.append('entity', 'patients');
                 formData.append('action', 'add');
@@ -686,7 +835,7 @@ $page_title = 'Add Appointment';
         }
 
         if (newPatientModal) {
-            newPatientModal.addEventListener('show.bs.modal', function (event) {
+            newPatientModal.addEventListener('show.bs.modal', function(event) {
                 try {
                     // fetchModalAgencies() is now called on page load, no need to call it here
                 } catch (error) {
@@ -694,7 +843,7 @@ $page_title = 'Add Appointment';
                 }
             });
 
-            newPatientModal.addEventListener('hidden.bs.modal', function () {
+            newPatientModal.addEventListener('hidden.bs.modal', function() {
                 try {
                     newPatientForm.reset();
                     newPatientStatusDiv.innerHTML = '';
@@ -713,7 +862,7 @@ $page_title = 'Add Appointment';
         const newProcedureStatusDiv = document.getElementById('new-procedure-status');
 
         if (saveNewProcedureButton) {
-            saveNewProcedureButton.addEventListener('click', function () {
+            saveNewProcedureButton.addEventListener('click', function() {
                 const procedureName = document.getElementById('new_procedure_name').value.trim();
 
                 if (!procedureName) {
@@ -729,8 +878,8 @@ $page_title = 'Add Appointment';
                 saveNewProcedureButton.innerHTML = '<i class="far fa-spinner fa-spin me-1"></i>Creating...';
 
                 apiRequest('procedures', 'create', {
-                    name: procedureName
-                })
+                        name: procedureName
+                    })
                     .then(data => {
                         if (data.success) {
                             newProcedureStatusDiv.innerHTML =
@@ -775,11 +924,10 @@ $page_title = 'Add Appointment';
         }
 
         if (newProcedureModal) {
-            newProcedureModal.addEventListener('hidden.bs.modal', function () {
+            newProcedureModal.addEventListener('hidden.bs.modal', function() {
                 document.getElementById('new_procedure_name').value = '';
                 newProcedureStatusDiv.innerHTML = '';
             });
         }
     });
-
 </script>

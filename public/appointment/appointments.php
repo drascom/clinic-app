@@ -110,12 +110,14 @@ $page_title = "Appointment Management";
                                 <div class="mb-3">
                                     <label for="edit-start-time" class="form-label">Start Time *</label>
                                     <input type="time" class="form-control" id="edit-start-time" required>
+                                    <div class="invalid-feedback"></div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="edit-end-time" class="form-label">End Time *</label>
                                     <input type="time" class="form-control" id="edit-end-time" required>
+                                    <div class="invalid-feedback"></div>
                                 </div>
                             </div>
                         </div>
@@ -155,7 +157,7 @@ $page_title = "Appointment Management";
     let rooms = [];
     let patients = [];
 
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         loadInitialData();
 
         // Search functionality
@@ -164,18 +166,189 @@ $page_title = "Appointment Management";
 
         const clearSearchBtn = document.getElementById('clear-search');
         if (searchInput && clearSearchBtn) {
-            clearSearchBtn.addEventListener('click', function () {
+            clearSearchBtn.addEventListener('click', function() {
                 searchInput.value = '';
                 renderAppointmentsTable();
             });
         }
 
         // Edit form submission
-        document.getElementById('edit-appointment-form').addEventListener('submit', function (e) {
+        document.getElementById('edit-appointment-form').addEventListener('submit', function(e) {
             e.preventDefault();
+            if (!validateEditForm(true)) return; // Add validation check
             updateAppointment();
         });
+
+        // Attach blur listeners for standard input fields in the edit modal
+        ['edit-start-time', 'edit-end-time', 'edit-appointment-date', 'edit-room-id'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('blur', () => {
+                    validateSingleEditField(id);
+                    updateEditSubmitButtonState
+                        (); // Update button state after single field validation
+                });
+            }
+        });
+
+        // Attach select2:close listeners for select2-enabled dropdowns in the edit modal
+        ['edit-patient-id', 'edit-procedure-id'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el && $(el).hasClass('select2-enable')) { // Check if it's a select2 element
+                $(el).on('select2:close', function() {
+                    validateSingleEditField(id);
+                    updateEditSubmitButtonState
+                        (); // Update button state after single field validation
+                });
+            } else if (el) { // For regular select elements
+                el.addEventListener('change', () => {
+                    validateSingleEditField(id);
+                    updateEditSubmitButtonState();
+                });
+            }
+        });
     });
+
+    // Function to update edit submit button state
+    function updateEditSubmitButtonState() {
+        const submitButton = document.querySelector('#edit-appointment-form button[type="submit"]');
+        if (submitButton) {
+            submitButton.disabled = !validateEditForm(false);
+        }
+    }
+
+    function validateEditForm(showUIErrors = false) {
+        const form = document.getElementById('edit-appointment-form');
+        if (showUIErrors) {
+            form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            form.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
+        }
+
+        let isValid = true;
+        const requiredFields = getEditFieldValidationRules();
+
+        requiredFields.forEach(f => {
+            const el = document.getElementById(f.id);
+            if (el && !el.value.trim()) {
+                isValid = false;
+                if (showUIErrors) {
+                    el.classList.add('is-invalid');
+                    let feedbackEl;
+                    if (el.parentElement.classList.contains('input-group')) {
+                        feedbackEl = el.parentElement.nextElementSibling;
+                    } else {
+                        feedbackEl = el.nextElementSibling;
+                    }
+                    if (feedbackEl && feedbackEl.classList.contains('invalid-feedback')) {
+                        feedbackEl.textContent = f.msg;
+                    }
+                }
+            }
+        });
+
+        // Additional validation for start and end times
+        const startTime = document.getElementById('edit-start-time').value;
+        const endTime = document.getElementById('edit-end-time').value;
+        if (startTime && endTime && startTime >= endTime) {
+            isValid = false;
+            if (showUIErrors) {
+                const endField = document.getElementById('edit-end-time');
+                endField.classList.add('is-invalid');
+                if (endField.nextElementSibling) {
+                    endField.nextElementSibling.textContent = 'End time must be after start time.';
+                }
+            }
+        }
+        return isValid;
+    }
+
+    function validateSingleEditField(id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+
+        const fieldRule = getEditFieldValidationRules().find(f => f.id === id);
+        const msg = fieldRule ? fieldRule.msg : 'This field is required.';
+
+        let feedbackEl;
+        if (el.parentElement.classList.contains('input-group')) {
+            feedbackEl = el.parentElement.nextElementSibling;
+        } else {
+            feedbackEl = el.nextElementSibling;
+        }
+
+        if (!el.value.trim()) {
+            el.classList.add('is-invalid');
+            if (feedbackEl && feedbackEl.classList.contains('invalid-feedback')) {
+                feedbackEl.textContent = msg;
+            }
+        } else {
+            el.classList.remove('is-invalid');
+            if (feedbackEl && feedbackEl.classList.contains('invalid-feedback')) {
+                feedbackEl.textContent = '';
+            }
+        }
+
+        // Specific validation for start-time and end-time
+        if (id === 'edit-start-time' || id === 'edit-end-time') {
+            const startTime = document.getElementById('edit-start-time').value;
+            const endTime = document.getElementById('edit-end-time').value;
+
+            if (startTime && endTime && startTime >= endTime) {
+                const endField = document.getElementById('edit-end-time');
+                endField.classList.add('is-invalid');
+                let endFeedbackEl;
+                if (endField.parentElement.classList.contains('input-group')) {
+                    endFeedbackEl = endField.parentElement.nextElementSibling;
+                } else {
+                    endFeedbackEl = endField.nextElementSibling;
+                }
+                if (endFeedbackEl && endFeedbackEl.classList.contains('invalid-feedback')) {
+                    endFeedbackEl.textContent = 'End time must be after start time.';
+                }
+            } else {
+                const endField = document.getElementById('edit-end-time');
+                endField.classList.remove('is-invalid');
+                let endFeedbackEl;
+                if (endField.parentElement.classList.contains('input-group')) {
+                    endFeedbackEl = endField.parentElement.nextElementSibling;
+                } else {
+                    endFeedbackEl = endField.nextElementSibling;
+                }
+                if (endFeedbackEl && endFeedbackEl.classList.contains('invalid-feedback')) {
+                    endFeedbackEl.textContent = '';
+                }
+            }
+        }
+        updateEditSubmitButtonState(); // Update button state after single field validation
+    }
+
+    function getEditFieldValidationRules() {
+        return [{
+                id: 'edit-patient-id',
+                msg: 'Please select a patient.'
+            },
+            {
+                id: 'edit-room-id',
+                msg: 'Please select a room.'
+            },
+            {
+                id: 'edit-appointment-date',
+                msg: 'Date required.'
+            },
+            {
+                id: 'edit-start-time',
+                msg: 'Start time required.'
+            },
+            {
+                id: 'edit-end-time',
+                msg: 'End time required.'
+            },
+            {
+                id: 'edit-procedure-id',
+                msg: 'Please select a procedure.'
+            }
+        ];
+    }
 
     async function loadInitialData() {
         showLoading(true);
@@ -187,7 +360,9 @@ $page_title = "Appointment Management";
 
             let patientsRequest;
             if (userRole === 'agent' && userAgencyId) {
-                patientsRequest = apiRequest('patients', 'list', { agency: userAgencyId });
+                patientsRequest = apiRequest('patients', 'list', {
+                    agency: userAgencyId
+                });
             } else {
                 patientsRequest = apiRequest('patients', 'list');
             }
@@ -397,9 +572,17 @@ $page_title = "Appointment Management";
         document.getElementById('edit-procedure-id').value = appointment.procedure_id || '';
         document.getElementById('edit-notes').value = appointment.notes || '';
 
+        // Clear previous validation states
+        const form = document.getElementById('edit-appointment-form');
+        form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+        form.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
+
         // Show modal
         const modal = new bootstrap.Modal(document.getElementById('editAppointmentModal'));
         modal.show();
+
+        // Update button state after populating the form
+        updateEditSubmitButtonState();
     }
 
     function updateAppointment() {
@@ -416,9 +599,9 @@ $page_title = "Appointment Management";
         formData.append('notes', document.getElementById('edit-notes').value);
 
         fetch('/api.php', {
-            method: 'POST',
-            body: formData
-        })
+                method: 'POST',
+                body: formData
+            })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -446,9 +629,9 @@ $page_title = "Appointment Management";
         formData.append('id', appointmentId);
 
         fetch('/api.php', {
-            method: 'POST',
-            body: formData
-        })
+                method: 'POST',
+                body: formData
+            })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -467,7 +650,6 @@ $page_title = "Appointment Management";
     function showLoading(show) {
         document.getElementById('loading-spinner').style.display = show ? 'block' : 'none';
     }
-
 </script>
 
 <?php require_once '../includes/footer.php'; ?>
