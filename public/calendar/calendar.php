@@ -242,7 +242,8 @@ $page_title = "Calendar";
         }
 
         checkAndShowEmptyState() {
-            const hasEvents = this.events && Object.values(this.events).some(day => day.appointments.length > 0 || day.surgeries.length > 0);
+            const hasEvents = this.events && Object.values(this.events).some(day => day.appointments.length > 0 || day
+                .surgeries.length > 0);
             const hasAnyData = hasEvents;
 
             if (!hasAnyData) {
@@ -358,7 +359,8 @@ $page_title = "Calendar";
                         if (dayEvents.appointments.length > 0) {
                             const appBtn = document.createElement('button');
                             appBtn.className = 'btn btn-text text-primary btn-sm mb-1 d-flex align-items-center';
-                            appBtn.innerHTML = `<i class="fas fa-calendar-check me-1"></i><span>Appointments: ${dayEvents.appointments.length}</span>`;
+                            appBtn.innerHTML =
+                                `<i class="fas fa-calendar-check me-1"></i><span>Appointments: ${dayEvents.appointments.length}</span>`;
                             appBtn.onclick = (e) => {
                                 e.stopPropagation();
                                 this.showDetailsModal('Appointments', dateString, dayEvents.appointments);
@@ -369,7 +371,8 @@ $page_title = "Calendar";
                         if (dayEvents.surgeries.length > 0) {
                             const surgBtn = document.createElement('button');
                             surgBtn.className = 'btn btn-text text-danger btn-sm d-flex align-items-center';
-                            surgBtn.innerHTML = `<i class="fas fa-syringe me-1"></i><span>Surgeries: ${dayEvents.surgeries.length}</span>`;
+                            surgBtn.innerHTML =
+                                `<i class="fas fa-syringe me-1"></i><span>Surgeries: ${dayEvents.surgeries.length}</span>`;
                             surgBtn.onclick = (e) => {
                                 e.stopPropagation();
                                 this.showDetailsModal('Surgeries', dateString, dayEvents.surgeries);
@@ -436,7 +439,8 @@ $page_title = "Calendar";
                     if (dayEvents.appointments.length > 0) {
                         const appBtn = document.createElement('button');
                         appBtn.className = 'btn btn-text text-primary btn-sm mb-1 d-flex align-items-center';
-                        appBtn.innerHTML = `<i class="fas fa-calendar-check me-1"></i><span>Appointments: ${dayEvents.appointments.length}</span>`;
+                        appBtn.innerHTML =
+                            `<i class="fas fa-calendar-check me-1"></i><span>Appointments: ${dayEvents.appointments.length}</span>`;
                         appBtn.onclick = (e) => {
                             e.stopPropagation();
                             this.showDetailsModal('Appointments', dateKey, dayEvents.appointments);
@@ -447,7 +451,8 @@ $page_title = "Calendar";
                     if (dayEvents.surgeries.length > 0) {
                         const surgBtn = document.createElement('button');
                         surgBtn.className = 'btn btn-text text-danger btn-sm d-flex align-items-center';
-                        surgBtn.innerHTML = `<i class="fas fa-syringe me-1"></i><span>Surgeries: ${dayEvents.surgeries.length}</span>`;
+                        surgBtn.innerHTML =
+                            `<i class="fas fa-syringe me-1"></i><span>Surgeries: ${dayEvents.surgeries.length}</span>`;
                         surgBtn.onclick = (e) => {
                             e.stopPropagation();
                             this.showDetailsModal('Surgeries', dateKey, dayEvents.surgeries);
@@ -486,10 +491,16 @@ $page_title = "Calendar";
 
                 listHtml += `
                     <a href="${link}" class="list-group-item list-group-item-action">
-                        <div class="d-flex w-100 justify-content-between">
+                        <div class="d-flex w-100 justify-content-between align-items-center">
                             <h6 class="mb-1">${item.patient_name}</h6>
+                            ${isAppointment ? `<small class="text-muted">${item.start_time} - ${item.end_time}</small>` : `<span class="badge bg-info">${item.status}</span>`}
                         </div>
-                        <p class="mb-1">${item.summary}</p>
+                        ${item.room_name ? `<p class="mb-1"><i class="fas fa-hospital-alt me-1"></i> Room: ${item.room_name}</p>` : ''}
+                        ${isAppointment && item.procedure_name ? `<p class="mb-1"><i class="fas fa-tag me-1"></i> Procedure: ${item.procedure_name}</p>` : ''}
+                        ${!isAppointment && item.predicted_grafts_count ? `<p class="mb-1"><i class="fas fa-microscope me-1"></i> Predicted Grafts: ${item.predicted_grafts_count}</p>` : ''}
+                        ${!isAppointment && item.current_grafts_count ? `<p class="mb-1"><i class="fas fa-microscope me-1"></i> Current Grafts: ${item.current_grafts_count}</p>` : ''}
+                        ${item.notes ? `<p class="mb-1 text-muted">Notes: ${item.notes}</p>` : ''}
+                        ${!isAppointment && item.is_recorded ? `<p class="mb-1 text-success"><i class="fas fa-video me-1"></i> Recorded</p>` : ''}
                     </a>`;
             });
             listHtml += '</ul>';
@@ -532,7 +543,7 @@ $page_title = "Calendar";
     }
 
     // Initialize calendar when DOM is loaded
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         new CustomCalendar();
     });
 </script>

@@ -34,9 +34,9 @@ function convert_heic_to_jpeg($source_path, $destination_path)
     error_log("Starting HEIC to JPEG conversion - Source: $source_path, Destination: $destination_path");
 
     // Try ImageMagick first (preferred method)
-    if (extension_loaded('imagick')) {
+    if (extension_loaded('imagick') && class_exists('Imagick')) {
         try {
-            $imagick = new Imagick();
+            $imagick = new \Imagick();
 
             // Check if ImageMagick supports HEIC
             $formats = $imagick->queryFormats();
@@ -78,7 +78,6 @@ function convert_heic_to_jpeg($source_path, $destination_path)
             }
 
             error_log("sips conversion failed - Return code: $return_code, Output: " . implode(', ', $output));
-
         } catch (Exception $e) {
             error_log("System command HEIC conversion failed: " . $e->getMessage());
         }
@@ -265,7 +264,6 @@ function handle_patients($action, $method, $db, $input = [])
                                 $final_destination_path = $jpeg_destination_path;
                                 $final_web_file_path = $jpeg_web_file_path;
                                 $conversion_performed = true;
-
                             } else {
                                 error_log("HEIC avatar conversion failed: " . ($conversion_result['error'] ?? 'Unknown error'));
 

@@ -5,21 +5,24 @@ require_once '../includes/header.php';
 $room_id = $_GET['room_id'] ?? null;
 $date = $_GET['date'] ?? null;
 $request_type = $_GET['request'] ?? null;
+$appointment_id = $_GET['id'] ?? null;
+$is_edit_mode = ($appointment_id !== null);
 $prefilled = ($room_id && $date);
-$page_title = 'Add Appointment';
+$page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
 
 ?>
 
-<div class="container emp frosted">
+<div class="container emp">
     <div class="card frosted">
-        <div class="card-header">
-            <div class="d-flex justify-content-between align-items-center py-2">
-                <a href="appointments.php" class="btn  btn-outline">
+        <div class="card-header p-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="appointments.php" class="btn btn-sm btn-outline-secondary">
                     <i class="fas fa-arrow-left me-1"></i>
                     <span class="d-none d-sm-inline">Appointments</span>
                 </a>
                 <h4 class="mb-0">
-                    <i class="far fa-calendar-plus me-2 text-success"></i>New Appointment
+                    <i
+                        class="far <?= $is_edit_mode ? 'fa-edit text-primary' : 'fa-calendar-plus text-success' ?> me-2"></i><?= $page_title ?>
                 </h4>
                 <a href="calendar.php" class="btn  btn-outline-primary">
                     <i class="far fa-calendar-alt me-1"></i>
@@ -30,6 +33,9 @@ $page_title = 'Add Appointment';
 
         <div class="card-body">
             <form id="appointment-form" novalidate>
+                <?php if ($is_edit_mode): ?>
+                    <input type="hidden" id="appointment-id" name="id" value="<?= htmlspecialchars($appointment_id) ?>">
+                <?php endif; ?>
                 <div class="row g-2">
                     <div class="col-md-5">
                         <fieldset class="border rounded p-3 mb-4 shadow-sm">
@@ -90,18 +96,20 @@ $page_title = 'Add Appointment';
 
                     <div class="col-md-7">
                         <fieldset class="border rounded p-3 mb-3 shadow-sm">
-                            <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex justify-content-between align-items-baseline mb-3">
                                 <legend class="w-auto px-3 m-0 p-0" style="font-size:1rem;">
                                     <i class="far fa-user me-2"></i>Patient Name<span class="text-danger">*</span>
                                 </legend>
-                                <button type="button" class="btn btn-link " data-bs-toggle="modal"
-                                    data-bs-target="#newPatientModal">
-                                    <i class="far fa-plus me-1"></i><span class="d-none d-sm-inline">Add</span>
+                                <button type="button"
+                                    class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1 py-0 px-2 m-0"
+                                    data-bs-toggle="modal" data-bs-target="#newPatientModal">
+                                    <i class="far fa-plus"></i>
+                                    <span class="d-none d-sm-inline">Add</span>
                                 </button>
                             </div>
                             <div class="input-group">
                                 <select class="form-select select2-enable" id="patient-id" name="patient_id">
-                                    <option value="">Select Patient<span class="text-danger">*</span></option>
+                                    <option value="">Select Patient</option>
                                 </select>
                             </div>
                             <div class="invalid-feedback"></div>
@@ -160,7 +168,7 @@ $page_title = 'Add Appointment';
                             <i class="fas fa-times me-1"></i>Cancel
                         </a>
                         <button type="submit" class="btn btn-primary">
-                            <i class="far fa-save me-1"></i>Create Appointment
+                            <i class="far fa-save me-1"></i><?= $is_edit_mode ? 'Update' : 'Create' ?> Appointment
                         </button>
                     </div>
                 </div>
@@ -282,10 +290,16 @@ $page_title = 'Add Appointment';
     let allAgencies = []; // Declare allAgencies globally
     let formWasSubmitted = false;
     const prefilled = <?= $prefilled ? 'true' : 'false' ?>;
+    const isEditMode = <?= $is_edit_mode ? 'true' : 'false' ?>;
+    const appointmentId = <?= $appointment_id ? (int) $appointment_id : 'null' ?>;
 
     function initPage() {
         console.log('Initialising page…');
-        loadInitialData();
+        if (isEditMode) {
+            loadAppointmentForEdit(appointmentId);
+        } else {
+            loadInitialData();
+        }
         fetchModalAgencies(); // Call fetchModalAgencies on page load
 
         const form = document.getElementById('appointment-form');
@@ -475,10 +489,53 @@ $page_title = 'Add Appointment';
         });
     }
 
+    async function loadAppointmentForEdit(id) {
+        console.log('Loading appointment for editing…', id);
+        try {
+            // First, load all the dropdown data like patients, rooms, etc.
+            await loadInitialData();
+
+            // Then, fetch the specific appointment's details
+            const appointmentData = await apiRequest('appointments', 'get', {
+                id
+            });
+            if (appointmentData.success && appointmentData.appointment) {
+                const app = appointmentData.appointment;
+                console.log('Appointment data received:', app);
+
+                // Populate the form fields
+                document.getElementById('appointment-date-input').value = app.appointment_date;
+                document.getElementById('start-time').value = app.start_time;
+                document.getElementById('end-time').value = app.end_time;
+                document.getElementById('notes').value = app.notes;
+
+                // Set room
+                $('#room-id-input').val(app.room_id).trigger('change');
+
+                // Set patient - requires select2 handling
+                $('#patient-id').val(app.patient_id).trigger('change');
+
+                // Set procedure - requires select2 handling
+                $('#procedure-id').val(app.procedure_id).trigger('change');
+
+                // After populating, update the button state
+                updateSubmitButtonState();
+
+            } else {
+                throw new Error(appointmentData.error || 'Appointment not found.');
+            }
+        } catch (err) {
+            console.error(err);
+            showToast('Failed to load appointment data: ' + err.message, 'danger');
+            // Redirect or disable form if loading fails
+            document.getElementById('appointment-form').innerHTML =
+                '<div class="alert alert-danger">Could not load appointment details.</div>';
+        }
+    }
+
     function onFormSubmit(e) {
         e.preventDefault();
         formWasSubmitted = true;
-        // On submit, call validateForm and show any errors
         if (!validateForm(true)) return;
 
         const payload = {
@@ -493,18 +550,33 @@ $page_title = 'Add Appointment';
             notes: document.getElementById('notes').value
         };
 
-        apiRequest('appointments', 'create', payload)
+        let apiAction;
+        let successMessage;
+
+        if (isEditMode) {
+            payload.id = appointmentId;
+            apiAction = 'update';
+            successMessage = 'Appointment updated successfully!';
+        } else {
+            apiAction = 'create';
+            successMessage = 'Appointment created successfully!';
+        }
+
+        apiRequest('appointments', apiAction, payload)
             .then(res => {
                 if (res.success) {
-                    showToast('Appointment created successfully!', 'success');
-                    setTimeout(() => location.href = 'appointments.php', 1500);
+                    showToast(successMessage, 'success');
+                    setTimeout(() => {
+                        const patientId = payload.patient_id;
+                        location.href = `/patient/patient_details.php?id=${patientId}&tab=appointments`;
+                    }, 1500);
                 } else {
-                    throw new Error(res.error || 'Unknown error');
+                    throw new Error(res.error || 'An unknown error occurred.');
                 }
             })
             .catch(err => {
-                console.error(err);
-                showToast('Failed to create appointment: ' + err.message, 'danger');
+                console.error('API Error:', err);
+                showToast(`Failed to ${apiAction} appointment: ${err.message}`, 'danger');
             });
     }
 

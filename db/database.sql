@@ -20,7 +20,7 @@ CREATE TABLE surgeries (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   date TEXT NOT NULL,
   notes TEXT,
-  status TEXT DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'Confirmed', 'Completed', 'Canceled')),
+  status TEXT DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'confirmed', 'completed', 'canceled')),
   predicted_grafts_count INTEGER,
   current_grafts_count INTEGER,
   room_id INTEGER,

@@ -4,7 +4,7 @@ include __DIR__ . '/../includes/header.php';
 $page_title = "Staff Management";
 ?>
 
-<div class="container emp-10">
+<div class="container emp ">
     <!-- Loading Spinner -->
     <div id="loading-spinner" class="text-center py-4" style="display: none;">
         <div class="spinner-border text-primary" role="status">
@@ -14,43 +14,44 @@ $page_title = "Staff Management";
 
     <!-- Main Content Card -->
     <div class="card">
-        <div class="card-header">
+        <div class="p-4 pb-2">
             <!-- Page Header -->
-            <div class="d-flex justify-content-between align-items-center p-2">
-                <h4 class="mb-0">
-                    <i class="fas fa-users me-2 text-primary"></i>
-                    <?php echo $page_title; ?>
-                </h4>
-                <div class="btn-group" role="group">
-                    <button class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#staffModal"
-                        id="addStaffBtn">
-                        <i class="fas fa-plus me-1"></i>
-                        <span class="d-none d-sm-inline">Add New Staff</span>
-                    </button>
-                    <a href="/staff/staff-availability.php" class="btn btn-outline-primary">
-                        <i class="far fa-calendar me-1"></i>
-                        <span class="d-none d-sm-inline">Staff Calendar</span>
-                    </a>
+            <h4 class="mb-3">
+                <i class="fas fa-users me-2 text-primary"></i>
+                <?php echo $page_title; ?>
+            </h4>
+
+
+
+            <div class="d-flex justify-content-between align-items-start gap-2">
+                <div class="position-relative search-expand">
+                    <div class="position-relative">
+                        <input type="text" id="search-input" class="form-control ps-5 pe-5"
+                            placeholder="Search staff by name, email, phone, location, position, or specialty...">
+                        <i
+                            class="fas fa-search position-absolute top-50 start-0 translate-middle-y ps-3 text-muted"></i>
+                        <button type="button" id="clear-search"
+                            class="btn btn-sm position-absolute top-50 end-0 translate-middle-y me-2 p-0 border-0 bg-transparent text-muted"
+                            title="Clear search" style="line-height:1;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="text-muted small d-none d-lg-inline text-center">
+                        <i class="fas fa-info-circle me-1"></i>
+                        <span id="candidate-count">Loading...</span> candidates |
+                        <span id="staff-total-count">Loading...</span> staff members
+                    </div>
                 </div>
+                <button class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#staffModal"
+                    id="addStaffBtn">
+                    <i class="fas fa-plus me-1"></i>
+                    Add<span class="d-none d-sm-inline"> New Staff</span>
+                </button>
             </div>
-            <!-- Search Bar -->
-            <fieldset class="p-4 frosted">
-                <div class="input-group">
-                    <span class="input-group-text">
-                        <i class="fas fa-search"></i>
-                    </span>
-                    <input type="text" id="search-input" class="form-control"
-                        placeholder="Search staff by name, email, phone, location, position, or specialty...">
-                    <button class="btn btn-outline-secondary" type="button" id="clear-search" title="Clear search">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="text-muted small ms-4">
-                    <i class="fas fa-info-circle me-1"></i>
-                    <span id="candidate-count">Loading...</span> candidates | <span
-                        id="staff-total-count">Loading...</span> staff members
-                </div>
-            </fieldset>
+
+
+
+
         </div>
         <div class="card-body">
             <!-- Tab Navigation -->
@@ -68,6 +69,12 @@ $page_title = "Staff Management";
                         <i class="fas fa-users-cog me-2"></i>Staff
                     </button>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <a href="/staff/staff-availability.php" class="nav-link d-flex align-items-center px-3">
+                        <i class="far fa-calendar me-2"></i>
+                        <span class="d-none d-sm-inline"> Staff </span>Calendar
+                    </a>
+                </li>
             </ul>
 
             <!-- Tab Content -->
@@ -83,10 +90,7 @@ $page_title = "Staff Management";
                                     <th>Email</th>
                                     <th class="d-none d-md-table-cell">Phone</th>
                                     <th class="d-none d-lg-table-cell">Location</th>
-                                    <th class="d-none d-lg-table-cell">Position Applied</th>
                                     <th class="d-none d-lg-table-cell">Specialty</th>
-                                    <th>Type</th>
-                                    <th class="text-center">Invitation</th>
                                     <th class="text-center">Actions</th>
                                 </tr>
                             </thead>
@@ -107,9 +111,7 @@ $page_title = "Staff Management";
                                     <th>Email</th>
                                     <th class="d-none d-md-table-cell">Phone</th>
                                     <th class="d-none d-lg-table-cell">Location</th>
-                                    <th class="d-none d-lg-table-cell">Position Applied</th>
                                     <th class="d-none d-lg-table-cell">Specialty</th>
-                                    <th>Type</th>
                                     <th class="text-center">Actions</th>
                                 </tr>
                             </thead>
@@ -748,25 +750,23 @@ $page_title = "Staff Management";
                         <td><span class="text-truncate-mobile">${escapeHtml(staff.email)}</span></td>
                         <td class="d-none d-md-table-cell">${escapeHtml(staff.phone || 'N/A')}</td>
                         <td class="d-none d-lg-table-cell">${escapeHtml(staff.location || 'N/A')}</td>
-                        <td class="d-none d-lg-table-cell">${escapeHtml(staff.position_applied || 'N/A')}</td>
                         <td class="d-none d-lg-table-cell">${escapeHtml(staff.speciality || 'N/A')}</td>
-                        <td>${staffTypeBadge} ${isActiveBadge}</td>
-                        <td class="text-center">
-                            ${staff.staff_type === 'candidate' ? `
+                       <!-- <td>${staffTypeBadge} ${isActiveBadge}</td> -->
+                      
+                        <td>
+                            <div class="btn-group" role="group"> 
+                             ${staff.staff_type === 'candidate' ? `
                                 <a href="/staff/send_interview_invitation.php?candidate_id=${staff.id}" class="btn btn-sm btn-outline-success" title="Send Interview Invitation">
                                     <i class="fas fa-paper-plane"></i>
                                 </a>
-                            ` : 'N/A'}
-                        </td>
-                        <td>
-                            <div class="btn-group" role="group">
+                            ` : ''}
                                 <button type="button" class="btn btn-sm btn-outline-primary" onclick="viewStaff(${staff.id})" title="View Details">
                                     <i class="fas fa-eye"></i>
                                 </button>
                                 ${isAdmin ? `
-                                <button type="button" class="btn btn-sm btn-outline-info" onclick="editStaff(${staff.id})" title="Edit">
+                                <!-- <button type="button" class="btn btn-sm btn-outline-info" onclick="editStaff(${staff.id})" title="Edit">
                                     <i class="fas fa-edit"></i>
-                                </button>
+                                </button> -->
                             
                                 <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteStaff(${staff.id}, '${escapeHtml(staff.name)}')" title="Delete">
                                     <i class="fas fa-trash"></i>
@@ -1026,14 +1026,14 @@ $page_title = "Staff Management";
                                         <span class="form-label fw-bold text-muted me-2">Position Applied:</span>
                                         <span>${escapeHtml(staff.position_applied || 'N/A')}</span>
                                     </div>
-                                    <div class="mb-2 d-flex justify-content-between">
+                                  <div class="mb-2 d-flex justify-content-between">
                                         <span class="form-label fw-bold text-muted me-2">Staff Type:</span>
                                         <span>${staffTypeBadge}</span>
                                     </div>
                                     <div class="mb-2 d-flex justify-content-between">
                                         <span class="form-label fw-bold text-muted me-2">Status:</span>
                                         <span>${isActiveBadge}</span>
-                                    </div>
+                                    </div> 
                                     <div class="mb-2 d-flex justify-content-between">
                                         <span class="form-label fw-bold text-muted me-2">Willing to Relocate:</span>
                                         <span>${isWillingToMove}</span>

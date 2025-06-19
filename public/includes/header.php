@@ -306,6 +306,6 @@ if (
     <!-- Main Content -->
     <main class="main-content">
         <!-- Toast Container for system-wide messages -->
-        <div class="toast-container position-absolute top-0 start-50 translate-middle-x p-3">
+        <div class="toast-container position-absolute start-50 translate-middle-x p-3" style="top: 40%;">
             <!-- Toasts will be appended here by JavaScript -->
         </div>

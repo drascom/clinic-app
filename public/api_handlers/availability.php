@@ -21,14 +21,15 @@ function handle_availability($action, $method, $db, $input = [])
                         SELECT
                             r.id,
                             r.name,
-                            r.types,
+                            r.type,
                             r.is_active,
                             CASE
                                 WHEN rr.id IS NOT NULL THEN 'booked'
                                 WHEN r.is_active = 0 THEN 'inactive'
                                 ELSE 'available'
                             END as status,
-                            s.graft_count,
+                            s.predicted_grafts_count,
+                            s.current_grafts_count,
                             s.id as surgery_id,
                             rr.surgery_id as reservation_surgery_id,
                             p.name as patient_name
@@ -45,11 +46,11 @@ function handle_availability($action, $method, $db, $input = [])
 
                     // Calculate availability statistics
                     $total_rooms = count($rooms);
-                    $active_rooms = array_filter($rooms, function($room) {
+                    $active_rooms = array_filter($rooms, function ($room) {
                         return $room['is_active'] == 1;
                     });
                     $total_active = count($active_rooms);
-                    $available_rooms = array_filter($active_rooms, function($room) {
+                    $available_rooms = array_filter($active_rooms, function ($room) {
                         return $room['status'] === 'available';
                     });
                     $available_count = count($available_rooms);
@@ -98,7 +99,8 @@ function handle_availability($action, $method, $db, $input = [])
                                 ELSE 'available'
                             END as status,
                             p.name as patient_name,
-                            s.graft_count,
+                             s.predicted_grafts_count,
+                            s.current_grafts_count,
                             s.id as surgery_id
                         FROM rooms r
                         LEFT JOIN room_reservations rr ON r.id = rr.room_id

@@ -25,11 +25,11 @@ require_once __DIR__ . '/../includes/header.php';
 ?>
 
 
-<div class="container emp">
+<div class="container emp frosted">
     <!-- Surgery Form -->
-    <div class="card">
+    <div class="card frosted">
         <!-- Page Header -->
-        <div class="card-header">
+        <div class="card-header p-4">
             <div class="d-flex justify-content-between align-items-center">
                 <a href="/surgery/surgeries.php" class="btn btn-outline-dark btn-sm">
                     <i class="fas fa-arrow-left me-1"></i>
@@ -87,7 +87,57 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
 
                 <div class="row">
-                    <!-- Left Column -->
+                    <!-- top column -->
+                    <div class="col-12">
+                        <!-- Patient Selection -->
+                        <?php if (!$is_editing): ?>
+                            <fieldset class="border rounded p-3 mb-3 shadow-sm">
+                                <div class="d-flex justify-content-between align-items-baseline mb-3">
+                                    <legend class="w-auto m-0 px-2" style="font-size: 1rem;">
+                                        <i class="far fa-user me-2"></i>Patient Selection<span class="text-danger">*</span>
+                                    </legend>
+                                    <button type="button"
+                                        class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1 py-0 px-2 m-0"
+                                        data-bs-toggle="modal" data-bs-target="#newPatientModal">
+                                        <i class="far fa-plus"></i>
+                                        <span class="d-none d-sm-inline">New Patient</span>
+                                    </button>
+                                </div>
+
+                                <div class="mb-3">
+                                    <div class="input-group">
+                                        <select class="form-select select2-enable" id="patient_id" name="patient_id"
+                                            required>
+                                            <option value="">Select Patient</option>
+                                        </select>
+                                    </div>
+                                    <div class="invalid-feedback"></div>
+                                </div>
+                            </fieldset>
+                        <?php else: ?>
+                            <fieldset class="border rounded p-3 mb-3 shadow-sm bg-body-secondary">
+                                <div class="d-flex justify-content-between flex-wrap align-items-start gap-3 ">
+                                    <legend class="w-auto m-0 px-2">
+                                        <h3 class="mb-0 text-primary" id="patient_name">
+                                            <i class="fas fa-user me-2"></i>
+                                        </h3>
+                                    </legend>
+                                    <p class="mb-2 fs-6">
+                                        <i class="fas fa-phone-alt text-primary me-1"></i>
+                                        <span class="fw-semibold text-muted">Phone:</span>
+                                        <span id="patient_phone" class="ms-2"></span>
+                                    </p>
+                                    <p class="mb-0 fs-6">
+                                        <i class="far fa-envelope text-primary me-1"></i>
+                                        <span class="fw-semibold text-muted">Email:</span>
+                                        <span id="patient_email" class="ms-2"></span>
+                                    </p>
+                                </div>
+                            </fieldset>
+                            <input type="hidden" name="patient_id" id="patient_id">
+                        <?php endif; ?>
+
+                    </div> <!-- Left Column -->
                     <div class="col-md-5">
                         <!-- Date and Room Section -->
                         <fieldset class="border rounded p-3 mb-4">
@@ -130,63 +180,34 @@ require_once __DIR__ . '/../includes/header.php';
                                 <div class="form-text" id="room-availability-text"></div>
                             </div>
                         </fieldset>
-                        <!-- Notes Section -->
-                        <fieldset class="border rounded p-3 mb-3 shadow-sm">
-                            <legend class="w-auto px-2 mb-3" style="font-size: 1rem;">
-                                <i class="far fa-sticky-note me-2"></i>Notes
-                            </legend>
-
-                            <textarea class="form-control" id="notes" name="notes" rows="6"
-                                placeholder="Enter any additional notes about the surgery..."></textarea>
-                            <div class="invalid-feedback"></div>
-                        </fieldset>
-
                     </div>
 
                     <!-- Right Column -->
                     <div class="col-md-7">
-                        <!-- Patient Selection -->
-                        <?php if (!$is_editing): ?>
-                            <fieldset class="border rounded p-3 mb-3 shadow-sm">
-                                <legend class="w-auto px-2 mb-3" style="font-size: 1rem;">
-                                    <i class="far fa-user me-2"></i>Patient Selection
-                                </legend>
-
-                                <div class="mb-3">
-                                    <label for="patient_id" class="form-label">Patient <span
-                                            class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <select class="form-select select2-enable" id="patient_id" name="patient_id" required>
-                                            <option value="">Select Patient</option>
-                                        </select>
-                                        <button type="button" class="btn btn-text text-primary" data-bs-toggle="modal"
-                                            data-bs-target="#newPatientModal">
-                                            <i class="far fa-plus me-1"></i>
-                                            <span class="d-none d-sm-inline">New Patient</span>
-                                        </button>
-                                    </div>
-                                    <div class="invalid-feedback"></div>
-                                </div>
-                            </fieldset>
-                        <?php else: ?>
-                            <input type="hidden" name="patient_id" id="patient_id">
-                        <?php endif; ?>
                         <!-- Technicians Section -->
                         <fieldset class="border rounded p-3 mb-3 shadow-sm">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <legend class="w-auto " style="font-size: 1rem;">
+                            <div class="d-flex justify-content-between align-items-baseline">
+                                <legend class="w-auto m-0" style="font-size:1rem;">
                                     <i class="fas fa-user-md me-2"></i>Assigned Technicians
                                 </legend>
-                                <button type="button" class="btn p-0 btn-sm btn-link" id="add-technicians-btn">
-                                    <i class="far fa-plus me-1"></i>Add Technicians
+
+                                <button type="button"
+                                    class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1 py-0 px-2 m-0"
+                                    id="add-technicians-btn">
+                                    <i class="far fa-plus"></i>
+                                    Add Technicians
                                 </button>
                             </div>
+
+
 
                             <div class="mb-3">
                                 <select class="form-select" id="technicians" name="technicians[]" multiple
                                     style="display: none;"></select>
                                 <div class="invalid-feedback"></div>
-                                <div id="assigned-technicians" class="mt-2"></div>
+                                <div id="assigned-technicians" class="mt-2">
+                                </div>
+                                <div class="form-text" id="technician-availability-text"></div>
                             </div>
                         </fieldset>
                         <!-- Surgery Details -->
@@ -208,22 +229,33 @@ require_once __DIR__ . '/../includes/header.php';
                                     <div class="invalid-feedback"></div>
                                 </div>
                             </div>
+                            <input type="hidden" id="status" name="status" value="scheduled">
+                        </fieldset>
+                    </div>
+                    <div class="col-12">
+                        <!-- Notes Section -->
+                        <fieldset class="border rounded p-3 mb-3 shadow-sm">
+                            <legend class="w-auto px-2 mb-3" style="font-size: 1rem;">
+                                <i class="far fa-sticky-note me-2"></i>Notes
+                            </legend>
+
+                            <textarea class="form-control" id="notes" name="notes" rows="6"
+                                placeholder="Enter any additional notes about the surgery..."></textarea>
+                            <div class="invalid-feedback"></div>
+                        </fieldset>
                     </div>
 
-                    <input type="hidden" id="status" name="status" value="scheduled">
-                    </fieldset>
                 </div>
         </div>
 
         <!-- Action Buttons -->
-        <div class="d-flex align-items-center justify-content-end gap-2">
-            <!-- Status Messages -->
+        <div class="card-footer d-flex justify-content-end">
             <div>
                 <a href="<?php echo $is_editing ? '/surgery/surgeries.php' : '/surgery/surgeries.php'; ?>"
                     class="btn btn-secondary">
                     <i class="fas fa-times me-1"></i>Cancel
                 </a>
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary" id="save-surgery-button">
                     <i class="far fa-save me-1"></i>
                     <span id="save-button-text"><?php echo $is_editing ? 'Update Surgery' : 'Add Surgery'; ?></span>
                 </button>
@@ -310,59 +342,49 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="technicianModalLabel">
-                    <i class="far fa-user-md me-2"></i>
-                    Select Available Technicians
+                <h5 class="modal-title" id="technicianModalLabel"><i class="far fa-user-md me-2"></i>Select Technicians
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <div id="technician-loading" class="text-center py-3">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                    <p class="mt-2">Loading available technicians...</p>
-                </div>
-                <div id="technician-list" class="d-none">
-                    <!-- Technicians will be loaded here -->
-                </div>
-                <div id="no-technicians" class="alert alert-warning d-none">
-                    No technicians are available for the selected date. Please choose another date.
-                </div>
+            <div class="modal-body" id="technician-modal-body-content">
+                <!-- Content injected by JavaScript -->
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="save-technicians">Save Selection</button>
+            <div class="modal-footer" id="technician-modal-footer-content">
+                <!-- Footer injected by JavaScript -->
             </div>
         </div>
     </div>
 </div>
-</div>
+
 
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const surgeryForm = document.getElementById('surgery-form');
+    document.addEventListener("DOMContentLoaded", function() {
+        // --- Core Validation Setup ---
+        const form = document.getElementById("surgery-form");
+        const submitButton = form.querySelector('button[type="submit"]');
+
         const surgeryIdInput = document.querySelector('#surgery-form input[name="id"]');
         const isEditing = surgeryIdInput !== null;
-        const patientSelect = document.getElementById('patient_id'); // Get the patient select dropdown
-        const patientIdHiddenInput = document.querySelector(
-            '#surgery-form input[name="patient_id"]'); // Hidden patient_id for editing
+        const patientSelect = document.getElementById('patient_id');
+        const patientIdHiddenInput = document.querySelector('#surgery-form input[name="patient_id"]');
         const roomSelect = document.getElementById('room_id');
         const dateInput = document.getElementById('date');
         const roomAvailabilityText = document.getElementById('room-availability-text');
-        const validationState = { hasInteracted: false }; // Declare validationState
 
         const newPatientModal = document.getElementById('newPatientModal');
         const saveNewPatientButton = document.getElementById('save-new-patient');
         const newPatientForm = document.getElementById('new-patient-form');
         const newPatientStatusDiv = document.getElementById('new-patient-status');
         let allAgencies = []; // Store all agencies for modal dropdown
+        const validationState = {
+            hasInteracted: false
+        }; // Track if user has interacted with form
 
         // Global function to update status display (accessible from surgery data loading)
-        window.updateStatusDisplayFromData = function (status) {
+        window.updateStatusDisplayFromData = function(status) {
             const statusDisplay = document.getElementById('status-display');
             const statusColors = {
                 'scheduled': 'bg-warning text-dark',
@@ -379,160 +401,213 @@ require_once __DIR__ . '/../includes/header.php';
             }
         };
 
+        // --- Initialization ---
+        initValidation();
 
-        // ===== FORM VALIDATION FUNCTIONS =====
-
-        // Setup form validation
-        setupFormValidation();
-
-        /**
-         * Setup form validation
-         */
-        function setupFormValidation() {
-            const form = surgeryForm;
-            const inputs = form.querySelectorAll('input, select, textarea');
-
-            inputs.forEach(input => {
-                // Real-time validation on blur
-                input.addEventListener('blur', function () {
-                    validateField(this);
-                });
-
-                // Clear validation on input
-                input.addEventListener('input', function () {
-                    if (this.classList.contains('is-invalid')) {
-                        this.classList.remove('is-invalid');
-                        const feedback = this.parentNode.querySelector('.invalid-feedback');
-                        if (feedback) feedback.textContent = '';
-                    }
-                });
-            });
-        }
-
-        /**
-         * Validate individual field
-         */
-        function validateField(field) {
-            const value = field.value.trim();
-            let isValid = true;
-            let message = '';
-
-            // Required field validation
-            if (field.hasAttribute('required') && !value) {
-                isValid = false;
-                message = 'This field is required.';
+        function initValidation() {
+            if (form) {
+                form.addEventListener("submit", onFormSubmit);
             }
 
-            // Date validation (not in the past for non-admin users)
-            else if (field.type === 'date' && value && field.name === 'date') {
-                const userRole = '<?php echo get_user_role(); ?>';
-                const isAdmin = userRole === 'admin';
+            // --- Event Listeners for Real-time Validation ---
+            const fieldsToValidate = getFieldValidationRules().map(rule => rule.id);
 
-                if (!isAdmin) {
-                    const selectedDate = new Date(value);
+            fieldsToValidate.forEach((id) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    if ($(el).hasClass("select2-enable")) {
+                        $(el).on("select2:close", () => validateSingleField(id));
+                    } else if (el.tagName === 'SELECT' || el.type === 'date') {
+                        el.addEventListener("change", () => validateSingleField(id));
+                    } else {
+                        el.addEventListener("blur", () => validateSingleField(id));
+                    }
+                }
+            });
+
+            // Set initial state of the submit button
+            updateSubmitButtonState();
+
+            // Initial load of availability if date is pre-filled
+            if (dateInput.value) {
+                loadAvailableTechnicians();
+            }
+        }
+
+        // --- Core Functions ---
+
+        function onFormSubmit(e) {
+            e.preventDefault();
+            // On submit, validate and show any UI errors
+            if (!validateForm(true)) {
+                showToast('Please correct the highlighted errors.', 'danger');
+                return;
+            }
+            // If valid, proceed with form submission logic
+            console.log("Form is valid and ready to submit.");
+
+            // Re-enable all room options before submitting to ensure selected value is included
+            Array.from(roomSelect.options).forEach(option => {
+                option.disabled = false;
+            });
+
+            const formData = new FormData(form);
+
+            fetch('/api.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast(data.message, 'success');
+                        setTimeout(() => {
+                            if (isEditing ||
+                                <?php echo json_encode($patient_id_from_url !== null); ?>) {
+                                window.location.href =
+                                    `/patient/patient_details.php?id=${formData.get('patient_id')}&tab=surgery`;
+                            } else {
+                                window.location.href = '/surgery/surgeries.php';
+                            }
+                        }, 500);
+                    } else {
+                        showToast(data.error || data.message || 'An error occurred.', 'danger');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error submitting surgery form:', error);
+                    showToast('An unexpected error occurred.', 'danger');
+                });
+        }
+
+        function updateSubmitButtonState() {
+            if (submitButton) {
+                // Check validity silently without showing errors
+                submitButton.disabled = !validateForm(false);
+            }
+        }
+
+        function validateSingleField(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+
+            const fieldRule = getFieldValidationRules().find((f) => f.id === id);
+            const msg = fieldRule ? fieldRule.msg : "This field is required.";
+
+            let feedbackEl;
+            if (el.parentElement.classList.contains("input-group")) {
+                feedbackEl = el.parentElement.nextElementSibling;
+            } else {
+                feedbackEl = el.nextElementSibling;
+            }
+
+            if (!el.value.trim()) {
+                el.classList.add("is-invalid");
+                if (feedbackEl && feedbackEl.classList.contains("invalid-feedback")) {
+                    feedbackEl.textContent = msg;
+                }
+            } else {
+                el.classList.remove("is-invalid");
+                if (feedbackEl && feedbackEl.classList.contains("invalid-feedback")) {
+                    feedbackEl.textContent = "";
+                }
+            }
+            // Re-evaluate the entire form's validity after each field is validated
+            updateSubmitButtonState();
+        }
+
+        function validateForm(showUIErrors = false) {
+            if (showUIErrors) {
+                form.querySelectorAll(".is-invalid").forEach((el) => el.classList.remove("is-invalid"));
+                form.querySelectorAll(".invalid-feedback").forEach((el) => (el.textContent = ""));
+            }
+
+            let isValid = true;
+            const requiredFields = getFieldValidationRules();
+
+            requiredFields.forEach((f) => {
+                const el = document.getElementById(f.id);
+                if (el && !el.value.trim()) {
+                    isValid = false;
+                    if (showUIErrors) {
+                        el.classList.add("is-invalid");
+                        let feedbackEl;
+                        if (el.parentElement.classList.contains("input-group")) {
+                            feedbackEl = el.parentElement.nextElementSibling;
+                        } else {
+                            feedbackEl = el.nextElementSibling;
+                        }
+                        if (feedbackEl && feedbackEl.classList.contains("invalid-feedback")) {
+                            feedbackEl.textContent = f.msg;
+                        }
+                    }
+                }
+            });
+
+            // --- Custom Validation Logic ---
+
+            // 1. Date cannot be in the past for non-admins
+            const dateField = document.getElementById('date');
+            if (dateField && dateField.value) {
+                const userRole = '<?php echo get_user_role(); ?>';
+                if (userRole !== 'admin') {
+                    const selectedDate = new Date(dateField.value);
                     const today = new Date();
                     today.setHours(0, 0, 0, 0);
-
                     if (selectedDate < today) {
                         isValid = false;
-                        message = 'Surgery date cannot be in the past.';
+                        if (showUIErrors) {
+                            dateField.classList.add('is-invalid');
+                            if (dateField.nextElementSibling) {
+                                dateField.nextElementSibling.textContent = 'Surgery date cannot be in the past.';
+                            }
+                        }
                     }
                 }
             }
 
-            // Number validation (graft count)
-            else if (field.type === 'number' && value) {
-                const numValue = parseInt(value);
-                if (isNaN(numValue) || numValue < 0) {
-                    isValid = false;
-                    message = 'Please enter a valid number.';
-                }
-            }
-
-            // Update field validation state
-            if (isValid) {
-                field.classList.remove('is-invalid');
-                field.classList.add('is-valid');
-            } else {
-                field.classList.remove('is-valid');
-                field.classList.add('is-invalid');
-                const feedback = field.parentNode.querySelector('.invalid-feedback');
-                if (feedback) feedback.textContent = message;
-            }
-
-            return isValid;
-        }
-
-        /**
-         * Validate entire form
-         */
-        function validateForm() {
-            const form = surgeryForm;
-            const inputs = form.querySelectorAll('input[required], select[required]');
-            let isValid = true;
-            let firstInvalidField = null;
-
-            // Validate all required fields
-            inputs.forEach(input => {
-                if (!validateField(input)) {
-                    isValid = false;
-                    if (!firstInvalidField) {
-                        firstInvalidField = input;
-                    }
-                }
-            });
-
-            // Validate technicians
-            if (!validateTechniciansAssignment(true)) { // Pass true to show errors immediately
+            // 2. At least 2 technicians must be assigned
+            const assignedTechniciansDiv = document.getElementById('assigned-technicians');
+            const techFeedback = assignedTechniciansDiv.parentNode.querySelector('.invalid-feedback');
+            if (selectedTechnicians.size < 2) {
                 isValid = false;
-                if (!firstInvalidField) {
-                    firstInvalidField = document.getElementById('add-technicians-btn');
+                if (showUIErrors) {
+                    assignedTechniciansDiv.classList.add('is-invalid');
+                    if (techFeedback) techFeedback.textContent = 'At least 2 technicians must be assigned.';
                 }
-            }
-
-            if (!isValid && firstInvalidField) {
-                firstInvalidField.focus();
-                showFormError('Please correct the highlighted errors before submitting.');
+            } else {
+                if (showUIErrors) {
+                    assignedTechniciansDiv.classList.remove('is-invalid');
+                    if (techFeedback) techFeedback.textContent = '';
+                }
             }
 
             return isValid;
         }
 
-        /**
-         * Show form error
-         */
-        function showFormError(message) {
-            const errorAlert = document.getElementById('form-error-alert');
-            const errorMessage = document.getElementById('form-error-message');
-            errorMessage.textContent = message;
-            errorAlert.classList.remove('d-none');
+
+        function getFieldValidationRules() {
+            // Centralize validation rules for easy management
+            const rules = [{
+                    id: "date",
+                    msg: "Please select a surgery date."
+                },
+                {
+                    id: "room_id",
+                    msg: "Please select a room."
+                },
+            ];
+
+            // Patient ID is only required when creating a new surgery
+            if (!isEditing) {
+                rules.push({
+                    id: "patient_id",
+                    msg: "Please select a patient."
+                });
+            }
+
+            return rules;
         }
-
-        /**
-         * Hide form error
-         */
-        function hideFormError() {
-            const errorAlert = document.getElementById('form-error-alert');
-            errorAlert.classList.add('d-none');
-        }
-
-        /**
-         * Reset form validation
-         */
-        function resetForm() {
-            surgeryForm.reset();
-            surgeryForm.classList.remove('was-validated');
-
-            // Clear validation states
-            const inputs = surgeryForm.querySelectorAll('input, select, textarea');
-            inputs.forEach(input => {
-                input.classList.remove('is-valid', 'is-invalid');
-            });
-
-            hideFormError();
-        }
-
-        // ===== END VALIDATION FUNCTIONS =====
 
         // Function to fetch agencies for the modal
         function fetchModalAgencies() {
@@ -547,21 +622,16 @@ require_once __DIR__ . '/../includes/header.php';
                 populateModalAgencyDropdown();
             } else {
                 // For admin and editor, fetch all agencies
-                console.log('Admin/Editor user - fetching agencies from API');
                 apiRequest('agencies', 'list')
                     .then(data => {
-                        console.log('Agencies API response:', data);
                         if (data.success) {
                             allAgencies = data.agencies;
-                            console.log('Agencies fetched successfully:', allAgencies.length, 'agencies');
                             populateModalAgencyDropdown();
-                        } else {
-                            console.error('Error fetching agencies:', data.message || data.error || 'Unknown error');
-                        }
-                    })
-                    .catch(error => {
+                        } else {}
+                    }).catch(error => {
                         console.error('Error fetching agencies:', error);
                     });
+
             }
         }
 
@@ -571,32 +641,24 @@ require_once __DIR__ . '/../includes/header.php';
             const userRole = '<?php echo get_user_role(); ?>';
             const userAgencyId = '<?php echo get_user_agency_id(); ?>';
 
-            console.log('populateModalAgencyDropdown called');
-            console.log('Agency select element:', agencySelect);
-            console.log('User role:', userRole, 'User agency ID:', userAgencyId);
-            console.log('All agencies:', allAgencies);
+
 
             if (!agencySelect) {
-                console.error('Agency select element not found!');
                 return; // Field might not exist for all roles
             }
 
             // For agents, set their agency_id in the hidden field
             if (userRole === 'agent' && userAgencyId) {
                 agencySelect.value = userAgencyId;
-                console.log('Agent agency_id set to:', userAgencyId);
             } else {
                 // For admin/editor, populate dropdown with all agencies
-                console.log('Populating dropdown for admin/editor with', allAgencies.length, 'agencies');
                 agencySelect.innerHTML = '<option value="">Select Agency*</option>';
                 allAgencies.forEach(agency => {
                     const option = document.createElement('option');
                     option.value = agency.id;
                     option.textContent = agency.name;
                     agencySelect.appendChild(option);
-                    console.log('Added agency option:', agency.name, 'ID:', agency.id);
                 });
-                console.log('Agency dropdown populated with', allAgencies.length, 'agencies');
             }
         }
 
@@ -648,8 +710,10 @@ require_once __DIR__ . '/../includes/header.php';
                                 option.textContent = room.name;
                                 option.disabled = false; // Ensure options are not disabled initially
 
-                                if (room.name.toLowerCase() === "consultation" || room.name.toLowerCase() === "cosmetology") {
-                                    option.disabled = true; // Disable consultation and cosmetology rooms
+                                if (room.name.toLowerCase() === "consultation" || room.name
+                                    .toLowerCase() === "cosmetology") {
+                                    option.disabled =
+                                        true; // Disable consultation and cosmetology rooms
                                 } else {
                                     option.selected = true;
                                 }
@@ -698,8 +762,8 @@ require_once __DIR__ . '/../includes/header.php';
             }
 
             apiRequest('availability', 'byDate', {
-                date: selectedDate
-            })
+                    date: selectedDate
+                })
                 .then(data => {
                     if (data.success) {
                         const statistics = data.statistics;
@@ -822,8 +886,8 @@ require_once __DIR__ . '/../includes/header.php';
         if (isEditing) {
             const surgeryId = surgeryIdInput.value;
             apiRequest('surgeries', 'get', {
-                id: surgeryId
-            })
+                    id: surgeryId
+                })
                 .then(data => {
                     if (data.success) {
                         const surgery = data.surgery;
@@ -833,7 +897,8 @@ require_once __DIR__ . '/../includes/header.php';
                             dateInput.value = surgery.date;
                         }
                         document.getElementById('status').value = surgery.status;
-                        document.getElementById('predicted_grafts_count').value = surgery.predicted_grafts_count;
+                        document.getElementById('predicted_grafts_count').value = surgery
+                            .predicted_grafts_count;
                         document.getElementById('current_grafts_count').value = surgery.current_grafts_count;
                         document.getElementById('notes').value = surgery.notes;
 
@@ -845,9 +910,39 @@ require_once __DIR__ . '/../includes/header.php';
                             patientIdHiddenInput.value = surgery.patient_id;
                         }
 
+                        // Fetch and display patient details if in editing mode
+                        if (isEditing && surgery.patient_id) {
+                            apiRequest('patients', 'get', {
+                                    id: surgery.patient_id
+                                })
+                                .then(patientData => {
+                                    if (patientData.success && patientData.patient) {
+                                        const patient = patientData.patient;
+                                        const patientNameEl = document.getElementById('patient_name');
+                                        const patientPhoneEl = document.getElementById('patient_phone');
+                                        const patientEmailEl = document.getElementById('patient_email');
+
+                                        if (patientNameEl) {
+                                            patientNameEl.innerHTML =
+                                                `<i class="fas fa-user me-2"></i>${patient.name}`;
+                                        }
+                                        if (patientPhoneEl) {
+                                            patientPhoneEl.textContent = patient.phone || 'N/A';
+                                        }
+                                        if (patientEmailEl) {
+                                            patientEmailEl.textContent = patient.email || 'N/A';
+                                        }
+                                    } else {
+                                        console.error('Error fetching patient details:', patientData.error);
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error fetching patient details:', error);
+                                });
+                        }
+
                         // Store room_id to select later
                         roomToSelect = surgery.room_id;
-                        console.log("Fetched surgery room_id:", roomToSelect);
 
                         // Load existing technician assignments
                         if (surgery.technician_ids && surgery.technician_ids.length > 0) {
@@ -912,117 +1007,144 @@ require_once __DIR__ . '/../includes/header.php';
 
         // Add event listener for date changes to check room availability
         if (dateInput) {
-            dateInput.addEventListener('change', checkRoomAvailability);
+            dateInput.addEventListener('change', function() {
+                checkRoomAvailability();
+                loadAvailableTechnicians(); // Fetch data and update text indicator
+
+                // Clear selected technicians when date changes, as they may no longer be available
+                selectedTechnicians.clear();
+                technicianData.clear();
+                updateAssignedTechnicians();
+
+                // Validate date in real-time
+                validateSingleField(this.id);
+            });
         }
 
         // Initialize technician selection
         const technicianModal = new bootstrap.Modal(document.getElementById('technicianModal'));
         const addTechniciansBtn = document.getElementById('add-technicians-btn');
-        const technicianList = document.getElementById('technician-list');
-        const saveTechniciansBtn = document.getElementById('save-technicians');
         const assignedTechniciansDiv = document.getElementById('assigned-technicians');
         const selectedTechnicians = new Set();
         const technicianData = new Map(); // Store technician info (id -> {name, specialty, period})
+        let availableTechnicians = []; // Store last fetched available technicians
 
-        // Load available technicians for the selected date
+        // Load available technicians for the selected date and update availability text
         function loadAvailableTechnicians() {
-            // Get date from either visible input or hidden input (calendar flow)
-            let selectedDate;
-            if (dateInput) {
-                selectedDate = dateInput.value;
-            } else {
-                // For calendar flow, get date from hidden input or URL parameter
-                const hiddenDateInput = document.querySelector('input[name="date"]');
-                selectedDate = hiddenDateInput ? hiddenDateInput.value : '<?php echo $date_from_url; ?>';
-            }
+            const selectedDate = dateInput.value;
+            const techAvailabilityText = document.getElementById('technician-availability-text');
 
             if (!selectedDate) {
-                alert('Please select a surgery date first');
-                // Focus on the date input field
-                if (dateInput) {
-                    dateInput.focus();
-                }
-                return false; // Return false to indicate validation failed
+                techAvailabilityText.innerHTML = '';
+                availableTechnicians = [];
+                addTechniciansBtn.style.display = 'none'; // Hide the button when no date is selected
+                return;
             }
 
-            document.getElementById('technician-loading').classList.remove('d-none');
-            document.getElementById('technician-list').classList.add('d-none');
-            document.getElementById('no-technicians').classList.add('d-none');
-
-            // For now, we'll load all available technicians for the date
-            // In the future, we could add period selection to the UI
+            techAvailabilityText.innerHTML = '<small class="text-muted">Checking availability...</small>';
             apiRequest('staff_availability', 'byDate', {
-                date: selectedDate
-            })
+                    date: selectedDate
+                })
                 .then(data => {
-                    if (data.success && data.technicians && data.technicians.length > 0) {
-                        renderTechnicianList(data.technicians);
-                        document.getElementById('technician-list').classList.remove('d-none');
-
-                        // Update modal title with count
-                        document.getElementById('technicianModalLabel').innerHTML = `
-                        <i class="far fa-user-md me-2"></i>
-                        Select Available Technicians (${data.count} available)
-                    `;
+                    if (data.success) {
+                        availableTechnicians = data.technicians || [];
+                        const count = data.count || 0;
+                        if (count > 0) {
+                            techAvailabilityText.innerHTML =
+                                `<small class="text-success"><i class="fas fa-check me-1"></i>${count} technicians available.</small>`;
+                            addTechniciansBtn.style.display = 'inline-block'; // Show the button
+                        } else {
+                            techAvailabilityText.innerHTML =
+                                `<small class="text-danger"><i class="fas fa-exclamation-triangle me-1"></i>No technicians available for this date.</small>`;
+                            addTechniciansBtn.style.display = 'none'; // Hide the button
+                        }
                     } else {
-                        document.getElementById('no-technicians').classList.remove('d-none');
-                        document.getElementById('technicianModalLabel').innerHTML = `
-                        <i class="far fa-user-md me-2"></i>
-                        Select Available Technicians (0 available)
-                    `;
+                        availableTechnicians = [];
+                        techAvailabilityText.innerHTML =
+                            `<small class="text-danger">Error checking availability.</small>`;
                     }
                 })
                 .catch(error => {
-                    console.error('Error loading technicians:', error);
-                    document.getElementById('no-technicians').classList.remove('d-none');
-                })
-                .finally(() => {
-                    document.getElementById('technician-loading').classList.add('d-none');
+                    console.error('Error checking technician availability:', error);
+                    availableTechnicians = [];
+                    techAvailabilityText.innerHTML =
+                        `<small class="text-danger">Error checking availability.</small>`;
                 });
-
-            return true; // Return true to indicate successful validation and loading
         }
 
-        // Render technician list in modal
+        // Render the technician modal content based on pre-fetched data
+        function renderTechnicianModal() {
+            const modalBody = document.getElementById('technician-modal-body-content');
+            const modalFooter = document.getElementById('technician-modal-footer-content');
+            const modalTitle = document.getElementById('technicianModalLabel');
+
+            if (!dateInput.value) {
+                showToast('Please select a surgery date first.', 'danger');
+                if (dateInput) dateInput.focus();
+                return false;
+            }
+
+            modalBody.innerHTML = '';
+            modalFooter.innerHTML = '';
+
+            if (availableTechnicians.length > 0) {
+                modalTitle.innerHTML =
+                    `<i class="far fa-user-md me-2"></i> Select Available Technicians (${availableTechnicians.length} available)`;
+                modalBody.innerHTML = renderTechnicianList(availableTechnicians);
+                modalFooter.innerHTML = `
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="save-technicians">Save Selection</button>
+                `;
+            } else {
+                modalTitle.innerHTML =
+                    `<i class="fas fa-exclamation-triangle me-2 text-warning"></i> No Technicians Available`;
+                modalBody.innerHTML = `
+                    <div class="alert alert-warning mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>There are no technicians available for the selected date. Please try a different date or check technician availability.
+                    </div>`;
+                modalFooter.innerHTML = `
+                    <a href="/calendar/calendar.php" class="btn btn-outline-secondary"><i class="far fa-calendar-alt me-1"></i>Go to Calendar</a>
+                    <a href="/staff/staff-availability.php" class="btn btn-outline-primary"><i class="fas fa-user-md me-1"></i>Staff Availability</a>
+                `;
+            }
+            return true;
+        }
+
+
+        // Render technician list HTML
         function renderTechnicianList(technicians) {
             // Store technician data for later use
             technicians.forEach(tech => {
-                technicianData.set(tech.id.toString(), {
-                    name: tech.name,
-                    specialty: tech.specialty,
-                    period: tech.period || 'full'
-                });
+                if (!technicianData.has(tech.id.toString())) {
+                    technicianData.set(tech.id.toString(), {
+                        name: tech.name,
+                        specialty: tech.specialty,
+                        period: tech.period || 'full'
+                    });
+                }
             });
 
-            technicianList.innerHTML = technicians.map(tech => {
-                // Format period display
-                let periodDisplay = '';
+            return technicians.map(tech => {
+                let periodDisplay = tech.period === 'full' ? 'All day' : (tech.period === 'am' ? 'Morning' :
+                    'Afternoon');
                 if (tech.available_periods) {
-                    const periods = tech.available_periods;
-                    if (periods.includes('full')) {
+                    if (tech.available_periods.includes('full')) {
                         periodDisplay = 'All day';
                     } else {
-                        const periodNames = periods.map(p => p === 'am' ? 'Morning' : 'Afternoon');
-                        periodDisplay = periodNames.join(', ');
+                        periodDisplay = tech.available_periods.map(p => p === 'am' ? 'Morning' :
+                            'Afternoon').join(', ');
                     }
-                } else {
-                    // Fallback for single period
-                    periodDisplay = tech.period === 'full' ? 'All day' :
-                        tech.period === 'am' ? 'Morning' : 'Afternoon';
                 }
 
                 return `
                 <div class="form-check mb-2">
-                    <input class="form-check-input technician-checkbox" type="checkbox"
-                           value="${tech.id}" id="tech-${tech.id}"
-                           ${selectedTechnicians.has(tech.id.toString()) ? 'checked' : ''}>
+                    <input class="form-check-input technician-checkbox" type="checkbox" value="${tech.id}" id="tech-${tech.id}" ${selectedTechnicians.has(tech.id.toString()) ? 'checked' : ''}>
                     <label class="form-check-label" for="tech-${tech.id}">
                         <strong>${tech.name}</strong> ${tech.specialty ? `<span class="badge bg-secondary">${tech.specialty}</span>` : ''}
                         <small class="text-muted d-block">Available: ${periodDisplay}</small>
                         ${tech.phone ? `<small class="text-muted d-block">Phone: ${tech.phone}</small>` : ''}
                     </label>
-                </div>
-            `;
+                </div>`;
             }).join('');
         }
 
@@ -1091,7 +1213,7 @@ require_once __DIR__ . '/../includes/header.php';
 
             // Add event listeners for remove buttons
             assignedTechniciansDiv.querySelectorAll('button[data-tech-id]').forEach(button => {
-                button.addEventListener('click', function () {
+                button.addEventListener('click', function() {
                     const techId = this.getAttribute('data-tech-id');
                     removeTechnician(techId);
                 });
@@ -1110,41 +1232,37 @@ require_once __DIR__ . '/../includes/header.php';
         }
 
         // Event listeners
-        addTechniciansBtn.addEventListener('click', function () {
-            // Only show modal if date validation passes
-            if (loadAvailableTechnicians()) {
+        addTechniciansBtn.addEventListener('click', function() {
+            if (renderTechnicianModal()) {
                 technicianModal.show();
             }
         });
 
-        saveTechniciansBtn.addEventListener('click', function () {
-            // Mark that user has interacted with technicians
-            validationState.hasInteracted = true;
+        // Use event delegation for the dynamically created save button
+        document.getElementById('technicianModal').addEventListener('click', function(event) {
+            if (event.target && event.target.id === 'save-technicians') {
+                validationState.hasInteracted = true;
 
-            // Get all checked technicians
-            document.querySelectorAll('.technician-checkbox:checked').forEach(checkbox => {
-                selectedTechnicians.add(checkbox.value);
-            });
+                // Get all checked technicians from the modal
+                document.querySelectorAll('.technician-checkbox').forEach(checkbox => {
+                    if (checkbox.checked) {
+                        selectedTechnicians.add(checkbox.value);
+                    } else {
+                        selectedTechnicians.delete(checkbox.value);
+                    }
+                });
 
-            updateAssignedTechnicians();
-            technicianModal.hide();
+                updateAssignedTechnicians();
+                technicianModal.hide();
+            }
         });
 
         // Add event listener for date changes to check technician availability
         if (dateInput) {
-            dateInput.addEventListener('change', function () {
-                // Clear selected technicians when date changes
-                selectedTechnicians.clear();
-                updateAssignedTechnicians();
-                // Validate date in real-time
-                validationState.hasInteracted = true;
-                validateField(this);
-            });
-
             // Add blur event for date validation
-            dateInput.addEventListener('blur', function () {
+            dateInput.addEventListener('blur', function() {
                 if (validationState.hasInteracted) {
-                    validateField(this);
+                    validateSingleField(this.id);
                 }
             });
         }
@@ -1153,11 +1271,11 @@ require_once __DIR__ . '/../includes/header.php';
 
         // Patient selection validation
         if (patientSelect) {
-            patientSelect.addEventListener('change', function () {
+            patientSelect.addEventListener('change', function() {
                 validationState.hasInteracted = true;
                 validateField(this);
             });
-            patientSelect.addEventListener('blur', function () {
+            patientSelect.addEventListener('blur', function() {
                 if (validationState.hasInteracted) {
                     validateField(this);
                 }
@@ -1166,7 +1284,7 @@ require_once __DIR__ . '/../includes/header.php';
 
         // Room selection validation
         if (roomSelect) {
-            roomSelect.addEventListener('change', function () {
+            roomSelect.addEventListener('change', function() {
                 validationState.hasInteracted = true;
                 validateField(this);
                 // Also check room availability when room changes
@@ -1174,7 +1292,7 @@ require_once __DIR__ . '/../includes/header.php';
                     checkRoomAvailability();
                 }
             });
-            roomSelect.addEventListener('blur', function () {
+            roomSelect.addEventListener('blur', function() {
                 if (validationState.hasInteracted) {
                     validateField(this);
                 }
@@ -1182,7 +1300,7 @@ require_once __DIR__ . '/../includes/header.php';
         }
 
         // Handle surgery form submission
-        surgeryForm.addEventListener('submit', function (event) {
+        form.addEventListener('submit', function(event) {
             event.preventDefault(); // Prevent default form submission
 
             // Clear previous messages
@@ -1198,14 +1316,14 @@ require_once __DIR__ . '/../includes/header.php';
                 option.disabled = false;
             });
 
-            const formData = new FormData(surgeryForm);
+            const formData = new FormData(form);
 
             // Note: technician IDs are already included as hidden inputs by updateAssignedTechnicians()
 
             fetch('/api.php', {
-                method: 'POST',
-                body: formData
-            })
+                    method: 'POST',
+                    body: formData
+                })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -1215,14 +1333,18 @@ require_once __DIR__ . '/../includes/header.php';
                             // Redirect based on whether it was an edit or add from patient list
                             if (isEditing ||
                                 <?php echo json_encode($patient_id_from_url !== null); ?>) {
+
                                 window.location.href =
-                                    `/patient.php?id=${formData.get('patient_id')}`;
+                                    `/patient/patient_details.php?id=${formData.get('patient_id')}&tab=surgeries`;
+
+
                             } else {
                                 window.location.href = '/surgery/surgeries.php';
                             }
                         }, 500);
                     } else {
-                        showFormError(data.error || data.message || 'An error occurred while saving surgery data.');
+                        showFormError(data.error || data.message ||
+                            'An error occurred while saving surgery data.');
                     }
                 })
                 .catch(error => {
@@ -1231,32 +1353,14 @@ require_once __DIR__ . '/../includes/header.php';
                 });
         });
 
-        // Handle new patient modal submission (AJAX to api.php)
         if (saveNewPatientButton) {
-            saveNewPatientButton.addEventListener('click', function () {
-                // Validate modal form
-                const modalForm = document.getElementById('new-patient-form');
-                const inputs = modalForm.querySelectorAll('input[required], select[required]');
-                let isValid = true;
-                let firstInvalidField = null;
-
-                inputs.forEach(input => {
-                    if (!validateField(input)) {
-                        isValid = false;
-                        if (!firstInvalidField) {
-                            firstInvalidField = input;
-                        }
-                    }
-                });
-
-                if (!isValid) {
-                    if (firstInvalidField) {
-                        firstInvalidField.focus();
-                    }
+            saveNewPatientButton.addEventListener('click', function() {
+                if (!validateNewPatientForm()) {
                     newPatientStatusDiv.innerHTML =
-                        '<div class="alert alert-danger">Please correct the highlighted errors before submitting.</div>';
+                        '<div class="alert alert-danger mt-2">Please fill out all required fields.</div>';
                     return;
                 }
+                newPatientStatusDiv.innerHTML = ''; // Clear previous errors
 
                 const formData = new FormData(newPatientForm);
                 formData.append('entity', 'patients');
@@ -1320,9 +1424,9 @@ require_once __DIR__ . '/../includes/header.php';
                 newPatientStatusDiv.innerHTML = ''; // Clear previous status
 
                 fetch('/api.php', {
-                    method: 'POST',
-                    body: formData
-                })
+                        method: 'POST',
+                        body: formData
+                    })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
@@ -1352,51 +1456,71 @@ require_once __DIR__ . '/../includes/header.php';
             });
         }
 
+        function getNewPatientValidationRules() {
+            const rules = [{
+                id: 'new_patient_name',
+                msg: 'Patient name is required.'
+            }];
+            const userRole = '<?php echo get_user_role(); ?>';
+            if (userRole === 'admin' || userRole === 'editor') {
+                rules.push({
+                    id: 'new_patient_agency_id',
+                    msg: 'Please select an agency.'
+                });
+            }
+            return rules;
+        }
+
+        function validateNewPatientForm() {
+            let isValid = true;
+            const rules = getNewPatientValidationRules();
+            rules.forEach(rule => {
+                const el = document.getElementById(rule.id);
+                if (el && !el.value.trim()) {
+                    isValid = false;
+                    el.classList.add('is-invalid');
+                    const feedbackEl = el.nextElementSibling;
+                    if (feedbackEl && feedbackEl.classList.contains('invalid-feedback')) {
+                        feedbackEl.textContent = rule.msg;
+                    }
+                } else if (el) {
+                    el.classList.remove('is-invalid');
+                }
+            });
+            return isValid;
+        }
+
+
         // Add event listener to current_grafts_count to update status
         const currentGraftCountInput = document.getElementById('current_grafts_count');
         const statusSelect = document.getElementById('status');
 
         if (currentGraftCountInput && statusSelect) {
-            currentGraftCountInput.addEventListener('input', function () {
-                // Check if the current_grafts_count input has a value (is not empty and not just whitespace)
+            currentGraftCountInput.addEventListener('input', function() {
                 if (this.value.trim() !== '' && parseInt(this.value) >= 0) {
                     statusSelect.value = 'completed';
+                    updateStatusDisplayFromData('completed');
                 }
-                // Optional: Reset status if current_grafts_count is cleared
-                // else {
-                //     // You might want to reset to 'booked' or leave as is
-                //     // statusSelect.value = 'booked';
-                // }
             });
         }
 
         // Reset modal form when hidden
         if (newPatientModal) {
-            newPatientModal.addEventListener('hidden.bs.modal', function () {
+            newPatientModal.addEventListener('hidden.bs.modal', function() {
                 newPatientForm.reset();
+                newPatientForm.querySelectorAll('.is-invalid').forEach(el => el.classList.remove(
+                    'is-invalid'));
                 newPatientStatusDiv.innerHTML = '';
             });
 
-            // Ensure agency_id is set when modal is shown
-            newPatientModal.addEventListener('shown.bs.modal', function () {
+            newPatientModal.addEventListener('shown.bs.modal', function() {
                 const userRole = '<?php echo get_user_role(); ?>';
                 const userAgencyId = '<?php echo get_user_agency_id(); ?>';
                 const agencySelect = document.getElementById('new_patient_agency_id');
 
-                console.log('Modal shown - User role:', userRole, 'Agency ID:', userAgencyId);
-
-                // For agents, ensure their agency_id is always set
-                if (userRole === 'agent' && userAgencyId && userAgencyId.trim() !== '' && agencySelect) {
+                if (userRole === 'agent' && userAgencyId && agencySelect) {
                     agencySelect.value = userAgencyId;
-                    console.log('Modal shown - Agent agency_id set to:', userAgencyId);
-
-                    // Also trigger a change event to ensure any listeners are notified
-                    agencySelect.dispatchEvent(new Event('change'));
-                } else if (userRole === 'agent') {
-                    console.warn('Agent user but no agency_id found:', userAgencyId);
                 }
-
-                // Focus on the name field for better UX
                 const nameField = document.getElementById('new_patient_name');
                 if (nameField) {
                     setTimeout(() => nameField.focus(), 100);
@@ -1488,9 +1612,9 @@ require_once __DIR__ . '/../includes/header.php';
                     formData.append('status', newStatus);
 
                     fetch('/api.php', {
-                        method: 'POST',
-                        body: formData
-                    })
+                            method: 'POST',
+                            body: formData
+                        })
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
@@ -1527,7 +1651,7 @@ require_once __DIR__ . '/../includes/header.php';
 
             // Handle Enter and Escape keys in inline select
             if (statusInline) {
-                statusInline.addEventListener('keydown', function (e) {
+                statusInline.addEventListener('keydown', function(e) {
                     if (e.key === 'Enter') {
                         e.preventDefault();
                         saveStatus();

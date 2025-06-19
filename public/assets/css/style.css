@@ -3,7 +3,7 @@
    =================================== */
 
 /* Import Custom Fonts */
-@import url('fonts.css');
+@import url("fonts.css");
 
 /* Root Variables for Consistent Design */
 :root {
@@ -18,7 +18,8 @@
     --border-radius-sm: 0.25rem;
     --border-radius-lg: 0.75rem;
 
-    --font-family-sans-serif: 'Klavika', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-family-sans-serif: "Klavika", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+        sans-serif;
 
     /* Light Theme Variables */
     --color-bg: #f0f2f5;
@@ -55,7 +56,9 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    transition: background-color 0.3s, color 0.3s;
+    transition:
+        background-color 0.3s,
+        color 0.3s;
 }
 
 /* Main Content Layout */
@@ -74,14 +77,12 @@ body {
     font-size: 1.25rem !important;
 }
 
-
 .navbar-nav .nav-link {
     font-size: 1rem !important;
     font-weight: 500;
     padding: 0.4rem 0.8rem;
     border-radius: var(--border-radius-sm);
     transition: all 0.3s ease;
-
 }
 
 .navbar-nav .nav-link {
@@ -92,6 +93,9 @@ body {
 .navbar-nav .nav-link:hover {
     background-color: rgba(255, 255, 255, 0.1);
     transform: translateY(-1px);
+}
+.search-expand {
+    width: 70%;
 }
 
 /* Theme toggle */
@@ -116,8 +120,6 @@ body {
     background: var(--frosted-bg) !important;
     backdrop-filter: blur(10px);
 }
-
-
 
 /* Card Enhancements */
 .card {
@@ -146,7 +148,8 @@ body {
     transition: all 0.3s ease;
 }
 
-.btn i { /* Added rule for icons within buttons */
+.btn i {
+    /* Added rule for icons within buttons */
     font-size: 0.8em; /* Smaller icon size */
 }
 
@@ -700,13 +703,13 @@ table.table {
 }
 
 /* Show feedback only when form is validated */
-.was-validated .form-control:valid~.valid-feedback,
-.was-validated .form-select:valid~.valid-feedback {
+.was-validated .form-control:valid ~ .valid-feedback,
+.was-validated .form-select:valid ~ .valid-feedback {
     display: block;
 }
 
-.was-validated .form-control:invalid~.invalid-feedback,
-.was-validated .form-select:invalid~.invalid-feedback {
+.was-validated .form-control:invalid ~ .invalid-feedback,
+.was-validated .form-select:invalid ~ .invalid-feedback {
     display: block;
 }
 
@@ -731,7 +734,10 @@ table.table {
 /* Validation animations */
 .was-validated .form-control,
 .was-validated .form-select {
-    transition: border-color 0.3s ease, box-shadow 0.3s ease, background-image 0.3s ease;
+    transition:
+        border-color 0.3s ease,
+        box-shadow 0.3s ease,
+        background-image 0.3s ease;
 }
 
 /* Custom validation for specific form elements */

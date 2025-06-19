@@ -14,6 +14,14 @@ function getStatusColor(status) {
             return 'secondary';
     }
 }
+
+// Initialize all Bootstrap toasts
+document.addEventListener('DOMContentLoaded', function () {
+    var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+    var toastList = toastElList.map(function (toastEl) {
+        return new bootstrap.Toast(toastEl)
+    })
+});
 // Function to show a Bootstrap toast message
 function showToast(message, type = 'info', delay = 1000) {
     const toastContainer = document.querySelector('.toast-container');
@@ -108,3 +116,21 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // The Select2 initialization has been moved to the specific pages that use it.
+
+// Function to show a general form error alert
+function showFormError(message) {
+    const errorAlert = document.getElementById('form-error-alert');
+    const errorMessageSpan = document.getElementById('form-error-message');
+    if (errorAlert && errorMessageSpan) {
+        errorMessageSpan.textContent = message;
+        errorAlert.classList.remove('d-none');
+    }
+}
+
+// Function to hide the general form error alert
+function hideFormError() {
+    const errorAlert = document.getElementById('form-error-alert');
+    if (errorAlert) {
+        errorAlert.classList.add('d-none');
+    }
+}

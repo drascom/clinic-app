@@ -35,12 +35,17 @@ function handle_calendar_events($action, $method, $db, $input = [])
             SELECT
                 a.id,
                 a.appointment_date,
+                a.start_time,
+                a.end_time,
+                a.notes,
                 p.id as patient_id,
                 p.name as patient_name,
-                a.notes,
-                a.start_time
+                r.name as room_name,
+                pr.name as procedure_name
             FROM appointments a
             JOIN patients p ON a.patient_id = p.id
+            LEFT JOIN rooms r ON a.room_id = r.id
+            LEFT JOIN procedures pr ON a.procedure_id = pr.id
             WHERE a.appointment_date BETWEEN ? AND ?
         ");
         $stmt_app->execute([$startDate, $endDate]);
@@ -53,6 +58,11 @@ function handle_calendar_events($action, $method, $db, $input = [])
                     'id' => $apt['id'],
                     'patient_id' => $apt['patient_id'],
                     'patient_name' => $apt['patient_name'],
+                    'start_time' => $apt['start_time'],
+                    'end_time' => $apt['end_time'],
+                    'room_name' => $apt['room_name'],
+                    'procedure_name' => $apt['procedure_name'],
+                    'notes' => $apt['notes'],
                     'summary' => trim($apt['start_time'] . ' ' . $apt['notes'])
                 ];
             }
@@ -63,10 +73,17 @@ function handle_calendar_events($action, $method, $db, $input = [])
             SELECT
                 s.id,
                 s.date as surgery_date,
+                s.notes,
+                s.status,
+                s.predicted_grafts_count,
+                s.current_grafts_count,
+                s.is_recorded,
                 p.id as patient_id,
-                p.name as patient_name
+                p.name as patient_name,
+                r.name as room_name
             FROM surgeries s
             JOIN patients p ON s.patient_id = p.id
+            LEFT JOIN rooms r ON s.room_id = r.id
             WHERE s.date BETWEEN ? AND ?
         ");
         $stmt_surg->execute([$startDate, $endDate]);
@@ -79,13 +96,18 @@ function handle_calendar_events($action, $method, $db, $input = [])
                     'id' => $surg['id'],
                     'patient_id' => $surg['patient_id'],
                     'patient_name' => $surg['patient_name'],
-                    'summary' => 'Surgery'
+                    'notes' => $surg['notes'],
+                    'status' => $surg['status'],
+                    'predicted_grafts_count' => $surg['predicted_grafts_count'],
+                    'current_grafts_count' => $surg['current_grafts_count'],
+                    'is_recorded' => $surg['is_recorded'],
+                    'room_name' => $surg['room_name'],
+                    'summary' => 'Surgery' // Keep summary for existing display logic
                 ];
             }
         }
 
         return ['success' => true, 'events' => $events];
-
     } catch (PDOException $e) {
         // In a real application, you would log the error message.
         error_log('Database error in handle_calendar_events: ' . $e->getMessage());

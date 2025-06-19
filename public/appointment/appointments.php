@@ -472,8 +472,14 @@ $page_title = "Appointment Management";
             <td>${appointment.notes || '-'}</td>
             <td>
                 <div class="btn-group btn-group-sm" role="group">
+                   <a href="/appointment/add_appointment.php?id=${appointment.id}"
+                        class="btn  btn-sm btn-text text-info"
+                        title="Edit Surgery">
+                        <i class="fas fa-edit"></i>
+                        <span class="d-none d-lg-inline ms-1">Edit</span>
+                    </a>
                     <button type="button" class="btn btn-text text-primary" onclick="editAppointment(${appointment.id})" title="Edit">
-                        <i class="fas fa-edit"></i><span class="d-none d-lg-inline ms-1">Edit</span>
+                        <i class="fas fa-edit"></i><span class="d-none d-lg-inline ms-1">Mini Edit</span>
                     </button>
                     <button type="button" class="btn btn-text text-danger" onclick="deleteAppointment(${appointment.id}, '${appointment.patient_name}')" title="Delete">
                         <i class="fas fa-trash"></i> <span class="d-none d-lg-inline ms-1">Delete</span>

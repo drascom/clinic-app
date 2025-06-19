@@ -99,15 +99,7 @@
 <script src="/assets/js/script.js"></script>
 <!-- API Helper for secure POST requests -->
 <script src="/assets/js/api-helper.js"></script>
-<script>
-    // Initialize all Bootstrap toasts
-    document.addEventListener('DOMContentLoaded', function() {
-        var toastElList = [].slice.call(document.querySelectorAll('.toast'))
-        var toastList = toastElList.map(function(toastEl) {
-            return new bootstrap.Toast(toastEl)
-        })
-    });
-</script>
+
 </body>
 
 </html>
