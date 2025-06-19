@@ -6,7 +6,7 @@ logs/
 vendor/
 .vscode/
 .roo/
-qdrant/
+qdrant_data/
 
 # Project-specific ignored files/directories
 db/database.sqlite
