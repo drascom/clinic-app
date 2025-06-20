@@ -1,6 +1,6 @@
 <?php
 require_once '../includes/db.php';
-require_once '../includes/email.php'; // Include the email functions
+require_once '../api_handlers/email_functions.php'; // Include the email functions
 
 $message = '';
 $message_type = '';

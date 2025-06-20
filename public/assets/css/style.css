@@ -1066,3 +1066,23 @@ table.table {
 .header-icon {
     color: var(--color-text);
 }
+
+/* Email App Specific Styles */
+.email-list-container {
+    height: calc(100vh - 120px); /* Adjust based on header/footer height */
+}
+
+.email-list-container .card {
+    height: 100%;
+}
+
+.email-list-container .card-body {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Ensure content doesn't overflow */
+}
+
+#email-list {
+    flex-grow: 1;
+    overflow-y: auto; /* Enable vertical scrolling for the email list */
+}

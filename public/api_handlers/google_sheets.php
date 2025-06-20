@@ -62,7 +62,6 @@ require __DIR__ . '/../../vendor/autoload.php'; // Adjust path if Composer is in
 function get_setting($key)
 {
     try {
-        // debugLog("Retrieving setting from database", ['key' => $key]); // Avoid excessive logging in API
         $pdo = get_db(); // Get the PDO instance using the helper function
         $stmt = $pdo->prepare("SELECT value FROM settings WHERE key = :key");
         $stmt->bindValue(':key', $key, PDO::PARAM_STR); // Use PDO::PARAM_STR for string binding
@@ -70,7 +69,6 @@ function get_setting($key)
         $row = $stmt->fetch(PDO::FETCH_ASSOC); // Use PDO fetch method
 
         $value = $row ? $row['value'] : null;
-        // debugLog("Setting retrieved", ['key' => $key, 'found' => $row ? 'YES' : 'NO', 'value_length' => $value ? strlen($value) : 0]); // Avoid excessive logging
         return $value;
     } catch (Exception $e) {
         debugLog("Error retrieving setting in API", ['key' => $key, 'error' => $e->getMessage()], 'ERROR');
@@ -111,7 +109,6 @@ if (file_exists($cacheFile) && (filemtime($cacheFile) > (time() - $cacheDuration
     if ($cachedData !== null && isset($cachedData['spreadsheetTitle'], $cachedData['sheetTitles'], $cachedData['sheetValues'])) {
         // Use cached data
         $usingCache = true;
-        debugLog("Using cached data in API");
         echo json_encode([
             'success' => true,
             'data' => $cachedData,
@@ -120,14 +117,12 @@ if (file_exists($cacheFile) && (filemtime($cacheFile) > (time() - $cacheDuration
         exit();
     } else {
         // Cache file is corrupted or empty, delete it
-        debugLog("Corrupted cache file found, deleting in API", ['cache_file' => basename($cacheFile)], 'WARNING');
         @unlink($cacheFile); // Use @ to suppress errors if file doesn't exist
     }
 }
 
 if (!$usingCache) {
     // Data Fetching from Google Sheets API
-    debugLog("Cache not available, fetching from Google Sheets API in API endpoint");
     $apiStartTime = microtime(true);
 
     try {
@@ -153,7 +148,6 @@ if (!$usingCache) {
 
             // Validate and sanitize sheet title
             if (empty($sheetTitle)) {
-                debugLog("Empty sheet title found, skipping in API", ['sheet_index' => $index], 'WARNING');
                 continue;
             }
 
@@ -182,10 +176,6 @@ if (!$usingCache) {
         }
 
         $apiEndTime = microtime(true);
-        debugLog("All sheet data retrieved in API endpoint", [
-            'total_sheets' => count($sheets),
-            'total_api_time_ms' => round(($apiEndTime - $apiStartTime) * 1000, 2)
-        ]);
 
         // Cache Storage
         $dataToCache = [
@@ -197,17 +187,11 @@ if (!$usingCache) {
 
         // Ensure cache directory exists before writing
         if (!is_dir($cacheDir)) {
-            debugLog("Creating cache directory in API", ['path' => $cacheDir]);
             mkdir($cacheDir, 0777, true);
         }
 
         $cacheData = json_encode($dataToCache);
         $cacheWriteResult = file_put_contents($cacheFile, $cacheData);
-
-        debugLog("Cache saved in API", [
-            'cache_file' => basename($cacheFile),
-            'cache_size_bytes' => $cacheWriteResult
-        ]);
 
         echo json_encode([
             'success' => true,
@@ -236,8 +220,6 @@ if (!$usingCache) {
 // Auto-import helper functions
 function handleTest()
 {
-    debugLog("Starting test action");
-
     $tests = [];
 
     // Test database connection
@@ -284,76 +266,72 @@ function handleTest()
 
 function handleProcessEntry()
 {
-    debugLog("Starting process_entry action", [
-        'date_str' => $_POST['date_str'] ?? '',
-        'patient_name' => $_POST['patient_name'] ?? '',
-        'entry_type' => $_POST['entry_type'] ?? 'surgery'
-    ]);
-
     $dateStr = $_POST['date_str'] ?? '';
-    $patientName = $_POST['patient_name'] ?? '';
-    $entryType = $_POST['entry_type'] ?? 'surgery';
     $originalEntry = $_POST['original_entry'] ?? '';
 
     try {
         $db = get_db();
-
-        // Clean patient name
-        $cleanedName = cleanPatientName($patientName);
-
-        // Parse date
         $date = parseDate($dateStr);
         if (!$date) {
             throw new Exception('Invalid date format');
         }
 
-        // Check if patient exists
-        $patientId = findPatientByName($cleanedName, $db);
-        $patientCreated = false;
+        $parsedEntries = parseComplexEntry($originalEntry);
+        $results = [];
 
-        if (!$patientId) {
-            // Create new patient
-            $patientId = createPatient($cleanedName, $db);
+        foreach ($parsedEntries as $entry) {
+            $patientName = $entry['name'];
+            $entryType = $entry['type'];
+
+            // Check if patient exists
+            $patientId = findPatientByName($patientName, $db);
+            $patientCreated = false;
+
             if (!$patientId) {
-                throw new Exception('Failed to create patient');
-            }
-            $patientCreated = true;
-        }
-
-        $recordCreated = false;
-        $recordType = '';
-
-        if ($entryType === 'surgery') {
-            // Check if surgery already exists
-            if (!surgeryExists($patientId, $date, $db)) {
-                // Create surgery
-                $surgeryId = createSurgery($patientId, $date, $db);
-                if (!$surgeryId) {
-                    throw new Exception('Failed to create surgery');
+                // Create new patient
+                $patientId = createPatient($patientName, $db);
+                if (!$patientId) {
+                    throw new Exception('Failed to create patient: ' . $patientName);
                 }
-                $recordCreated = true;
-                $recordType = 'surgery';
+                $patientCreated = true;
             }
-        } else {
-            // Handle consultations - create appointment record
-            if (!appointmentExists($patientId, $date, $db)) {
-                $appointmentId = createAppointment($patientId, $date, $entryType, $db, $originalEntry);
-                if (!$appointmentId) {
-                    throw new Exception('Failed to create appointment');
+
+            $recordCreated = false;
+            $recordType = '';
+
+            if ($entryType === 'surgery') {
+                if (!surgeryExists($patientId, $date, $db)) {
+                    $surgeryId = createSurgery($patientId, $date, $db);
+                    if (!$surgeryId) {
+                        throw new Exception('Failed to create surgery for ' . $patientName);
+                    }
+                    $recordCreated = true;
+                    $recordType = 'surgery';
                 }
-                $recordCreated = true;
-                $recordType = 'appointment';
+            } else { // Consultation
+                if (!appointmentExists($patientId, $date, $db)) {
+                    $appointmentId = createAppointment($patientId, $date, $entryType, $db, $originalEntry);
+                    if (!$appointmentId) {
+                        throw new Exception('Failed to create appointment for ' . $patientName);
+                    }
+                    $recordCreated = true;
+                    $recordType = 'appointment';
+                }
             }
+
+            $results[] = [
+                'patient_name' => $patientName,
+                'patient_created' => $patientCreated,
+                'record_created' => $recordCreated,
+                'record_type' => $recordType,
+                'entry_type' => $entryType
+            ];
         }
 
         echo json_encode([
             'success' => true,
-            'patient_created' => $patientCreated,
-            'record_created' => $recordCreated,
-            'record_type' => $recordType,
-            'entry_type' => $entryType
+            'results' => $results
         ]);
-
     } catch (Exception $e) {
         echo json_encode([
             'success' => false,
@@ -362,13 +340,62 @@ function handleProcessEntry()
     }
 }
 
+function parseComplexEntry($entry)
+{
+    $appointments = [];
+    // Split by common delimiters for multiple appointments in one cell
+    $delimiters = ['/', "\n"];
+    // The regex looks for a space, a slash, and a space, OR a newline.
+    $pattern = '/\s\/\s|\n/';
+    $parts = preg_split($pattern, $entry, -1, PREG_SPLIT_NO_EMPTY);
+
+    foreach ($parts as $part) {
+        $part = trim($part);
+        if (empty($part)) continue;
+
+        $name = cleanPatientName($part);
+        $type = extractEntryType($part);
+
+        $appointments[] = [
+            'name' => $name,
+            'type' => $type,
+            'original' => $part
+        ];
+    }
+
+    return $appointments;
+}
+
+function extractEntryType($entry)
+{
+    if (preg_match('/\b(F2F)\b/i', $entry)) return 'F2F';
+    if (preg_match('/\b(V2V)\b/i', $entry)) return 'V2V';
+    if (preg_match('/\b(VIDEO)\b/i', $entry)) return 'V2V';
+    if (preg_match('/\b(C-)\b/i', $entry)) return 'F2F'; // Assuming C- is a form of face-to-face
+    return 'surgery'; // Default
+}
+
+
 // Helper functions for auto-import
 function cleanPatientName($name)
 {
-    // Remove C-, V2V, F2F, VIDEO prefixes and any phone numbers
-    $cleaned = preg_replace('/^(C|V2V|F2F|VIDEO)\s*-\s*/', '', trim($name));
-    // Remove phone numbers (+ followed by digits, spaces, dashes)
-    $cleaned = preg_replace('/\s*-?\s*\+?\d+[\d\s\-]*$/', '', $cleaned);
+    // Remove prefixes like "C - ", "R - ", "V2V ", etc.
+    $cleaned = preg_replace('/^([CRV]|V2V|F2F|VIDEO)\s*-\s*/i', '', trim($name));
+
+    // Remove suffixes like " -"
+    $cleaned = preg_replace('/-\s*$/', '', $cleaned);
+
+    // Remove f2f and v2v from anywhere in the name
+    $cleaned = preg_replace('/\s*(f2f|v2v)\s*/i', ' ', $cleaned);
+
+    // Remove phone numbers and times
+    $cleaned = preg_replace('/\s*\+\d+[\d\s\-]*\d{1,2}(am|pm)/i', '', $cleaned);
+    $cleaned = preg_replace('/\s*\+\d+[\d\s\-]*/', '', $cleaned);
+    $cleaned = preg_replace('/\s+\d{1,2}(am|pm)/i', '', $cleaned);
+
+    // Replace multiple spaces with a single space
+    $cleaned = preg_replace('/\s+/', ' ', $cleaned);
+
     return trim($cleaned);
 }
 
@@ -423,8 +450,8 @@ function createSurgery($patientId, $date, $db)
 {
     try {
         $stmt = $db->prepare("
-            INSERT INTO surgeries (patient_id, date, room_id, status, graft_count, notes, is_recorded, created_at, updated_at)
-            VALUES (?, ?, 1, 'sheduled', 0, 'Auto-imported from Google Sheets', 1, datetime('now'), datetime('now'))
+            INSERT INTO surgeries (patient_id, date, room_id, status, predicted_grafts_count, notes, is_recorded, created_at, updated_at)
+            VALUES (?, ?, 1, 'scheduled', 0, 'Auto-imported from Google Sheets', 1, datetime('now'), datetime('now'))
         ");
         $stmt->execute([$patientId, $date]);
         return $db->lastInsertId();
@@ -450,6 +477,14 @@ function createAppointment($patientId, $date, $type, $db, $originalEntry = '')
 {
     try {
         $notes = 'Auto-imported from Google Sheets - ' . $type;
+
+        // Determine consultation type
+        $consultationType = null;
+        if (strcasecmp($type, 'F2F') === 0) {
+            $consultationType = 'face-to-face';
+        } elseif (strcasecmp($type, 'V2V') === 0) {
+            $consultationType = 'video-to-video';
+        }
 
         // Extract time from original entry (e.g., "2pm", "14:00", "9:30am")
         $startTime = '09:00'; // Default fallback
@@ -480,10 +515,10 @@ function createAppointment($patientId, $date, $type, $db, $originalEntry = '')
         $roomId = 4; // Default room
 
         $stmt = $db->prepare("
-            INSERT INTO appointments (room_id, patient_id, appointment_date, start_time, end_time, notes, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+            INSERT INTO appointments (room_id, patient_id, procedure_id, appointment_date, start_time, end_time, notes, consultation_type, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
         ");
-        $stmt->execute([$roomId, $patientId, $date, $startTime, $endTime, $notes]);
+        $stmt->execute([$roomId, $patientId, 1, $date, $startTime, $endTime, $notes, $consultationType]);
         return $db->lastInsertId();
     } catch (PDOException $e) {
         debugLog("Error creating appointment", ['patient_id' => $patientId, 'date' => $date, 'type' => $type, 'error' => $e->getMessage()], 'ERROR');

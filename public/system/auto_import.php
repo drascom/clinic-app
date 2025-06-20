@@ -60,7 +60,7 @@ require_once '../includes/header.php';
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const testButton = document.getElementById('test-connection');
         const startButton = document.getElementById('start-import');
         const progressDiv = document.getElementById('import-progress');
@@ -70,7 +70,7 @@ require_once '../includes/header.php';
         const resultsContent = document.getElementById('results-content');
 
         // Test connection button
-        testButton.addEventListener('click', async function () {
+        testButton.addEventListener('click', async function() {
             testButton.disabled = true;
             testButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Testing...';
 
@@ -97,7 +97,8 @@ require_once '../includes/header.php';
                 }
 
                 if (result.success) {
-                    let testResults = '<div class="alert alert-success">Connection tests completed:</div>';
+                    let testResults =
+                        '<div class="alert alert-success">Connection tests completed:</div>';
                     testResults += '<ul class="list-group">';
                     for (const [test, status] of Object.entries(result.tests)) {
                         const isOk = status === 'OK';
@@ -114,7 +115,8 @@ require_once '../includes/header.php';
                 }
 
             } catch (error) {
-                resultsContent.innerHTML = `<div class="alert alert-danger">Test failed: ${error.message}</div>`;
+                resultsContent.innerHTML =
+                    `<div class="alert alert-danger">Test failed: ${error.message}</div>`;
                 resultsDiv.style.display = 'block';
             } finally {
                 testButton.disabled = false;
@@ -122,7 +124,7 @@ require_once '../includes/header.php';
             }
         });
 
-        startButton.addEventListener('click', async function () {
+        startButton.addEventListener('click', async function() {
             startButton.disabled = true;
             progressDiv.style.display = 'block';
             resultsDiv.style.display = 'none';
@@ -175,7 +177,7 @@ require_once '../includes/header.php';
                             // Check surgery column (column 2 - Room 3A)
                             const surgeryPatientName = row[2] || '';
                             if (dateStr && surgeryPatientName && !surgeryPatientName.includes(
-                                'Closed')) {
+                                    'Closed')) {
                                 allEntries.push({
                                     dateStr: dateStr,
                                     patientName: surgeryPatientName,
@@ -187,37 +189,14 @@ require_once '../includes/header.php';
                             // Check consultation column (column 7 - Consultation F2F/V2V)
                             const consultationEntry = row[7] || '';
                             if (dateStr && consultationEntry && !consultationEntry.includes(
-                                'Closed')) {
-                                let consultationPatientName = '';
-                                let consultationType = 'consultation';
-
-                                // Parse F2F consultations: "F2F - Client Name"
-                                if (consultationEntry.includes('F2F')) {
-                                    consultationPatientName = consultationEntry.replace(
-                                        /^.*F2F\s*-\s*/, '').trim();
-                                    consultationType = 'consultation_f2f';
-                                }
-                                // Parse V2V consultations: "V2V - Client Name and mobile number" or "VIDEO - Client Name"
-                                else if (consultationEntry.includes('V2V') || consultationEntry
-                                    .includes('VIDEO')) {
-                                    consultationPatientName = consultationEntry
-                                        .replace(/^.*(?:V2V|VIDEO)\s*-\s*/, '')
-                                        .replace(/\s*-\s*\+?\d+.*$/, '') // Remove phone numbers
-                                        .trim();
-                                    consultationType = 'consultation_v2v';
-                                }
-
-                                // Only add if we extracted a valid patient name
-                                if (consultationPatientName && consultationPatientName.length >
-                                    2) {
-                                    allEntries.push({
-                                        dateStr: dateStr,
-                                        patientName: consultationPatientName,
-                                        type: consultationType,
-                                        originalEntry: consultationEntry,
-                                        sheetTitle: sheetTitle
-                                    });
-                                }
+                                    'Closed')) {
+                                allEntries.push({
+                                    dateStr: dateStr,
+                                    patientName: consultationEntry, // Send the raw entry for backend parsing
+                                    type: 'consultation', // Let backend determine specific type
+                                    originalEntry: consultationEntry,
+                                    sheetTitle: sheetTitle
+                                });
                             }
                         }
                     });
@@ -277,9 +256,9 @@ require_once '../includes/header.php';
             const formData = new FormData();
             formData.append('action', 'process_entry');
             formData.append('date_str', entry.dateStr);
-            formData.append('patient_name', entry.patientName);
-            formData.append('entry_type', entry.type);
-            formData.append('original_entry', entry.originalEntry || '');
+            // The original_entry now contains the full string for parsing on the backend
+            formData.append('original_entry', entry.originalEntry || entry.patientName);
+
 
             const response = await fetch('/api_handlers/google_sheets.php', {
                 method: 'POST',
@@ -291,33 +270,35 @@ require_once '../includes/header.php';
             }
 
             const responseText = await response.text();
-            let result;
+            let apiResult;
             try {
-                result = JSON.parse(responseText);
+                apiResult = JSON.parse(responseText);
             } catch (e) {
                 console.error('Invalid JSON response:', responseText);
                 throw new Error('Server returned invalid JSON response');
             }
 
-            if (result.success) {
-                if (result.patient_created) results.patientsCreated++;
-                else results.patientsExisting++;
+            if (apiResult.success) {
+                apiResult.results.forEach(result => {
+                    if (result.patient_created) results.patientsCreated++;
+                    else results.patientsExisting++;
 
-                if (result.record_created) {
-                    if (result.record_type === 'surgery') {
-                        results.surgeriesCreated++;
-                    } else if (result.record_type === 'appointment') {
-                        results.appointmentsCreated = (results.appointmentsCreated || 0) + 1;
-                    }
-                } else {
-                    if (result.entry_type === 'surgery') {
-                        results.surgeriesSkipped++;
+                    if (result.record_created) {
+                        if (result.record_type === 'surgery') {
+                            results.surgeriesCreated++;
+                        } else if (result.record_type === 'appointment') {
+                            results.appointmentsCreated = (results.appointmentsCreated || 0) + 1;
+                        }
                     } else {
-                        results.appointmentsSkipped = (results.appointmentsSkipped || 0) + 1;
+                        if (result.entry_type === 'surgery') {
+                            results.surgeriesSkipped++;
+                        } else {
+                            results.appointmentsSkipped = (results.appointmentsSkipped || 0) + 1;
+                        }
                     }
-                }
+                });
             } else {
-                throw new Error(result.error || 'Unknown error');
+                throw new Error(apiResult.error || 'Unknown error');
             }
         }
 

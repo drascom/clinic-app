@@ -462,7 +462,7 @@ $page_title = "Appointment Management";
         <tr>
             <td>${formatDate(appointment.appointment_date)}</td>
             <td>${appointment.start_time} - ${appointment.end_time}</td>
-            <td>${appointment.patient_name}</td>
+            <td><a href="http://localhost:8000/patient/patient_details.php?id=${appointment.patient_id}&tab=appointments">${appointment.patient_name}</a></td>
             <td>${appointment.room_name}</td>
             <td>
                 <span class="badge bg-primary">
@@ -539,7 +539,7 @@ $page_title = "Appointment Management";
         <tr>
             <td>${formatDate(appointment.appointment_date)}</td>
             <td>${appointment.start_time} - ${appointment.end_time}</td>
-            <td>${appointment.patient_name}</td>
+            <td><a href="http://localhost:8000/patient/patient_details.php?id=${appointment.patient_id}&tab=appointments">${appointment.patient_name}</a></td>
             <td>${appointment.room_name}</td>
             <td>
                 <span class="badge bg-primary">

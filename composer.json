@@ -1,0 +1,16 @@
+{
+    "name": "yedek/project",
+    "description": "Medical appointment management system.",
+    "type": "project",
+    "require": {
+        "php": ">=7.4",
+        "phpmailer/phpmailer": "^6.5",
+        "vlucas/phpdotenv": "^5.4"
+    },
+    "authors": [
+        {
+            "name": "Your Name",
+            "email": "you@example.com"
+        }
+    ]
+}

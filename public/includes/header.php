@@ -144,6 +144,12 @@ if (
                                     </a>
                                 </li>
                                 <?php if (is_editor() || is_admin()): ?>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="/emailapp">
+                                            <i class="fas fa-envelope me-1"></i>
+                                            <span class="d-lg-inline">Emails</span>
+                                        </a>
+                                    </li>
                                     <!-- HR Management - for Editor -->
                                     <li class="nav-item dropdown">
                                         <a class="nav-link dropdown-toggle" href="#" id="hrDropdown" role="button"
@@ -267,6 +273,11 @@ if (
                                 </a>
                             </li>
                             <li>
+                                <a class="dropdown-item" href="/admin/email_settings.php">
+                                    <i class="fas fa-envelope-open-text me-2"></i>Email Settings
+                                </a>
+                            </li>
+                            <li>
                                 <hr class="dropdown-divider">
                             </li>
                             <li>
@@ -281,7 +292,7 @@ if (
             <?php else: ?>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="/auth/login.php">
+                        <a class="nav-link" href="login.php">
                             <i class="fas fa-sign-in-alt me-1"></i>Login
                         </a>
                     </li>

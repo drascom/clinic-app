@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/send_mail.php';
+require_once __DIR__ . '/email_functions.php';
 
 function handle_invite_process($action, $method, $db, $request_data = [])
 {
@@ -54,20 +54,15 @@ function handle_invite_process($action, $method, $db, $request_data = [])
                     // Success: Generate link to send
                     $invitation_link = "http://" . $_SERVER['HTTP_HOST'] . '/enter_user_details.php?token=' . urlencode($token);
 
-                    // Send email using the send_mail handler
-                    $email_subject = 'Complete Your Registration';
-                    $email_body = "Hello,\n\nYou have been invited to join the system as a '{$role}'.\n\nClick the link below to set your password and activate your account:\n\n{$invitation_link}\n\nThis link will expire in 24 hours.\n\nThank you!";
+                    // Send email using the new EmailService
+                    $emailService = new EmailService($db);
+                    $userId = $_SESSION['user_id'] ?? null;
 
-                    $mail_request_data = [
-                        'to' => $email,
-                        'subject' => $email_subject,
-                        'body' => $email_body,
-                        // Optional headers can be added here if needed
-                        // 'headers' => "From: no-reply@yourdomain.com"
-                    ];
+                    if ($userId === null) {
+                        return ['success' => false, 'error' => 'User not authenticated for sending email.'];
+                    }
 
-                    // Call the handle_send_mail function directly
-                    $mail_response = handle_send_mail('send', 'POST', $db, $mail_request_data);
+                    $mail_response = $emailService->sendInvitationEmail($userId, $email, $invitation_link, $role);
 
                     if ($mail_response['success']) {
                         return [

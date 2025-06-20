@@ -81,7 +81,6 @@ function initialize_database($database_file, $sql_file)
 
         log_to_file("Database initialization completed successfully.");
         return true;
-
     } catch (Exception $e) {
         log_to_file("Database initialization failed: " . $e->getMessage());
 
@@ -170,7 +169,6 @@ while ($retry_count < $max_retries && $pdo === null) {
         // Test the connection by running a simple query
         $pdo->query("SELECT 1")->fetchColumn();
         log_to_file("PDO instance created and tested successfully.");
-
     } catch (\PDOException $e) {
         $retry_count++;
         log_to_file("Database connection attempt $retry_count failed: SQLSTATE [" . $e->getCode() . "] " . $e->getMessage());
@@ -185,32 +183,7 @@ while ($retry_count < $max_retries && $pdo === null) {
     }
 }
 
-// If the database was just created, add an initial admin user
-if (!$db_exists) {
-    log_to_file("Database was just created. Admin user must be created manually.");
 
-    // Generate a secure random password
-    $admin_password_raw = 1111;// bin2hex(random_bytes(16));
-    $admin_email = "admin@example.com"; // Placeholder email
-    $admin_password_hashed = password_hash($admin_password_raw, PASSWORD_DEFAULT);
-
-    try {
-        // Create admin user with secure credentials
-        $stmt = $pdo->prepare("INSERT INTO users (username, email, password, role, is_active, created_at, updated_at) VALUES (?, ?, ?, 'admin', 1, datetime('now'), datetime('now'))");
-        $stmt->execute(['Admin', $admin_email, $admin_password_hashed]);
-
-        // Provide setup instructions
-        log_to_file("======================================================");
-        log_to_file("SECURITY NOTICE: Initial admin user created");
-        log_to_file("Email: $admin_email");
-        log_to_file("Temporary password: $admin_password_raw");
-        log_to_file("======================================================");
-        log_to_file("IMPORTANT: Immediately change password after first login");
-        log_to_file("This password should not be used in production systems");
-    } catch (\PDOException $e) {
-        log_to_file("Admin user creation failed: " . $e->getMessage());
-    }
-}
 
 function get_db()
 {

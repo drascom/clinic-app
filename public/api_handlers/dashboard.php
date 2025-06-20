@@ -11,11 +11,14 @@ require_once __DIR__ . '/../auth/auth.php';
  */
 function handle_dashboard($action, $method, $db, $input = [])
 {
+    error_log("Dashboard API Request: Action=$action, Method=$method, Input=" . json_encode($input));
+
     switch ($action) {
         case 'stats':
             if ($method === 'POST') {
                 // Check if user has appropriate permissions
-                if (is_technician()) {
+                if (is_staff()) {
+                    error_log("Dashboard API: Insufficient permissions for technician.");
                     return ['success' => false, 'error' => 'Insufficient permissions.'];
                 }
 
@@ -23,6 +26,7 @@ function handle_dashboard($action, $method, $db, $input = [])
 
                 // Validate month format YYYY-MM
                 if (!preg_match('/^\d{4}-\d{2}$/', $month)) {
+                    error_log("Dashboard API: Invalid month format: $month");
                     return ['success' => false, 'error' => 'Invalid month format. Use YYYY-MM.'];
                 }
 
@@ -82,10 +86,10 @@ function handle_dashboard($action, $method, $db, $input = [])
 
                     // 5. Total grafts this month
                     $stmt = $db->prepare("
-                        SELECT COALESCE(SUM(s.graft_count), 0) as count
+                        SELECT COALESCE(SUM(s.current_grafts_count), 0) as count
                         FROM surgeries s
                         LEFT JOIN patients p ON s.patient_id = p.id
-                        WHERE DATE(s.date) BETWEEN ? AND ? AND s.graft_count IS NOT NULL" . $agencyFilter . "
+                        WHERE DATE(s.date) BETWEEN ? AND ? AND s.current_grafts_count IS NOT NULL" . $agencyFilter . "
                     ");
                     $stmt->execute(array_merge([$startDate, $endDate], $agencyParams));
                     $stats['total_grafts'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
@@ -108,7 +112,7 @@ function handle_dashboard($action, $method, $db, $input = [])
                         FROM surgeries s
                         LEFT JOIN patients p ON s.patient_id = p.id
                         WHERE DATE(s.date) BETWEEN ? AND ?
-                        AND status IN ('reserved', 'confirmed')" . $agencyFilter . "
+                        AND status IN ('scheduled', 'confirmed')" . $agencyFilter . "
                         GROUP BY status
                     ");
                     $stmt->execute(array_merge([$startDate, $endDate], $agencyParams));
@@ -133,9 +137,10 @@ function handle_dashboard($action, $method, $db, $input = [])
                     $stats['reserved_percentage'] = $totalStatusSurgeries > 0 ? round(($stats['reserved_surgeries'] / $totalStatusSurgeries) * 100, 1) : 0;
                     $stats['confirmed_percentage'] = $totalStatusSurgeries > 0 ? round(($stats['confirmed_surgeries'] / $totalStatusSurgeries) * 100, 1) : 0;
 
+                    error_log("Dashboard API: Stats data returned: " . json_encode($stats));
                     return ['success' => true, 'stats' => $stats, 'month' => $month];
-
                 } catch (PDOException $e) {
+                    error_log("Dashboard API Error (stats): " . $e->getMessage());
                     return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
                 }
             }
@@ -144,7 +149,7 @@ function handle_dashboard($action, $method, $db, $input = [])
         case 'yearlyChart':
             if ($method === 'POST') {
                 // Check if user has appropriate permissions
-                if (is_technician()) {
+                if (is_staff()) {
                     return ['success' => false, 'error' => 'Insufficient permissions.'];
                 }
 
@@ -152,6 +157,7 @@ function handle_dashboard($action, $method, $db, $input = [])
 
                 // Validate year format
                 if (!preg_match('/^\d{4}$/', $year)) {
+                    error_log("Dashboard API: Invalid year format: $year");
                     return ['success' => false, 'error' => 'Invalid year format. Use YYYY.'];
                 }
 
@@ -169,7 +175,7 @@ function handle_dashboard($action, $method, $db, $input = [])
                         SELECT
                             strftime('%m', s.date) as month,
                             COUNT(*) as surgery_count,
-                            COALESCE(SUM(s.graft_count), 0) as graft_count
+                            COALESCE(SUM(s.current_grafts_count), 0) as graft_count
                         FROM surgeries s
                         LEFT JOIN patients p ON s.patient_id = p.id
                         WHERE strftime('%Y', s.date) = ?" . $agencyFilter . "
@@ -206,9 +212,10 @@ function handle_dashboard($action, $method, $db, $input = [])
                         }
                     }
 
+                    error_log("Dashboard API: Yearly chart data returned: " . json_encode($chartData));
                     return ['success' => true, 'chartData' => $chartData, 'year' => $year];
-
                 } catch (PDOException $e) {
+                    error_log("Dashboard API Error (yearlyChart): " . $e->getMessage());
                     return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
                 }
             }
@@ -217,7 +224,7 @@ function handle_dashboard($action, $method, $db, $input = [])
         case 'techAvailability':
             if ($method === 'POST') {
                 // Check if user has appropriate permissions
-                if (is_technician()) {
+                if (is_staff()) {
                     return ['success' => false, 'error' => 'Insufficient permissions.'];
                 }
 
@@ -225,6 +232,7 @@ function handle_dashboard($action, $method, $db, $input = [])
 
                 // Validate month format YYYY-MM
                 if (!preg_match('/^\d{4}-\d{2}$/', $month)) {
+                    error_log("Dashboard API: Invalid month format: $month");
                     return ['success' => false, 'error' => 'Invalid month format. Use YYYY-MM.'];
                 }
 
@@ -255,9 +263,9 @@ function handle_dashboard($action, $method, $db, $input = [])
 
                     // Get total available technician days this month
                     $stmt = $db->prepare("
-                        SELECT COUNT(*) as available_days 
+                        SELECT COUNT(*) as available_days
                         FROM technician_availability ta
-                        JOIN technicians t ON ta.tech_id = t.id
+                        JOIN staff t ON ta.staff_id = t.id
                         WHERE ta.available_on BETWEEN ? AND ?
                         AND t.is_active = 1
                     ");
@@ -267,7 +275,7 @@ function handle_dashboard($action, $method, $db, $input = [])
                     // Calculate deficit or surplus
                     $difference = $availableDays - $requiredTechDays;
 
-                    return [
+                    $responseData = [
                         'success' => true,
                         'data' => [
                             'surgery_count' => (int) $surgeryCount,
@@ -278,16 +286,20 @@ function handle_dashboard($action, $method, $db, $input = [])
                         ],
                         'month' => $month
                     ];
-
+                    error_log("Dashboard API: Tech availability data returned: " . json_encode($responseData['data']));
+                    return $responseData;
                 } catch (PDOException $e) {
+                    error_log("Dashboard API Error (techAvailability): " . $e->getMessage());
                     return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
                 }
             }
             break;
 
         default:
+            error_log("Dashboard API: Invalid action for dashboard entity: $action");
             return ['success' => false, 'error' => 'Invalid action for dashboard entity.'];
     }
 
+    error_log("Dashboard API: Invalid request method for action: $action");
     return ['success' => false, 'error' => 'Invalid request method for this action.'];
 }

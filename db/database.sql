@@ -42,6 +42,7 @@ CREATE TABLE appointments (
     start_time TEXT NOT NULL,
     end_time TEXT NOT NULL,
     procedure_id INTEGER,
+    consultation_type TEXT DEFAULT 'face-to-face' CHECK (consultation_type IN ('face-to-face', 'video-to-video')),
     notes TEXT,
     updated_by INTEGER NULL,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
@@ -367,3 +368,47 @@ INSERT INTO staff (name, email, phone, position_applied, location, staff_type, u
 INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Sravani', 'update', '07508858512', 'senior', 'UK', 'staff', 1);
 INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Sagun Khadka', 'update', '07380576839', 'senior', 'UK', 'staff', 1);
 INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Monisha', 'update', '07436422647', 'senior', 'UK', 'staff', 1);
+
+CREATE TABLE IF NOT EXISTS emails (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    uid TEXT NOT NULL UNIQUE,
+    user_id INTEGER NOT NULL,
+    message_id TEXT UNIQUE,
+    subject TEXT,
+    from_address TEXT NOT NULL,
+    from_name TEXT,
+    to_address TEXT,
+    cc_address TEXT,
+    bcc_address TEXT,
+    reply_to_address TEXT,
+    date_received INTEGER NOT NULL,
+    body TEXT,
+    is_read BOOLEAN DEFAULT 0,
+    folder TEXT DEFAULT 'INBOX',
+    is_active BOOLEAN DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+CREATE TABLE user_email_settings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    email_address VARCHAR(255) NOT NULL,
+    smtp_host VARCHAR(255) NOT NULL,
+    smtp_port INTEGER NOT NULL,
+    smtp_username VARCHAR(255) NOT NULL,
+    smtp_password VARCHAR(255) NOT NULL,
+    smtp_secure VARCHAR(10) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+INSERT INTO user_email_settings (user_id, email_address, smtp_host, smtp_port, smtp_username, smtp_password, smtp_secure) VALUES (1, 'ayhan@livharleystreet.co.uk', 'gukm1005.siteground.biz', 465, 'ayhan@livharleystreet.co.uk', 'Doktor2024@', 'ssl');
+-- INSERT INTO user_email_settings (user_id, email_address, smtp_host, smtp_port, smtp_username, smtp_password, smtp_secure) VALUES (2, 'ebru.tok@livharleystreet.co.uk', 'gukm1005.siteground.biz', 465, 'ebru.tok@livharleystreet.co.uk', '051224..Uk', 'ssl');
+INSERT INTO user_email_settings (user_id, email_address, smtp_host, smtp_port, smtp_username, smtp_password, smtp_secure) VALUES (2, 'contact@livharleystreet.co.uk', 'gukm1005.siteground.biz', 465, 'ebru.tok@livharleystreet.co.uk', '051224..Uk', 'ssl');
+CREATE TABLE IF NOT EXISTS email_attachments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email_id INTEGER NOT NULL,
+    filename TEXT NOT NULL,
+    file_path TEXT NOT NULL UNIQUE,
+    mime_type TEXT,
+    size INTEGER,
+    FOREIGN KEY (email_id) REFERENCES emails(id) ON DELETE CASCADE
+);

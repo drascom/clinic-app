@@ -163,7 +163,27 @@
     flex-direction: column;
     gap: 2px;
 }
+.event {
+    padding: 2px 6px;
+    border-left: 3px solid;
+    border-radius: 0.25rem;
+    font-size: 0.825rem;
+    display: inline-block;
+    margin-bottom: 2px;
+    width: 100%;
+}
 
+.event.surgery {
+    color: #ab3e3e;
+    border-color: #dc3545;
+    background: rgba(220, 53, 69, 0.05);
+}
+
+.event.appointment {
+    color: #0d6efd;
+    border-color: #0d6efd;
+    background: rgba(13, 110, 253, 0.05);
+}
 .event-item {
     display: flex;
     flex-direction: column;
@@ -183,7 +203,7 @@
     transition: all 0.2s;
 }
 
-.event-item>div {
+.event-item > div {
     /* Target direct child divs (event-header and graft-count) */
     padding-left: 6px;
     /* Add left padding to the content inside */

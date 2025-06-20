@@ -1,4 +1,5 @@
 <?php
+session_start();
 // Report all PHP errors, warnings, and notices
 error_reporting(E_ALL);
 // Do not display errors in the output (important for APIs returning JSON)
@@ -6,21 +7,24 @@ ini_set('display_errors', 0);
 // Enable logging of PHP errors
 ini_set('log_errors', 1);
 // Specify the file where PHP errors should be logged
-ini_set('error_log', __DIR__ . '/../logs/php_error.log');
-error_log("PHP error log path set to: " . ini_get('error_log'));
+ini_set('error_log', __DIR__ . '/../logs/error.log');
 
 // Start output buffering to catch any unexpected output
 ob_start();
 
 require_once __DIR__ . '/includes/db.php';
 
-header('Content-Type: application/json');
 
 // Main API routing
 $entity = null;
 $action = null;
 $method = $_SERVER['REQUEST_METHOD'];
 $request_body = file_get_contents('php://input');
+// Set Content-Type header based on the request. Default to application/json.
+// For Server-Sent Events (SSE) from the emails handler, the content type will be overridden there.
+if (!($entity === 'emails' && $action === 'check_new_emails')) {
+    header('Content-Type: application/json');
+}
 
 if ($method === 'POST') {
     // Check Content-Type to determine if it's JSON or form data
@@ -109,4 +113,4 @@ try {
 ob_clean();
 
 // Log and return the response
-echo json_encode($response);
+echo json_encode($response, JSON_INVALID_UTF8_SUBSTITUTE);

@@ -214,6 +214,34 @@ function handle_users($action, $method, $db, $request_data = [])
                 return ['success' => true, 'message' => 'Password changed successfully.'];
             }
             break;
+
+        case 'get_email_settings':
+            if ($method === 'POST') {
+                // Assuming user_id is passed in the input for this action
+                $user_id = $input['user_id'] ?? null;
+
+                if (!$user_id) {
+                    return ['success' => false, 'error' => 'User ID is required to get email settings.'];
+                }
+
+                $stmt = $db->prepare("SELECT * FROM user_email_settings WHERE user_id = :user_id");
+                $stmt->bindValue(':user_id', $user_id);
+                $stmt->execute();
+                $settings = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                if (!$settings) {
+                    $settings = [
+                        'email_address' => '',
+                        'smtp_host' => '',
+                        'smtp_port' => '',
+                        'smtp_username' => '',
+                        'smtp_password' => '',
+                        'smtp_secure' => 'tls'
+                    ];
+                }
+                return ['success' => true, 'settings' => $settings];
+            }
+            break;
     }
 
     return ['success' => false, 'error' => "Invalid request for action '{$action}' with method '{$method}'."];

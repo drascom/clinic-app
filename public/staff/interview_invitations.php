@@ -317,9 +317,9 @@ include __DIR__ . '/../includes/header.php';
 
 <!-- API Helper for secure POST requests -->
 <script src="/assets/js/api-helper.js"></script>
-
+<?php require_once '../includes/footer.php'; ?>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         // Global variables
         let currentPage = 1;
         let currentSearch = '';
@@ -331,7 +331,6 @@ include __DIR__ . '/../includes/header.php';
         // DOM elements
         const invitationForm = document.getElementById('invitation-form');
         const invitationsTable = document.getElementById('invitationsTable').querySelector('tbody');
-        const statusMessages = document.getElementById('status-messages');
         const saveDraftBtn = document.getElementById('save-draft-btn');
         const previewEmailBtn = document.getElementById('preview-email-btn');
         const confirmSendBtn = document.getElementById('confirm-send-btn');
@@ -358,13 +357,13 @@ include __DIR__ . '/../includes/header.php';
             previewEmailBtn.addEventListener('click', showEmailPreview);
 
             // Confirm send button
-            confirmSendBtn.addEventListener('click', function() {
+            confirmSendBtn.addEventListener('click', function () {
                 bootstrap.Modal.getInstance(document.getElementById('emailPreviewModal')).hide();
                 submitInvitation();
             });
 
             // Confirm action button
-            confirmActionBtn.addEventListener('click', function() {
+            confirmActionBtn.addEventListener('click', function () {
                 if (confirmationCallback) {
                     confirmationCallback();
                     confirmationCallback = null;
@@ -376,7 +375,7 @@ include __DIR__ . '/../includes/header.php';
             const searchInput = document.getElementById('invitation-search');
             const clearSearchBtn = document.getElementById('clear-search');
 
-            searchInput.addEventListener('input', function() {
+            searchInput.addEventListener('input', function () {
                 const searchTerm = this.value.trim();
 
                 // Clear previous timeout
@@ -391,14 +390,14 @@ include __DIR__ . '/../includes/header.php';
                 }, 300);
             });
 
-            clearSearchBtn.addEventListener('click', function() {
+            clearSearchBtn.addEventListener('click', function () {
                 searchInput.value = '';
                 currentSearch = '';
                 loadInvitations(1);
             });
 
             // Reset form when modal is hidden
-            document.getElementById('invitationModal').addEventListener('hidden.bs.modal', function() {
+            document.getElementById('invitationModal').addEventListener('hidden.bs.modal', function () {
                 resetForm();
             });
 
@@ -416,12 +415,12 @@ include __DIR__ . '/../includes/header.php';
 
             inputs.forEach(input => {
                 // Real-time validation on blur
-                input.addEventListener('blur', function() {
+                input.addEventListener('blur', function () {
                     validateField(this);
                 });
 
                 // Clear validation on input
-                input.addEventListener('input', function() {
+                input.addEventListener('input', function () {
                     if (this.classList.contains('is-invalid')) {
                         this.classList.remove('is-invalid');
                         const feedback = this.parentNode.querySelector('.invalid-feedback');
@@ -656,17 +655,17 @@ include __DIR__ . '/../includes/header.php';
                 });
 
                 if (response.success) {
-                    showSuccessMessage(response.message);
+                    showToast(response.message);
                     bootstrap.Modal.getInstance(document.getElementById('invitationModal')).hide();
                     resetForm();
                     loadInvitations();
                     loadStats();
                 } else {
-                    showFormError(response.error || 'Failed to save invitation draft.');
+                    showToast(response.error || 'Failed to save invitation draft.');
                 }
             } catch (error) {
                 console.error('Error saving invitation draft:', error);
-                showFormError('An error occurred while saving the invitation draft.');
+                showToast(response.error || 'Failed to save invitation draft.');
             } finally {
                 // Reset button state
                 saveDraftBtn.disabled = false;
@@ -686,7 +685,7 @@ include __DIR__ . '/../includes/header.php';
                 });
 
                 if (response.success) {
-                    showSuccessMessage(response.message);
+                    showToast(response.message);
                     loadInvitations();
                     loadStats();
                     // Close any open modals
@@ -695,11 +694,11 @@ include __DIR__ . '/../includes/header.php';
                         bootstrap.Modal.getInstance(modal).hide();
                     });
                 } else {
-                    showErrorMessage(response.error || 'Failed to send invitation.');
+                    showToast(response.error || 'Failed to send invitation.');
                 }
             } catch (error) {
                 console.error('Error sending saved invitation:', error);
-                showErrorMessage('An error occurred while sending the invitation.');
+                showToast(response.error || 'An error occurred while sending the invitation.');
             }
         }
 
@@ -937,7 +936,7 @@ include __DIR__ . '/../includes/header.php';
 
             // Page numbers
             for (let i = Math.max(1, pagination.page - 2); i <= Math.min(pagination.pages, pagination.page +
-                    2); i++) {
+                2); i++) {
                 const activeClass = i === pagination.page ? 'active' : '';
                 paginationHtml +=
                     `<li class="page-item ${activeClass}"><a class="page-link" href="#" onclick="loadInvitations(${i})">${i}</a></li>`;
@@ -996,37 +995,6 @@ include __DIR__ . '/../includes/header.php';
             const errorAlert = document.getElementById('form-error-alert');
             errorAlert.classList.add('d-none');
         }
-
-        /**
-         * Show success message
-         */
-        function showSuccessMessage(message) {
-            statusMessages.innerHTML = `
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="fas fa-check-circle me-2"></i>${message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            `;
-            statusMessages.scrollIntoView({
-                behavior: 'smooth'
-            });
-        }
-
-        /**
-         * Show error message
-         */
-        function showErrorMessage(message) {
-            statusMessages.innerHTML = `
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="fas fa-exclamation-triangle me-2"></i>${message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            `;
-            statusMessages.scrollIntoView({
-                behavior: 'smooth'
-            });
-        }
-
         /**
          * Escape HTML to prevent XSS
          */
@@ -1037,7 +1005,7 @@ include __DIR__ . '/../includes/header.php';
         }
 
         // Global functions for onclick handlers
-        window.viewInvitation = async function(id) {
+        window.viewInvitation = async function (id) {
             const modal = new bootstrap.Modal(document.getElementById('viewInvitationModal'));
             const loadingDiv = document.getElementById('invitation-loading');
             const errorDiv = document.getElementById('invitation-error');
@@ -1091,10 +1059,10 @@ include __DIR__ . '/../includes/header.php';
 
             const formattedInterviewTime = new Date(`2000-01-01T${invitation.interview_time}`).toLocaleTimeString(
                 'en-US', {
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    hour12: true
-                });
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+            });
 
             const formattedSentDate = sentDate.toLocaleDateString('en-US', {
                 year: 'numeric',
@@ -1278,10 +1246,10 @@ include __DIR__ . '/../includes/header.php';
             // Show/hide Send Now button based on status
             if (invitation.status === 'draft') {
                 sendNowBtn.classList.remove('d-none');
-                sendNowBtn.onclick = function() {
+                sendNowBtn.onclick = function () {
                     showConfirmation(
                         `Are you sure you want to send the interview invitation to ${invitation.candidate_name}?`,
-                        function() {
+                        function () {
                             sendSavedInvitation(invitation.id);
                         }
                     );
@@ -1305,10 +1273,10 @@ include __DIR__ . '/../includes/header.php';
             errorDiv.classList.remove('d-none');
         }
 
-        window.deleteInvitation = function(id, candidateName) {
+        window.deleteInvitation = function (id, candidateName) {
             const message =
                 `Are you sure you want to delete the invitation for "${candidateName}"? This action cannot be undone.`;
-            showConfirmation(message, async function() {
+            showConfirmation(message, async function () {
                 try {
                     const response = await apiRequest('/api.php', 'POST', {
                         entity: 'interview_invitations',
@@ -1317,15 +1285,15 @@ include __DIR__ . '/../includes/header.php';
                     });
 
                     if (response.success) {
-                        showSuccessMessage(response.message);
+                        showToast(response.message);
                         loadInvitations(currentPage);
                         loadStats();
                     } else {
-                        showErrorMessage(response.error || 'Failed to delete invitation.');
+                        showToast(response.error || 'Failed to delete invitation.');
                     }
                 } catch (error) {
                     console.error('Error deleting invitation:', error);
-                    showErrorMessage('An error occurred while deleting the invitation.');
+                    showToast(error + ' An error occurred while deleting the invitation.');
                 }
             });
         };

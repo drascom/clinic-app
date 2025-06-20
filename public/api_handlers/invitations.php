@@ -69,10 +69,26 @@ function handle_invitations($action, $method, $db, $request_data = [])
                     $update_stmt->bindParam(':id', $id);
 
                     if ($update_stmt->execute()) {
-                        // TODO: Implement actual email sending logic here
-                        // Use $invitation['email'] and the new $token to send the email
+                        // Re-send email using the send_mail handler
+                        $invitation_link = "http://" . $_SERVER['HTTP_HOST'] . '/auth/enter_user_details.php?token=' . urlencode($token);
+                        $email_subject = 'Complete Your Registration';
+                        $email_body = "Hello,\n\nYou have been invited to join the system.\n\nClick the link below to set your password and activate your account:\n\n{$invitation_link}\n\nThis link will expire in 24 hours.\n\nThank you!";
 
-                        return ['success' => true, 'message' => 'Invitation resent successfully.'];
+                        $mail_request_data = [
+                            'to' => $invitation['email'],
+                            'subject' => $email_subject,
+                            'body' => $email_body,
+                        ];
+
+                        // Call the handle_send_mail function directly
+                        $mail_response = handle_send_mail('send', 'POST', $db, $mail_request_data);
+
+                        if ($mail_response['success']) {
+                            return ['success' => true, 'message' => 'Invitation resent successfully.'];
+                        } else {
+                            error_log("Failed to resend invitation email to {$invitation['email']}: " . ($mail_response['message'] ?? 'Unknown error'));
+                            return ['success' => true, 'message' => 'Invitation token updated, but failed to resend email.', 'email_error' => $mail_response['message'] ?? 'Unknown email error'];
+                        }
                     } else {
                         return ['success' => false, 'error' => 'Failed to update invitation token.'];
                     }

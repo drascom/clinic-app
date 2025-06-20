@@ -3,7 +3,9 @@ require_once '../includes/header.php';
 $page_title = "Calendar";
 ?>
 <link rel="stylesheet" href="/assets/css/calendar.css">
+<style>
 
+</style>
 <!-- Calendar Container -->
 <div class="calendar-container emp">
     <!-- Calendar Header -->
@@ -78,7 +80,7 @@ $page_title = "Calendar";
 
     <!-- List View -->
     <div id="listView" class="list-view">
-        <div id="listContent"></div>
+        <div id="listContent" class=""></div>
     </div>
 </div>
 
@@ -357,28 +359,29 @@ $page_title = "Calendar";
                         eventSummaryEl.className = 'event-summary d-flex flex-column';
 
                         if (dayEvents.appointments.length > 0) {
-                            const appBtn = document.createElement('button');
-                            appBtn.className = 'btn btn-text text-primary btn-sm mb-1 d-flex align-items-center';
+                            const appBtn = document.createElement('span');
+                            appBtn.className = 'event appointment d-flex align-items-center mx-2';
                             appBtn.innerHTML =
-                                `<i class="fas fa-calendar-check me-1"></i><span>Appointments: ${dayEvents.appointments.length}</span>`;
+                                `<i class="far fa-calendar me-2"></i><span class="d-none d-sm-inline"> Appointment: </span> ${dayEvents.appointments.length} `;
                             appBtn.onclick = (e) => {
                                 e.stopPropagation();
-                                this.showDetailsModal('Appointments', dateString, dayEvents.appointments);
+                                this.showDetailsModal('Appointments', dateKey, dayEvents.appointments);
                             };
                             eventSummaryEl.appendChild(appBtn);
                         }
 
                         if (dayEvents.surgeries.length > 0) {
-                            const surgBtn = document.createElement('button');
-                            surgBtn.className = 'btn btn-text text-danger btn-sm d-flex align-items-center';
+                            const surgBtn = document.createElement('span');
+                            surgBtn.className = 'event surgery d-flex align-items-center mx-2';
                             surgBtn.innerHTML =
-                                `<i class="fas fa-syringe me-1"></i><span>Surgeries: ${dayEvents.surgeries.length}</span>`;
+                                `<i class="fas fa-syringe me-2"></i><span class="d-none d-sm-inline"> Surgery: </span>${dayEvents.surgeries.length} `;
                             surgBtn.onclick = (e) => {
                                 e.stopPropagation();
-                                this.showDetailsModal('Surgeries', dateString, dayEvents.surgeries);
+                                this.showDetailsModal('Surgeries', dateKey, dayEvents.surgeries);
                             };
                             eventSummaryEl.appendChild(surgBtn);
                         }
+
                         dayElement.appendChild(eventSummaryEl);
                     }
 
@@ -399,6 +402,7 @@ $page_title = "Calendar";
         renderListView() {
             // Clear existing content
             this.listContent.innerHTML = '';
+            this.listContent.className = 'p-4';
 
             const monthStart = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), 1);
             const monthEnd = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1, 0);
@@ -437,10 +441,10 @@ $page_title = "Calendar";
                     summaryContainer.className = 'list-item-summary d-flex';
 
                     if (dayEvents.appointments.length > 0) {
-                        const appBtn = document.createElement('button');
-                        appBtn.className = 'btn btn-text text-primary btn-sm mb-1 d-flex align-items-center';
+                        const appBtn = document.createElement('span');
+                        appBtn.className = 'event appointment d-flex align-items-center mx-2';
                         appBtn.innerHTML =
-                            `<i class="fas fa-calendar-check me-1"></i><span>Appointments: ${dayEvents.appointments.length}</span>`;
+                            `<i class="far fa-calendar me-1"></i>${dayEvents.appointments.length} Appointments`;
                         appBtn.onclick = (e) => {
                             e.stopPropagation();
                             this.showDetailsModal('Appointments', dateKey, dayEvents.appointments);
@@ -449,10 +453,10 @@ $page_title = "Calendar";
                     }
 
                     if (dayEvents.surgeries.length > 0) {
-                        const surgBtn = document.createElement('button');
-                        surgBtn.className = 'btn btn-text text-danger btn-sm d-flex align-items-center';
+                        const surgBtn = document.createElement('span');
+                        surgBtn.className = 'event surgery  d-flex align-items-center mx-2';
                         surgBtn.innerHTML =
-                            `<i class="fas fa-syringe me-1"></i><span>Surgeries: ${dayEvents.surgeries.length}</span>`;
+                            `<i class="fas fa-syringe me-1"></i>${dayEvents.surgeries.length} Surgeries`;
                         surgBtn.onclick = (e) => {
                             e.stopPropagation();
                             this.showDetailsModal('Surgeries', dateKey, dayEvents.surgeries);

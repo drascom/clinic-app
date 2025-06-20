@@ -11,7 +11,7 @@ require_once 'includes/header.php';
 <div class="container-fluid emp">
 
     <!-- Page Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 p-4">
         <div>
             <h2 class="mb-0">
                 <i class="fas fa-tachometer-alt me-2 text-primary"></i>
@@ -221,9 +221,10 @@ require_once 'includes/header.php';
                 });
 
                 if (!response.success) {
+                    console.error('API Response Error (stats):', response.error);
                     throw new Error(response.error || 'Failed to load statistics');
                 }
-
+                console.log('API Response (stats):', response.stats);
                 this.renderStatsCards(response.stats);
             } catch (error) {
                 console.error('Error loading stats:', error);
@@ -233,8 +234,7 @@ require_once 'includes/header.php';
 
         renderStatsCards(stats) {
             // Individual cards for patients
-            const individualCards = [
-                {
+            const individualCards = [{
                     title: 'Total Patients',
                     value: stats.total_patients,
                     icon: 'fas fa-users',
@@ -375,9 +375,10 @@ require_once 'includes/header.php';
                 });
 
                 if (!response.success) {
+                    console.error('API Response Error (yearlyChart):', response.error);
                     throw new Error(response.error || 'Failed to load yearly chart data');
                 }
-
+                console.log('API Response (yearlyChart):', response.chartData);
                 this.renderSurgeryChart(response.chartData);
             } catch (error) {
                 console.error('Error loading yearly chart:', error);
@@ -397,8 +398,7 @@ require_once 'includes/header.php';
                 type: 'line',
                 data: {
                     labels: data.map(item => item.month_name),
-                    datasets: [
-                        {
+                    datasets: [{
                             label: 'Surgeries',
                             data: data.map(item => item.surgery_count),
                             borderColor: 'rgb(54, 162, 235)',
@@ -473,9 +473,10 @@ require_once 'includes/header.php';
                 });
 
                 if (!response.success) {
+                    console.error('API Response Error (techAvailability):', response.error);
                     throw new Error(response.error || 'Failed to load technician analysis');
                 }
-
+                console.log('API Response (techAvailability):', response.data);
                 this.renderTechAnalysis(response.data);
             } catch (error) {
                 console.error('Error loading tech analysis:', error);

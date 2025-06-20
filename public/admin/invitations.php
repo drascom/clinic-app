@@ -358,7 +358,7 @@ include __DIR__ . '/../includes/header.php';
                 // The data object will now contain email, agency_id, and role
                 console.log('Invite form data:', data); // Log data to verify
 
-                apiRequest('invite_process', 'invite', data)
+                apiRequest('user_invitation', 'invite', data)
                     .then(response => {
                         const responseDiv = document.getElementById(
                             'responseMessage'

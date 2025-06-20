@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../auth/auth.php';
-require_once __DIR__ . '/../includes/email.php';
+require_once __DIR__ . '/email_functions.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
@@ -613,8 +613,10 @@ function save_invitation_draft($db, $input)
 function send_saved_invitation($db, $input)
 {
     $id = intval($input['id'] ?? 0);
+    error_log("send_saved_invitation: Received ID: " . $id);
 
     if ($id <= 0) {
+        error_log("send_saved_invitation: Invalid invitation ID: " . $id);
         return ['success' => false, 'error' => 'Invalid invitation ID.'];
     }
 
@@ -630,8 +632,10 @@ function send_saved_invitation($db, $input)
         $invitation = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$invitation) {
+            error_log("send_saved_invitation: Draft invitation with ID {$id} not found or not in 'draft' status.");
             return ['success' => false, 'error' => 'Draft invitation not found.'];
         }
+        error_log("send_saved_invitation: Invitation found. Candidate Email: " . $invitation['candidate_email']);
 
         // Extract invitation data
         $candidate_name = $invitation['candidate_name'];
@@ -739,6 +743,12 @@ function send_saved_invitation($db, $input)
 
         // Server settings
         $mail->isSMTP();
+        error_log("PHPMailer Config: Host=" . (defined('SMTP_HOST') ? SMTP_HOST : 'UNDEFINED') .
+            ", Username=" . (defined('SMTP_USERNAME') ? SMTP_USERNAME : 'UNDEFINED') .
+            ", SMTPSecure=" . (defined('SMTP_SECURE') ? SMTP_SECURE : 'UNDEFINED') .
+            ", Port=" . (defined('SMTP_PORT') ? SMTP_PORT : 'UNDEFINED') .
+            ", FromEmail=" . (defined('MAIL_FROM_EMAIL') ? MAIL_FROM_EMAIL : 'UNDEFINED') .
+            ", FromName=" . (defined('MAIL_FROM_NAME') ? MAIL_FROM_NAME : 'UNDEFINED'));
         $mail->Host = SMTP_HOST;
         $mail->SMTPAuth = true;
         $mail->Username = SMTP_USERNAME;
