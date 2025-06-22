@@ -1,6 +1,9 @@
 <?php
+require_once __DIR__ . '/../services/LogService.php';
+
 function handle_appointments($action, $method, $db, $input = [])
 {
+    $logService = new LogService();
     switch ($action) {
         case 'create':
             if ($method === 'POST') {
@@ -13,6 +16,7 @@ function handle_appointments($action, $method, $db, $input = [])
                 $notes = $_POST['notes'] ?? $input['notes'] ?? null;
 
                 if (!$room_id || !$patient_id || !$appointment_date || !$start_time || !$end_time || !$procedure_id) {
+                    $logService->log('appointments', 'error', 'Missing required fields for create appointment.', $input);
                     return ['success' => false, 'error' => 'Missing required fields'];
                 }
 
@@ -24,8 +28,9 @@ function handle_appointments($action, $method, $db, $input = [])
                 ");
                 $stmt->execute([$room_id, $appointment_date, $start_time, $start_time, $end_time, $end_time, $start_time, $end_time]);
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
-                
+
                 if ($result['count'] > 0) {
+                    $logService->log('appointments', 'error', 'Time slot overlaps with existing appointment.', $input);
                     return ['success' => false, 'error' => 'Time slot overlaps with existing appointment'];
                 }
 
@@ -35,14 +40,18 @@ function handle_appointments($action, $method, $db, $input = [])
                         VALUES (?, ?, ?, ?, ?, ?, ?)
                     ");
                     $stmt->execute([$room_id, $patient_id, $appointment_date, $start_time, $end_time, $procedure_id, $notes]);
-                    
-                    return ['success' => true, 'id' => $db->lastInsertId()];
+                    $newId = $db->lastInsertId();
+                    $logService->log('appointments', 'success', 'Appointment created successfully.', ['id' => $newId, 'patient_id' => $patient_id, 'date' => $appointment_date]);
+                    return ['success' => true, 'id' => $newId];
                 } catch (PDOException $e) {
+                    $logService->log('appointments', 'error', 'Database error during create appointment: ' . $e->getMessage(), ['error' => $e->getMessage(), 'input' => $input]);
                     return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
                 }
+            } else {
+                $logService->log('appointments', 'error', 'Invalid method for create action.', ['method' => $method]);
             }
             break;
-            
+
         case 'update':
             if ($method === 'POST') {
                 $id = $_POST['id'] ?? $input['id'] ?? null;
@@ -55,6 +64,7 @@ function handle_appointments($action, $method, $db, $input = [])
                 $notes = $_POST['notes'] ?? $input['notes'] ?? null;
 
                 if (!$id || !$room_id || !$patient_id || !$appointment_date || !$start_time || !$end_time || !$procedure_id) {
+                    $logService->log('appointments', 'error', 'Missing required fields for update appointment.', $input);
                     return ['success' => false, 'error' => 'Missing required fields'];
                 }
 
@@ -68,6 +78,7 @@ function handle_appointments($action, $method, $db, $input = [])
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
                 if ($result['count'] > 0) {
+                    $logService->log('appointments', 'error', 'Time slot overlaps with existing appointment during update.', $input);
                     return ['success' => false, 'error' => 'Time slot overlaps with existing appointment'];
                 }
 
@@ -79,11 +90,14 @@ function handle_appointments($action, $method, $db, $input = [])
                         WHERE id = ?
                     ");
                     $stmt->execute([$room_id, $patient_id, $appointment_date, $start_time, $end_time, $procedure_id, $notes, $id]);
-
+                    $logService->log('appointments', 'success', 'Appointment updated successfully.', ['id' => $id, 'patient_id' => $patient_id, 'date' => $appointment_date]);
                     return ['success' => true, 'message' => 'Appointment updated successfully'];
                 } catch (PDOException $e) {
+                    $logService->log('appointments', 'error', 'Database error during update appointment: ' . $e->getMessage(), ['error' => $e->getMessage(), 'input' => $input]);
                     return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
                 }
+            } else {
+                $logService->log('appointments', 'error', 'Invalid method for update action.', ['method' => $method]);
             }
             break;
 
@@ -92,6 +106,7 @@ function handle_appointments($action, $method, $db, $input = [])
                 $id = $_POST['id'] ?? $input['id'] ?? null;
 
                 if (!$id) {
+                    $logService->log('appointments', 'error', 'Appointment ID is required for delete.', $input);
                     return ['success' => false, 'error' => 'Appointment ID is required'];
                 }
 
@@ -105,8 +120,11 @@ function handle_appointments($action, $method, $db, $input = [])
                         return ['success' => false, 'error' => 'Appointment not found'];
                     }
                 } catch (PDOException $e) {
+                    $logService->log('appointments', 'error', 'Database error during delete appointment: ' . $e->getMessage(), ['error' => $e->getMessage(), 'id' => $id]);
                     return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
                 }
+            } else {
+                $logService->log('appointments', 'error', 'Invalid method for delete action.', ['method' => $method]);
             }
             break;
 
@@ -115,6 +133,7 @@ function handle_appointments($action, $method, $db, $input = [])
                 $id = $input['id'] ?? null;
 
                 if (!$id) {
+                    $logService->log('appointments', 'error', 'Appointment ID is required for get.', $input);
                     return ['success' => false, 'error' => 'Appointment ID is required'];
                 }
 
@@ -136,8 +155,11 @@ function handle_appointments($action, $method, $db, $input = [])
                         return ['success' => false, 'error' => 'Appointment not found'];
                     }
                 } catch (PDOException $e) {
+                    $logService->log('appointments', 'error', 'Database error during get appointment: ' . $e->getMessage(), ['error' => $e->getMessage(), 'id' => $id]);
                     return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
                 }
+            } else {
+                $logService->log('appointments', 'error', 'Invalid method for get action.', ['method' => $method]);
             }
             break;
 
@@ -181,11 +203,14 @@ function handle_appointments($action, $method, $db, $input = [])
 
                     return ['success' => true, 'appointments' => $appointments];
                 } catch (PDOException $e) {
+                    $logService->log('appointments', 'error', 'Database error during list appointments: ' . $e->getMessage(), ['error' => $e->getMessage(), 'input' => $input]);
                     return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
                 }
+            } else {
+                $logService->log('appointments', 'error', 'Invalid method for list action.', ['method' => $method]);
             }
             break;
     }
-    
+    $logService->log('appointments', 'error', 'Invalid action for appointments entity.', ['action' => $action, 'method' => $method]);
     return ['success' => false, 'error' => 'Invalid action for appointments entity'];
 }

@@ -12,7 +12,7 @@ The core principle is that every email is sent on behalf of a specific user, usi
 
 The heart of the new system is the `EmailService` class.
 
-- **Location:** `public/includes/services/EmailService.php`
+- **Location:** `public/services/EmailService.php`
 - **Dependency:** `PHPMailer` (or another robust mailer library)
 - **Initialization:** `new EmailService(PDO $db)`
 
@@ -23,12 +23,14 @@ The heart of the new system is the `EmailService` class.
 This is the primary method for sending all emails.
 
 - **Parameters:**
+
   - `int $userId`: The ID of the user whose SMTP settings should be used for sending the email. This is a **mandatory** parameter.
   - `string $recipient`: The email address of the recipient.
   - `string $subject`: The subject line of the email.
   - `string $htmlBody`: The HTML content of the email body.
 
 - **Returns:** An associative array with two keys:
+
   - `'success'` (boolean): `true` if the email was sent successfully, `false` otherwise.
   - `'message'` (string): A descriptive message indicating the result of the operation (e.g., "Email sent successfully." or an error message from the mailer).
 

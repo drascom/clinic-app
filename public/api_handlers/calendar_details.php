@@ -1,14 +1,18 @@
 <?php
+require_once __DIR__ . '/../services/LogService.php';
+
 function handle_calendar_details($action, $method, $db, $input = [])
 {
+    $logService = new LogService();
     if ($method === 'POST') {
         $room_id = $input['room_id'] ?? null;
         $date = $input['date'] ?? null;
-        
+
         if (!$room_id || !$date) {
+            $logService->log('calendar_details', 'error', 'Room ID and date are required for calendar details.', $input);
             return ['success' => false, 'error' => 'Room ID and date are required'];
         }
-        
+
         try {
             // Get room type to determine how to categorize appointments
             $stmt = $db->prepare("SELECT types FROM rooms WHERE id = ?");
@@ -36,7 +40,7 @@ function handle_calendar_details($action, $method, $db, $input = [])
             } elseif ($room_type === 'treatment') {
                 $cosmetics = $appointments;
             }
-            
+
             // Get surgery details
             $stmt = $db->prepare("
                 SELECT s.id, p.name as patient_name, s.graft_count, s.status
@@ -47,7 +51,7 @@ function handle_calendar_details($action, $method, $db, $input = [])
             ");
             $stmt->execute([$room_id, $date]);
             $surgery = $stmt->fetch(PDO::FETCH_ASSOC);
-            
+
             $surgery_details = null;
             if ($surgery) {
                 $surgery_details = [
@@ -58,7 +62,7 @@ function handle_calendar_details($action, $method, $db, $input = [])
                     'time' => '08:00-17:00' // Default time for surgeries
                 ];
             }
-            
+
             return [
                 'success' => true,
                 'consult' => $consults,
@@ -66,9 +70,12 @@ function handle_calendar_details($action, $method, $db, $input = [])
                 'surgery' => $surgery_details
             ];
         } catch (PDOException $e) {
+            $logService->log('calendar_details', 'error', 'Database error in calendar_details: ' . $e->getMessage(), ['error' => $e->getMessage(), 'input' => $input]);
             return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
         }
+    } else {
+        $logService->log('calendar_details', 'error', 'Only POST method is supported for calendar_details entity.', ['method' => $method]);
     }
-    
+
     return ['success' => false, 'error' => 'Only POST method is supported for calendar_details entity'];
 }

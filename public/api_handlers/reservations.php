@@ -1,6 +1,9 @@
 <?php
+require_once __DIR__ . '/../services/LogService.php';
+
 function handle_reservations($action, $method, $db, $input = [])
 {
+    $logService = new LogService();
     switch ($action) {
         case 'reserve':
             if ($method === 'POST') {
@@ -9,11 +12,13 @@ function handle_reservations($action, $method, $db, $input = [])
                 $reserved_date = $input['reserved_date'] ?? null;
 
                 if (!$room_id || !$surgery_id || !$reserved_date) {
+                    $logService->log('reservations', 'error', 'Room ID, surgery ID, and reserved date are required for reserve.', $input);
                     return ['success' => false, 'error' => 'Room ID, surgery ID, and reserved date are required.'];
                 }
 
                 // Validate date format
                 if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $reserved_date)) {
+                    $logService->log('reservations', 'error', 'Invalid date format for reserve.', ['date' => $reserved_date]);
                     return ['success' => false, 'error' => 'Invalid date format. Use YYYY-MM-DD.'];
                 }
 
@@ -69,13 +74,15 @@ function handle_reservations($action, $method, $db, $input = [])
                     ");
                     $stmt->execute([$reservation_id]);
                     $reservation = $stmt->fetch(PDO::FETCH_ASSOC);
-
+                    $logService->log('reservations', 'success', 'Room reserved successfully.', ['id' => $reservation_id, 'room_id' => $room_id, 'surgery_id' => $surgery_id, 'date' => $reserved_date]);
                     return ['success' => true, 'message' => 'Room reserved successfully.', 'reservation' => $reservation];
                 } catch (PDOException $e) {
                     if ($e->getCode() == 23000) { // UNIQUE constraint violation
                         http_response_code(409); // Conflict
+                        $logService->log('reservations', 'error', 'Room already booked for this date.', $input);
                         return ['success' => false, 'error' => 'Room already booked for this date.'];
                     }
+                    $logService->log('reservations', 'error', 'Database error on reserve: ' . $e->getMessage(), ['error' => $e->getMessage(), 'input' => $input]);
                     return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
                 }
             }
@@ -86,6 +93,7 @@ function handle_reservations($action, $method, $db, $input = [])
                 $id = $_POST['id'] ?? $input['id'] ?? $_GET['id'] ?? null;
 
                 if (!$id) {
+                    $logService->log('reservations', 'error', 'Reservation ID is required for cancel.', $input);
                     return ['success' => false, 'error' => 'Reservation ID is required.'];
                 }
 
@@ -113,9 +121,10 @@ function handle_reservations($action, $method, $db, $input = [])
                     // Delete the reservation
                     $stmt = $db->prepare("DELETE FROM room_reservations WHERE id = ?");
                     $stmt->execute([$id]);
-
+                    $logService->log('reservations', 'success', 'Reservation cancelled successfully.', ['id' => $id]);
                     return ['success' => true, 'message' => 'Reservation cancelled successfully.', 'cancelled_reservation' => $reservation];
                 } catch (PDOException $e) {
+                    $logService->log('reservations', 'error', 'Database error on cancel: ' . $e->getMessage(), ['error' => $e->getMessage(), 'id' => $id]);
                     return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
                 }
             }
@@ -126,6 +135,7 @@ function handle_reservations($action, $method, $db, $input = [])
                 $id = $_GET['id'] ?? null;
 
                 if (!$id) {
+                    $logService->log('reservations', 'error', 'Reservation ID is required for get.', $_GET);
                     return ['success' => false, 'error' => 'Reservation ID is required.'];
                 }
 
@@ -153,8 +163,10 @@ function handle_reservations($action, $method, $db, $input = [])
                         return ['success' => false, 'error' => 'Reservation not found.'];
                     }
 
+                    $logService->log('reservations', 'success', 'Reservation retrieved successfully.', ['id' => $id]);
                     return ['success' => true, 'reservation' => $reservation];
                 } catch (PDOException $e) {
+                    $logService->log('reservations', 'error', 'Database error on get: ' . $e->getMessage(), ['error' => $e->getMessage(), 'id' => $id]);
                     return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
                 }
             }
@@ -168,11 +180,13 @@ function handle_reservations($action, $method, $db, $input = [])
                 $reserved_date = $_POST['reserved_date'] ?? $input['reserved_date'] ?? null;
 
                 if (!$id || !$room_id || !$surgery_id || !$reserved_date) {
+                    $logService->log('reservations', 'error', 'Reservation ID, room ID, surgery ID, and reserved date are required for update.', $input);
                     return ['success' => false, 'error' => 'Reservation ID, room ID, surgery ID, and reserved date are required.'];
                 }
 
                 // Validate date format
                 if (!DateTime::createFromFormat('Y-m-d', $reserved_date)) {
+                    $logService->log('reservations', 'error', 'Invalid date format for update.', ['date' => $reserved_date]);
                     return ['success' => false, 'error' => 'Invalid date format. Use YYYY-MM-DD.'];
                 }
 
@@ -205,9 +219,10 @@ function handle_reservations($action, $method, $db, $input = [])
                         WHERE id = ?
                     ");
                     $stmt->execute([$room_id, $surgery_id, $reserved_date, $id]);
-
+                    $logService->log('reservations', 'success', 'Reservation updated successfully.', ['id' => $id, 'room_id' => $room_id, 'surgery_id' => $surgery_id, 'date' => $reserved_date]);
                     return ['success' => true, 'message' => 'Reservation updated successfully.'];
                 } catch (PDOException $e) {
+                    $logService->log('reservations', 'error', 'Database error on update: ' . $e->getMessage(), ['error' => $e->getMessage(), 'input' => $input]);
                     return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
                 }
             }
@@ -259,17 +274,20 @@ function handle_reservations($action, $method, $db, $input = [])
                     $stmt = $db->prepare($sql);
                     $stmt->execute($params);
                     $reservations = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+                    $logService->log('reservations', 'success', 'Reservations listed successfully.', ['count' => count($reservations)]);
                     return ['success' => true, 'reservations' => $reservations];
                 } catch (PDOException $e) {
+                    $logService->log('reservations', 'error', 'Database error on list: ' . $e->getMessage(), ['error' => $e->getMessage(), 'input' => $_GET]);
                     return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
                 }
             }
             break;
 
         default:
+            $logService->log('reservations', 'error', 'Invalid action for reservations entity.', ['action' => $action]);
             return ['success' => false, 'error' => 'Invalid action for reservations entity.'];
     }
 
+    $logService->log('reservations', 'error', 'Invalid request method for this action.', ['action' => $action, 'method' => $method]);
     return ['success' => false, 'error' => 'Invalid request method for this action.'];
 }

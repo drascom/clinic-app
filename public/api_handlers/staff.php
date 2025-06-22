@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../auth/auth.php';
+require_once __DIR__ . '/../services/LogService.php';
 
 /**
  * Handle staff API requests
@@ -131,20 +132,16 @@ function get_staff_list($db, $input)
             SELECT 
                 s.id, s.name, s.phone, s.email, s.location, s.position_applied, s.staff_type, s.is_active,
                 sd.speciality, sd.experience_level, sd.current_company, sd.linkedin_profile, sd.source,
-                sd.salary_expectation, sd.willing_to_relocate
+                sd.salary_expectation, sd.willing_to_relocate, sd.daily_fee
             FROM staff s
             LEFT JOIN staff_details sd ON s.id = sd.staff_id
             {$where_clause}
             ORDER BY s.name ASC
             LIMIT ? OFFSET ?
         ";
-        error_log("DEBUG: get_staff_list - Main SQL: " . $sql);
-        error_log("DEBUG: get_staff_list - Main Params: " . json_encode(array_merge($params, [$limit, $offset])));
-
         $stmt = $db->prepare($sql);
         $stmt->execute(array_merge($params, [$limit, $offset]));
         $staff_members = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        error_log("DEBUG: get_staff_list - Fetched Staff Members: " . count($staff_members) . " rows");
 
         // Get total count for candidates (with search filter)
         $candidate_count_sql = "
@@ -153,17 +150,15 @@ function get_staff_list($db, $input)
             LEFT JOIN staff_details sd ON s.id = sd.staff_id
             WHERE s.staff_type = 'candidate'
             " . (!empty($search) ? " AND (" . implode(' AND ', array_filter($where_conditions, function ($cond) {
-            return strpos($cond, 's.name LIKE') !== false || strpos($cond, 's.email LIKE') !== false || strpos($cond, 's.phone LIKE') !== false || strpos($cond, 's.location LIKE') !== false || strpos($cond, 's.position_applied LIKE') !== false || strpos($cond, 'sd.speciality LIKE') !== false || strpos($cond, 's.staff_type LIKE') !== false; })) . ")" : "");
+            return strpos($cond, 's.name LIKE') !== false || strpos($cond, 's.email LIKE') !== false || strpos($cond, 's.phone LIKE') !== false || strpos($cond, 's.location LIKE') !== false || strpos($cond, 's.position_applied LIKE') !== false || strpos($cond, 'sd.speciality LIKE') !== false || strpos($cond, 's.staff_type LIKE') !== false;
+        })) . ")" : "");
         $candidate_count_params = [];
         if (!empty($search)) {
             $candidate_count_params = array_merge($candidate_count_params, [$search_param, $search_param, $search_param, $search_param, $search_param, $search_param, $search_param]);
         }
-        error_log("DEBUG: get_staff_list - Candidate Count SQL: " . $candidate_count_sql);
-        error_log("DEBUG: get_staff_list - Candidate Count Params: " . json_encode($candidate_count_params));
         $candidate_count_stmt = $db->prepare($candidate_count_sql);
         $candidate_count_stmt->execute($candidate_count_params);
         $candidate_total = $candidate_count_stmt->fetchColumn();
-        error_log("DEBUG: get_staff_list - Candidate Total: " . $candidate_total);
 
         // Get total count for staff (with search filter)
         $staff_count_sql = "
@@ -172,22 +167,18 @@ function get_staff_list($db, $input)
             LEFT JOIN staff_details sd ON s.id = sd.staff_id
             WHERE s.staff_type = 'staff'
             " . (!empty($search) ? " AND (" . implode(' AND ', array_filter($where_conditions, function ($cond) {
-            return strpos($cond, 's.name LIKE') !== false || strpos($cond, 's.email LIKE') !== false || strpos($cond, 's.phone LIKE') !== false || strpos($cond, 's.location LIKE') !== false || strpos($cond, 's.position_applied LIKE') !== false || strpos($cond, 'sd.speciality LIKE') !== false || strpos($cond, 's.staff_type LIKE') !== false; })) . ")" : "");
+            return strpos($cond, 's.name LIKE') !== false || strpos($cond, 's.email LIKE') !== false || strpos($cond, 's.phone LIKE') !== false || strpos($cond, 's.location LIKE') !== false || strpos($cond, 's.position_applied LIKE') !== false || strpos($cond, 'sd.speciality LIKE') !== false || strpos($cond, 's.staff_type LIKE') !== false;
+        })) . ")" : "");
         $staff_count_params = [];
         if (!empty($search)) {
             $staff_count_params = array_merge($staff_count_params, [$search_param, $search_param, $search_param, $search_param, $search_param, $search_param, $search_param]);
         }
-        error_log("DEBUG: get_staff_list - Staff Count SQL: " . $staff_count_sql);
-        error_log("DEBUG: get_staff_list - Staff Count Params: " . json_encode($staff_count_params));
         $staff_count_stmt = $db->prepare($staff_count_sql);
         $staff_count_stmt->execute($staff_count_params);
         $staff_total = $staff_count_stmt->fetchColumn();
-        error_log("DEBUG: get_staff_list - Staff Total: " . $staff_total);
 
         // Calculate pagination for the currently filtered list
         $total_pages = ceil($total / $limit);
-        error_log("DEBUG: get_staff_list - Total: {$total}, Candidate Total: {$candidate_total}, Staff Total: {$staff_total}, Total Pages: {$total_pages}");
-
         return [
             'success' => true,
             'staff' => $staff_members,
@@ -202,9 +193,9 @@ function get_staff_list($db, $input)
                 'has_prev' => $page > 1
             ]
         ];
-
     } catch (Exception $e) {
-        error_log("Get staff list failed: " . $e->getMessage());
+        $logService = new LogService();
+        $logService->log('staff_api', 'error', "Get staff list failed", ['error' => $e->getMessage()]);
         return ['success' => false, 'error' => 'Failed to retrieve staff list.'];
     }
 }
@@ -225,7 +216,7 @@ function get_staff_details($db, $input)
             SELECT
                 s.id, s.name, s.phone, s.email, s.location, s.position_applied, s.staff_type, s.is_active,
                 sd.speciality, sd.experience_level, sd.current_company, sd.linkedin_profile, sd.source,
-                sd.salary_expectation, sd.willing_to_relocate
+                sd.salary_expectation, sd.willing_to_relocate, sd.daily_fee
             FROM staff s
             LEFT JOIN staff_details sd ON s.id = sd.staff_id
             WHERE s.id = ?
@@ -242,9 +233,9 @@ function get_staff_details($db, $input)
 
 
         return ['success' => true, 'staff' => $staff];
-
     } catch (Exception $e) {
-        error_log("Get staff details failed: " . $e->getMessage());
+        $logService = new LogService();
+        $logService->log('staff_api', 'error', "Get staff details failed", ['id' => $input['id'] ?? 0, 'error' => $e->getMessage()]);
         return ['success' => false, 'error' => 'Failed to retrieve staff details.'];
     }
 }
@@ -282,6 +273,8 @@ function add_staff($db, $input)
             return ['success' => false, 'error' => 'A staff member with this email already exists.'];
         }
     } catch (Exception $e) {
+        $logService = new LogService();
+        $logService->log('staff_api', 'error', "Duplicate email check failed", ['email' => $email, 'error' => $e->getMessage()]);
         return ['success' => false, 'error' => 'Failed to check for duplicate email.'];
     }
 
@@ -296,10 +289,10 @@ function add_staff($db, $input)
 
         $result = $stmt->execute([
             trim($input['name']),
-            trim($input['phone'] ?? null),
+            trim($input['phone'] ?? ''),
             $email,
             trim($input['location']),
-            trim($input['position_applied'] ?? null),
+            trim($input['position_applied'] ?? ''),
             trim($input['staff_type']),
             intval($input['is_active'] ?? 1),
             $updated_by
@@ -317,19 +310,20 @@ function add_staff($db, $input)
             $details_stmt = $db->prepare("
                 INSERT INTO staff_details (
                     staff_id, speciality, experience_level, current_company,
-                    linkedin_profile, source, salary_expectation, willing_to_relocate, updated_by
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    linkedin_profile, source, salary_expectation, willing_to_relocate, daily_fee, updated_by
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ");
 
             $details_result = $details_stmt->execute([
                 $staff_id,
-                trim($input['speciality'] ?? null),
-                trim($input['experience_level'] ?? null),
-                trim($input['current_company'] ?? null),
-                trim($input['linkedin_profile'] ?? null),
-                trim($input['source'] ?? null),
-                trim($input['salary_expectation'] ?? null),
+                trim($input['speciality'] ?? ''),
+                trim($input['experience_level'] ?? ''),
+                trim($input['current_company'] ?? ''),
+                trim($input['linkedin_profile'] ?? ''),
+                trim($input['source'] ?? ''),
+                trim($input['salary_expectation'] ?? ''),
                 intval($input['willing_to_relocate'] ?? 0),
+                intval($input['daily_fee'] ?? 0),
                 $updated_by
             ]);
 
@@ -345,10 +339,10 @@ function add_staff($db, $input)
             'message' => 'Staff member added successfully.',
             'staff_id' => $staff_id
         ];
-
     } catch (Exception $e) {
         $db->rollBack();
-        error_log("Add staff failed: " . $e->getMessage());
+        $logService = new LogService();
+        $logService->log('staff_api', 'error', "Add staff failed", ['input' => $input, 'error' => $e->getMessage()]);
         return ['success' => false, 'error' => 'Failed to add staff member: ' . $e->getMessage()];
     }
 }
@@ -358,7 +352,6 @@ function add_staff($db, $input)
  */
 function update_staff($db, $input)
 {
-    error_log("DEBUG: update_staff received input: " . print_r($input, true));
     $id = intval($input['id'] ?? 0);
 
     if (!$id) {
@@ -393,6 +386,8 @@ function update_staff($db, $input)
             return ['success' => false, 'error' => 'A staff member with this email already exists.'];
         }
     } catch (Exception $e) {
+        $logService = new LogService();
+        $logService->log('staff_api', 'error', "Duplicate email check failed on update", ['email' => $email, 'id' => $id, 'error' => $e->getMessage()]);
         return ['success' => false, 'error' => 'Failed to check for duplicate email.'];
     }
 
@@ -408,10 +403,10 @@ function update_staff($db, $input)
 
         $result = $stmt->execute([
             trim($input['name']),
-            trim($input['phone'] ?? null),
+            trim($input['phone'] ?? ''),
             $email,
             trim($input['location']),
-            trim($input['position_applied'] ?? null),
+            trim($input['position_applied'] ?? ''),
             trim($input['staff_type']),
             intval($input['is_active'] ?? 1),
             $updated_by,
@@ -421,7 +416,6 @@ function update_staff($db, $input)
         // If staff type is 'candidate', update or insert into staff_details table
         $staff_type_lower = strtolower(trim($input['staff_type']));
         if ($staff_type_lower === 'candidate') {
-            error_log("DEBUG: staff_type in update_staff: " . trim($input['staff_type']) . ", comparison result: " . ($staff_type_lower === 'candidate' ? 'true' : 'false'));
             // Check if details already exist
             $check_details_stmt = $db->prepare("SELECT id FROM staff_details WHERE staff_id = ?");
             $check_details_stmt->execute([$id]);
@@ -432,42 +426,42 @@ function update_staff($db, $input)
                 $details_stmt = $db->prepare("
                     UPDATE staff_details SET
                         speciality = ?, experience_level = ?, current_company = ?,
-                        linkedin_profile = ?, source = ?, salary_expectation = ?, willing_to_relocate = ?, updated_by = ?
+                        linkedin_profile = ?, source = ?, salary_expectation = ?, willing_to_relocate = ?, daily_fee = ?, updated_by = ?
                     WHERE staff_id = ?
                 ");
                 $update_params = [
-                    trim($input['speciality'] ?? null),
-                    trim($input['experience_level'] ?? null),
-                    trim($input['current_company'] ?? null),
-                    trim($input['linkedin_profile'] ?? null),
-                    trim($input['source'] ?? null),
-                    trim($input['salary_expectation'] ?? null),
+                    trim($input['speciality'] ?? ''),
+                    trim($input['experience_level'] ?? ''),
+                    trim($input['current_company'] ?? ''),
+                    trim($input['linkedin_profile'] ?? ''),
+                    trim($input['source'] ?? ''),
+                    trim($input['salary_expectation'] ?? ''),
                     intval($input['willing_to_relocate'] ?? 0),
+                    intval($input['daily_fee'] ?? 0),
                     $updated_by,
                     $id
                 ];
-                error_log("DEBUG: update_staff_details UPDATE params: " . print_r($update_params, true));
                 $details_result = $details_stmt->execute($update_params);
             } else {
                 // Insert new details
                 $details_stmt = $db->prepare("
                     INSERT INTO staff_details (
                         staff_id, speciality, experience_level, current_company,
-                        linkedin_profile, source, salary_expectation, willing_to_relocate, updated_by
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        linkedin_profile, source, salary_expectation, willing_to_relocate, daily_fee, updated_by
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ");
                 $insert_params = [
                     $id,
-                    trim($input['speciality'] ?? null),
-                    trim($input['experience_level'] ?? null),
-                    trim($input['current_company'] ?? null),
-                    trim($input['linkedin_profile'] ?? null),
-                    trim($input['source'] ?? null),
-                    trim($input['salary_expectation'] ?? null),
+                    trim($input['speciality'] ?? ''),
+                    trim($input['experience_level'] ?? ''),
+                    trim($input['current_company'] ?? ''),
+                    trim($input['linkedin_profile'] ?? ''),
+                    trim($input['source'] ?? ''),
+                    trim($input['salary_expectation'] ?? ''),
                     intval($input['willing_to_relocate'] ?? 0),
+                    intval($input['daily_fee'] ?? 0),
                     $updated_by
                 ];
-                error_log("DEBUG: update_staff_details INSERT params: " . print_r($insert_params, true));
                 $details_result = $details_stmt->execute($insert_params);
             }
 
@@ -483,10 +477,10 @@ function update_staff($db, $input)
 
         $db->commit();
         return ['success' => true, 'message' => 'Staff member updated successfully.'];
-
     } catch (Exception $e) {
         $db->rollBack();
-        error_log("Update staff failed: " . $e->getMessage());
+        $logService = new LogService();
+        $logService->log('staff_api', 'error', "Update staff failed", ['id' => $id, 'input' => $input, 'error' => $e->getMessage()]);
         return ['success' => false, 'error' => 'Failed to update staff member: ' . $e->getMessage()];
     }
 }
@@ -528,9 +522,9 @@ function delete_staff($db, $input)
         } else {
             return ['success' => false, 'error' => 'Failed to delete staff member.'];
         }
-
     } catch (Exception $e) {
-        error_log("Delete staff failed: " . $e->getMessage());
+        $logService = new LogService();
+        $logService->log('staff_api', 'error', "Delete staff failed", ['id' => $id, 'error' => $e->getMessage()]);
         return ['success' => false, 'error' => 'Failed to delete staff member: ' . $e->getMessage()];
     }
 }
@@ -580,9 +574,9 @@ function add_staff_note($db, $input)
         } else {
             return ['success' => false, 'error' => 'Failed to add note.'];
         }
-
     } catch (Exception $e) {
-        error_log("Add staff note failed: " . $e->getMessage());
+        $logService = new LogService();
+        $logService->log('staff_api', 'error', "Add staff note failed", ['staff_id' => $staff_id, 'error' => $e->getMessage()]);
         return ['success' => false, 'error' => 'Failed to add note: ' . $e->getMessage()];
     }
 }
@@ -611,9 +605,9 @@ function get_staff_notes($db, $input)
         $notes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return ['success' => true, 'notes' => $notes];
-
     } catch (Exception $e) {
-        error_log("Get staff notes failed: " . $e->getMessage());
+        $logService = new LogService();
+        $logService->log('staff_api', 'error', "Get staff notes failed", ['staff_id' => $staff_id, 'error' => $e->getMessage()]);
         return ['success' => false, 'error' => 'Failed to retrieve notes.'];
     }
 }
@@ -642,9 +636,9 @@ function delete_staff_note($db, $input)
         } else {
             return ['success' => false, 'error' => 'Note not found or already deleted.'];
         }
-
     } catch (Exception $e) {
-        error_log("Delete staff note failed: " . $e->getMessage());
+        $logService = new LogService();
+        $logService->log('staff_api', 'error', "Delete staff note failed", ['note_id' => $note_id, 'error' => $e->getMessage()]);
         return ['success' => false, 'error' => 'Failed to delete note: ' . $e->getMessage()];
     }
 }

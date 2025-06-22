@@ -1,17 +1,22 @@
 <?php
+require_once __DIR__ . '/../services/LogService.php';
+
 function handle_availability($action, $method, $db, $input = [])
 {
+    $logService = new LogService();
     switch ($action) {
         case 'byDate':
             if ($method === 'POST') {
                 $date = $input['date'] ?? null;
 
                 if (!$date) {
+                    $logService->log('availability', 'error', 'Date is required for byDate action.', $input);
                     return ['success' => false, 'error' => 'Date is required.'];
                 }
 
                 // Validate date format
                 if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+                    $logService->log('availability', 'error', 'Invalid date format for byDate action.', ['date' => $date]);
                     return ['success' => false, 'error' => 'Invalid date format. Use YYYY-MM-DD.'];
                 }
 
@@ -67,8 +72,11 @@ function handle_availability($action, $method, $db, $input = [])
                         ]
                     ];
                 } catch (PDOException $e) {
+                    $logService->log('availability', 'error', 'Database error in byDate action: ' . $e->getMessage(), ['error' => $e->getMessage(), 'date' => $date]);
                     return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
                 }
+            } else {
+                $logService->log('availability', 'error', 'Invalid method for byDate action.', ['method' => $method]);
             }
             break;
 
@@ -78,11 +86,13 @@ function handle_availability($action, $method, $db, $input = [])
                 $end = $input['end'] ?? null;
 
                 if (!$start || !$end) {
+                    $logService->log('availability', 'error', 'Start and end dates are required for range action.', $input);
                     return ['success' => false, 'error' => 'Start and end dates are required.'];
                 }
 
                 // Validate date formats
                 if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $start) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $end)) {
+                    $logService->log('availability', 'error', 'Invalid date format for range action.', ['start' => $start, 'end' => $end]);
                     return ['success' => false, 'error' => 'Invalid date format. Use YYYY-MM-DD.'];
                 }
 
@@ -124,16 +134,21 @@ function handle_availability($action, $method, $db, $input = [])
                         $availability[$date][] = $row;
                     }
 
+                    $logService->log('availability', 'success', 'Availability range retrieved successfully.', ['start' => $start, 'end' => $end, 'count' => count($results)]);
                     return ['success' => true, 'start' => $start, 'end' => $end, 'availability' => $availability];
                 } catch (PDOException $e) {
+                    $logService->log('availability', 'error', 'Database error in range action: ' . $e->getMessage(), ['error' => $e->getMessage(), 'start' => $start, 'end' => $end]);
                     return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
                 }
+            } else {
+                $logService->log('availability', 'error', 'Invalid method for range action.', ['method' => $method]);
             }
             break;
 
         default:
+            $logService->log('availability', 'error', 'Invalid action for availability entity.', ['action' => $action]);
             return ['success' => false, 'error' => 'Invalid action for availability entity.'];
     }
-
+    $logService->log('availability', 'error', 'Invalid request method for this action.', ['action' => $action, 'method' => $method]);
     return ['success' => false, 'error' => 'Invalid request method for this action.'];
 }

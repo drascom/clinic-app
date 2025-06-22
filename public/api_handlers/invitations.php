@@ -1,6 +1,10 @@
 <?php
+require_once __DIR__ . '/../services/LogService.php';
+require_once __DIR__ . '/../services/EmailService.php';
+
 function handle_invitations($action, $method, $db, $request_data = [])
 {
+    $logService = new LogService();
     $input = $request_data;
     // log_response($action, $method, $request_data); // Uncomment for debugging
 
@@ -9,7 +13,11 @@ function handle_invitations($action, $method, $db, $request_data = [])
             if ($method === 'POST') {
                 // Fetch all invitations
                 $stmt = $db->query("SELECT id, email, role, agency_id, status, created_at, used_at FROM invitations ORDER BY created_at DESC");
-                return ['success' => true, 'invitations' => $stmt->fetchAll(PDO::FETCH_ASSOC)];
+                $invitations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                $logService->log('invitations', 'success', 'Invitations listed successfully.', ['count' => count($invitations)]);
+                return ['success' => true, 'invitations' => $invitations];
+            } else {
+                $logService->log('invitations', 'error', 'Invalid method for list action.', ['method' => $method]);
             }
             break;
 
@@ -20,9 +28,18 @@ function handle_invitations($action, $method, $db, $request_data = [])
                     $stmt = $db->prepare("SELECT id, email, role, agency_id, status, created_at, used_at FROM invitations WHERE id = ?");
                     $stmt->execute([$id]);
                     $data = $stmt->fetch(PDO::FETCH_ASSOC);
-                    return $data ? ['success' => true, 'invitation' => $data] : ['success' => false, 'error' => "Invitation not found with ID: {$id}"];
+                    if ($data) {
+                        $logService->log('invitations', 'success', 'Invitation retrieved successfully.', ['id' => $id]);
+                        return ['success' => true, 'invitation' => $data];
+                    } else {
+                        $logService->log('invitations', 'error', "Invitation not found with ID: {$id}", ['id' => $id]);
+                        return ['success' => false, 'error' => "Invitation not found with ID: {$id}"];
+                    }
                 }
+                $logService->log('invitations', 'error', 'ID is required for get action.', $input);
                 return ['success' => false, 'error' => 'ID is required.'];
+            } else {
+                $logService->log('invitations', 'error', 'Invalid method for get action.', ['method' => $method]);
             }
             break;
 
@@ -34,14 +51,19 @@ function handle_invitations($action, $method, $db, $request_data = [])
                     $check_stmt = $db->prepare("SELECT id FROM invitations WHERE id = ?");
                     $check_stmt->execute([$id]);
                     if (!$check_stmt->fetch()) {
+                        $logService->log('invitations', 'error', 'Invitation not found for delete.', ['id' => $id]);
                         return ['success' => false, 'error' => 'Invitation not found.'];
                     }
 
                     $stmt = $db->prepare("DELETE FROM invitations WHERE id = ?");
                     $stmt->execute([$id]);
+                    $logService->log('invitations', 'success', 'Invitation deleted successfully.', ['id' => $id]);
                     return ['success' => true, 'message' => 'Invitation deleted successfully.'];
                 }
+                $logService->log('invitations', 'error', 'ID is required for delete action.', $input);
                 return ['success' => false, 'error' => 'ID is required.'];
+            } else {
+                $logService->log('invitations', 'error', 'Invalid method for delete action.', ['method' => $method]);
             }
             break;
 
@@ -55,6 +77,7 @@ function handle_invitations($action, $method, $db, $request_data = [])
                     $invitation = $check_stmt->fetch(PDO::FETCH_ASSOC);
 
                     if (!$invitation) {
+                        $logService->log('invitations', 'error', 'Invitation not found or is not pending for resend.', ['id' => $id]);
                         return ['success' => false, 'error' => 'Invitation not found or is not pending.'];
                     }
 
@@ -80,26 +103,39 @@ function handle_invitations($action, $method, $db, $request_data = [])
                             'body' => $email_body,
                         ];
 
-                        // Call the handle_send_mail function directly
-                        $mail_response = handle_send_mail('send', 'POST', $db, $mail_request_data);
+                        // Call the EmailService
+                        $emailService = new EmailService($db);
+                        $mail_response = $emailService->sendInvitationEmail(
+                            $_SESSION['user_id'],
+                            $invitation['email'],
+                            $invitation_link,
+                            'user' // Assuming 'user' role for now, adjust if needed
+                        );
 
                         if ($mail_response['success']) {
+                            $logService->log('invitations', 'success', 'Invitation resent successfully.', ['id' => $id, 'email' => $invitation['email']]);
                             return ['success' => true, 'message' => 'Invitation resent successfully.'];
                         } else {
-                            error_log("Failed to resend invitation email to {$invitation['email']}: " . ($mail_response['message'] ?? 'Unknown error'));
+                            $logService->log('invitations', 'error', "Failed to resend invitation email to {$invitation['email']}: " . ($mail_response['message'] ?? 'Unknown error'), ['id' => $id, 'email' => $invitation['email']]);
                             return ['success' => true, 'message' => 'Invitation token updated, but failed to resend email.', 'email_error' => $mail_response['message'] ?? 'Unknown email error'];
                         }
                     } else {
+                        $logService->log('invitations', 'error', 'Failed to update invitation token for resend.', ['id' => $id]);
                         return ['success' => false, 'error' => 'Failed to update invitation token.'];
                     }
                 }
+                $logService->log('invitations', 'error', 'ID is required for resend action.', $input);
                 return ['success' => false, 'error' => 'ID is required.'];
+            } else {
+                $logService->log('invitations', 'error', 'Invalid method for resend action.', ['method' => $method]);
             }
             break;
 
         default:
+            $logService->log('invitations', 'error', "Invalid action '{$action}' for invitations entity.", ['action' => $action]);
             return ['success' => false, 'error' => "Invalid action '{$action}' for invitations entity."];
     }
 
+    $logService->log('invitations', 'error', "Invalid request for action '{$action}' with method '{$method}'.", ['action' => $action, 'method' => $method]);
     return ['success' => false, 'error' => "Invalid request for action '{$action}' with method '{$method}'."];
 }

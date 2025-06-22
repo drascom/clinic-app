@@ -15,8 +15,13 @@ $page_title = "Email Dashboard";
     }
 
     .list-group-item.active {
-        background-color: #d0e2ff !important;
+        background-color: rgb(233, 238, 242) !important;
         color: black;
+    }
+
+    .list-group-item:hover {
+        background-color: var(--bs-tertiary-bg);
+        /* A subtle hover effect */
     }
 
     .card-body {
@@ -38,6 +43,107 @@ $page_title = "Email Dashboard";
         width: auto !important;
         /* neutralise fixed widths coming from email */
     }
+
+    .accordion-item {
+        border: 1px solid #dee2e6;
+        margin-bottom: 1rem;
+        border-radius: .375rem;
+    }
+
+    .accordion-button {
+        border-radius: .375rem;
+        background-color: #fff;
+        color: #212529;
+        border: none;
+    }
+
+    .accordion-button:hover {
+        background-color: var(--bs-tertiary-bg);
+        /* A subtle hover effect */
+    }
+
+    .accordion-button:not(.collapsed) {
+        color: #0c63e4;
+        background-color: #e7f1ff;
+        box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .125);
+    }
+
+    .accordion-button:focus {
+        z-index: 3;
+        border-color: #86b7fe;
+        outline: 0;
+        box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .25);
+    }
+
+    .accordion-button::after {
+        flex-shrink: 0;
+        width: 1.25rem;
+        height: 1.25rem;
+        margin-left: auto;
+        content: "";
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23212529'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-size: 1.25rem;
+        transition: transform .2s ease-in-out;
+    }
+
+    .accordion-button:not(.collapsed)::after {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%230c63e4'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+        transform: rotate(-180deg);
+    }
+
+    .timeline {
+        position: relative;
+        padding-left: 40px;
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 20px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: rgb(24, 116, 209);
+    }
+
+    .accordion-item {
+        position: relative;
+    }
+
+    .accordion-header {
+        background-color: var(--bs-tertiary-bg);
+    }
+
+    .accordion-item::before {
+        content: '';
+        position: absolute;
+        left: -19px;
+        top: 22px;
+        /* Aligns circle with the header text */
+        transform: translateX(-50%);
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--bs-body-bg);
+        border: 2px solid var(--bs-primary);
+        z-index: 1;
+    }
+
+    .accordion-button::after {
+        font-family: "Font Awesome 5 Free";
+        content: "\f067";
+        /* plus */
+        font-weight: 900;
+        background-image: none;
+    }
+
+    .accordion-button:not(.collapsed)::after {
+        content: "\f068";
+        /* minus */
+        transform: none;
+        background-image: none;
+    }
 </style>
 <div class="container-fluid emp p-4">
     <div class="row">
@@ -51,14 +157,26 @@ $page_title = "Email Dashboard";
                             Inbox
                         </h5>
                         <div class="d-flex justify-content-between px-2">
-                            <button class="btn btn-sm btn-outline-primary" id="check-emails-btn">
-                                <i class="fas fa-sync-alt me-1"></i>
-                                Check
+
+                            <!-- xs + sm: text buttons -->
+                            <button class="btn btn-sm btn-text text-success d-inline-flex d-md-none align-items-center" id="check-emails-btn-sm">
+                                <i id="check-emails-btn-sm" class="fas fa-sync-alt me-1"></i> Check
                             </button>
-                            <a href="#" class="btn btn-sm btn-outline-success ms-2" id="nav-send">
-                                <i class="fas fa-envelope me-2"></i> Send
+                            <a href="#" class="btn btn-sm btn-text text-primary ms-2 d-inline-flex d-md-none align-items-center" id="nav-send-sm">
+                                <i class="fas fa-envelope me-1"></i> Send
                             </a>
+
+                            <!-- md and up: outline buttons -->
+                            <button class="btn btn-sm btn-outline-primary d-none d-md-inline-flex align-items-center" id="check-emails-btn">
+                                <i class="fas fa-sync-alt me-1"></i> Check
+                            </button>
+
+                            <a href="#" class="btn btn-sm btn-outline-success ms-2 d-none d-md-inline-flex align-items-center" id="nav-send">
+                                <i class="fas fa-envelope me-1"></i> Send
+                            </a>
+
                         </div>
+
                     </div>
                 </div>
                 <div class="card-body p-0 d-flex flex-column">
@@ -96,11 +214,13 @@ $page_title = "Email Dashboard";
                         </div>
                     </div>
                     <!-- Toggle Message -->
-                    <div id="toggle-message-container" class="alert alert-info d-flex align-items-center mt-3"
-                        role="alert">
-                        <i class="fas fa-info-circle me-2"></i>
-                        <small class="text-muted">To see all conversations, click person name again.</small>
+                    <div class="px-4">
+                        <div id="toggle-message-container" class="alert alert-info align-items-center mt-3" role="alert" style="display:none;">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <small class="text-muted">To see all conversations, click person name again.</small>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -111,11 +231,11 @@ $page_title = "Email Dashboard";
                 <div class="card-header">
                     <h5 class="mb-0">
                         <i class="fas fa-envelope-open-text me-2 text-primary"></i>
-                        Conversation
+                        Conversations
                     </h5>
                 </div>
-                <div class="card-body p-0">
-                    <div id="email-content" class="accordion accordion-flush">
+                <div class="card-body px-0">
+                    <div id="email-content" class="accordion accordion-flush timeline">
                         <!-- Email conversation will be loaded here -->
                         <div class="text-center p-4">
                             <p>Select an email from the list to view the conversation.</p>
@@ -129,7 +249,7 @@ $page_title = "Email Dashboard";
 
 <?php require_once '../includes/footer.php'; ?>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const emailList = document.getElementById('email-list');
         const emailContent = document.getElementById('email-content');
         const searchInput = document.getElementById('search-input');
@@ -224,16 +344,17 @@ $page_title = "Email Dashboard";
                                 '';
                             const listItem = document.createElement('a');
                             listItem.href = '#';
-                            listItem.className = 'list-group-item list-group-item-action';
+                            listItem.className = 'list-group-item list-group-item-action mb-1';
+                            listItem.style = 'border-radius: 30px;';
                             listItem.dataset.senderEmail = convo.sender_email;
                             listItem.innerHTML = `
-                            <div class="d-flex w-100 justify-content-between">
+                            <div class="d-flex w-100 justify-content-between mt-1">
                                 <h6 class="mb-1">${convo.sender_name}</h6>
                                 <small>${new Date(convo.latest_date * 1000).toLocaleDateString()}</small>
                             </div>
                              <span class="mb-1 d-flex justify-content-between"><small>${convo.sender_email} </small>
                                <span>
-                                     <i class="fas fa-eye-slash deactivate-conversation-btn me-2" data-sender-email="${convo.sender_email}"></i>
+                                     <i class="fas fa-eye-slash deactivate-conversation-btn me-2 text-danger" data-sender-email="${convo.sender_email}"></i>
                                     <!--   <i class="fas fa-trash-alt text-danger delete-conversation-btn" data-sender-email="${convo.sender_email}"></i> -->   </span>
                              </span>
                             ${unreadBadge}
@@ -314,9 +435,9 @@ $page_title = "Email Dashboard";
             progressText.textContent = 'Starting email fetch...';
 
             // Use EventSource for real-time progress updates
-            const eventSource = new EventSource('api.php?entity=emails&action=check_new_emails');
+            const eventSource = new EventSource('/api.php?entity=emails&action=check_new_emails');
 
-            eventSource.onmessage = function (event) {
+            eventSource.onmessage = function(event) {
                 const data = JSON.parse(event.data);
                 if (data.status === 'progress') {
                     const percentage = data.total > 0 ? (data.processed / data.total) * 100 : 0;
@@ -345,7 +466,7 @@ $page_title = "Email Dashboard";
                 }
             };
 
-            eventSource.onerror = function (err) {
+            eventSource.onerror = function(err) {
                 console.error('EventSource failed:', err);
                 progressText.textContent = 'Error: Connection to server lost or failed.';
                 progressBar.classList.add('bg-danger');
@@ -366,8 +487,8 @@ $page_title = "Email Dashboard";
             }
 
             apiRequest('emails', 'delete_conversation', {
-                sender_email: senderEmail
-            })
+                    sender_email: senderEmail
+                })
                 .then(data => {
                     if (data.success) {
                         alert('Conversation deleted successfully!');
@@ -391,8 +512,8 @@ $page_title = "Email Dashboard";
             }
 
             apiRequest('emails', 'deactivate_conversation', {
-                sender_email: senderEmail
-            })
+                    sender_email: senderEmail
+                })
                 .then(data => {
                     if (data.success) {
                         // On success, find the specific list item and remove it from the DOM
@@ -424,14 +545,14 @@ $page_title = "Email Dashboard";
         fetchAndDisplayConversations(currentFolder);
 
         // Event listener for "Click to see deleted mails"
-        showDeactivatedEmailsBtn.addEventListener('click', function (event) {
+        showDeactivatedEmailsBtn.addEventListener('click', function(event) {
             event.preventDefault();
             currentFolder = currentFolder == 'deactivated' ? 'inbox' : 'deactivated';
             fetchAndDisplayConversations(currentFolder);
         });
 
         // Handle click on a sender to load the conversation or delete
-        emailList.addEventListener('click', function (event) {
+        emailList.addEventListener('click', function(event) {
             const target = event.target;
 
             // Handle deactivate button click
@@ -460,6 +581,7 @@ $page_title = "Email Dashboard";
             const senderEmail = listItem.dataset.senderEmail;
 
             if (activeConversationEmail === senderEmail) {
+                console.log('2 ', activeConversationEmail, senderEmail)
                 // If the same item is clicked again, clear content and show all list items
                 emailContent.innerHTML =
                     '<p class="text-center p-4">Select an email from the list to view the conversation.</p>';
@@ -477,6 +599,7 @@ $page_title = "Email Dashboard";
                 hideOtherListItems(senderEmail);
                 addToggleMessage(); // Add message to newly active
                 activeConversationEmail = senderEmail;
+                console.log('1 ', activeConversationEmail)
                 loadConversation(senderEmail, listItem);
             }
         });
@@ -492,8 +615,8 @@ $page_title = "Email Dashboard";
 
             // Mark the conversation as read first
             apiRequest('emails', 'mark_as_read', {
-                sender_email: senderEmail
-            })
+                    sender_email: senderEmail
+                })
                 .then(markData => {
                     if (markData.success && markData.updated_count > 0) {
                         // Remove the unread badge from the UI
@@ -509,8 +632,8 @@ $page_title = "Email Dashboard";
 
 
             apiRequest('emails', 'get_conversation', {
-                sender_email: senderEmail
-            })
+                    sender_email: senderEmail
+                })
                 .then(data => {
                     if (data.success) {
                         emailContent.innerHTML = ''; // Clear spinner
@@ -531,30 +654,25 @@ $page_title = "Email Dashboard";
                                             data-bs-target="#collapse-${index}"
                                             aria-expanded="${index === 0 ? 'true' : 'false'}"
                                             aria-controls="collapse-${index}">
-                                        <div class="d-flex w-100 justify-content-between">
-                                            <div class="fw-bold me-2"> <p>Subject: </br>
-                                           <small class="text-muted">${email.subject}</small></p></div>
-                                            <small >${new Date(email.date * 1000).toLocaleString()}</small>
+                                        <div class="d-flex w-100 justify-content-between align-items-center">
+                                            <span class="fw-bold me-2">${email.subject}</span>
+                                            <small class="text-muted me-2">${new Date(email.date * 1000).toLocaleString()}</small>
                                         </div>
                                     </button>
                                 </h2>
-
-                                <!-- added data-bs-parent -->
                                 <div id="collapse-${index}"
                                     class="accordion-collapse collapse ${index === 0 ? 'show' : ''}"
                                     aria-labelledby="heading-${index}"
                                     data-bs-parent="#email-content">
-
                                     <div class="accordion-body overflow-auto" style="max-height:65vh;">
                                         <small>From: ${email.from}</small><br>
                                         <small>To: ${email.to}</small><hr>
                                         <div class="email-body">${email.body}</div>
-
                                         ${email.attachments?.length
                                     ? `<hr><h6>Attachments:</h6><ul class="list-unstyled">
                                                 ${email.attachments.map(a => `
                                                     <li>
-                                                        <a href="download.php?file=${encodeURIComponent(a.file_path.replace(/^\//, ''))}&filename=${encodeURIComponent(a.filename)}"
+                                                        <a href="serve-file.php?file_id=${a.id}"
                                                         class="download-attachment-btn" target="_blank">
                                                             <i class="fas fa-paperclip me-1"></i>
                                                             ${a.filename} (${(a.size / 1024).toFixed(2)} KB)

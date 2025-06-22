@@ -13,7 +13,9 @@ ini_set('error_log', __DIR__ . '/../logs/error.log');
 ob_start();
 
 require_once __DIR__ . '/includes/db.php';
+require_once __DIR__ . '/services/LogService.php';
 
+$logService = new LogService();
 
 // Main API routing
 $entity = null;
@@ -84,29 +86,30 @@ try {
             // Log function check
             if (function_exists($handler_function)) {
                 $db = get_db();
+                // Add authenticated user ID to input for handlers
+                $input['authenticated_user_id'] = $_SESSION['user_id'] ?? 0;
+
                 // Pass the input data to the handler function
                 $response = $handler_function($action, $method, $db, $input ?? []);
-                $log_message = "Result '{$entity}', action '{$action}', method '{$method}': " . $handler_function;
-                error_log($log_message);
+                if (!$response['success']) {
+                    $logService->log($entity, $response['success'] ? 'success' : 'error', "Action: {$action}", $response);
+                }
+                $logService->log($entity, $response['success'] ? 'success' : 'error', "File: {$entity} Action: {$action}", []);
             } else {
-                $log_message = "Handler function not found for entity '{$entity}', action '{$action}', method '{$method}': " . $handler_function;
-                error_log($log_message);
                 $response = ['success' => false, 'message' => "Function {$handler_function} not found."];
+                $logService->log($entity, 'error', "Handler function not found: {$handler_function}");
             }
         } else {
-            $log_message = "Handler file not found for entity '{$entity}', action '{$action}', method '{$method}': " . $handler_file;
-            error_log($log_message);
             $response = ['success' => false, 'message' => "Handler for {$entity} not found."];
+            $logService->log('api', 'error', "Handler file not found for entity: {$entity}");
         }
     }
 } catch (Exception $e) {
-    // Log the exception details
-    error_log("Exception: " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine());
     $response = ['success' => false, 'error' => 'Internal server error.'];
+    $logService->log('api', 'error', "Exception: " . $e->getMessage(), ['file' => $e->getFile(), 'line' => $e->getLine()]);
 } catch (Error $e) {
-    // Log the error details
-    error_log("Fatal Error: " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine());
     $response = ['success' => false, 'error' => 'Fatal error occurred.'];
+    $logService->log('api', 'error', "Fatal Error: " . $e->getMessage(), ['file' => $e->getFile(), 'line' => $e->getLine()]);
 }
 
 // Clean any unexpected output

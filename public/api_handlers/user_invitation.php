@@ -1,9 +1,11 @@
 <?php
 
 require_once __DIR__ . '/email_functions.php';
+require_once __DIR__ . '/../services/LogService.php';
 
 function handle_invite_process($action, $method, $db, $request_data = [])
 {
+    $logService = new LogService();
     $input = $request_data;
 
     switch ($action) {

@@ -359,25 +359,25 @@ $page_title = "Calendar";
                         eventSummaryEl.className = 'event-summary d-flex flex-column';
 
                         if (dayEvents.appointments.length > 0) {
-                            const appBtn = document.createElement('span');
-                            appBtn.className = 'event appointment d-flex align-items-center mx-2';
+                            const appBtn = document.createElement('btn');
+                            appBtn.className = 'event appointment d-flex align-items-center mx-2 btn';
                             appBtn.innerHTML =
-                                `<i class="far fa-calendar me-2"></i><span class="d-none d-sm-inline"> Appointment: </span> ${dayEvents.appointments.length} `;
+                                `<i class="far fa-calendar me-2"></i><span class=" d-none d-sm-inline"> Appointment: </span> ${dayEvents.appointments.length} `;
                             appBtn.onclick = (e) => {
                                 e.stopPropagation();
-                                this.showDetailsModal('Appointments', dateKey, dayEvents.appointments);
+                                this.showDetailsModal('Appointments', dayDate, dayEvents.appointments);
                             };
                             eventSummaryEl.appendChild(appBtn);
                         }
 
                         if (dayEvents.surgeries.length > 0) {
-                            const surgBtn = document.createElement('span');
-                            surgBtn.className = 'event surgery d-flex align-items-center mx-2';
+                            const surgBtn = document.createElement('btn');
+                            surgBtn.className = 'event surgery d-flex align-items-center mx-2 btn ';
                             surgBtn.innerHTML =
                                 `<i class="fas fa-syringe me-2"></i><span class="d-none d-sm-inline"> Surgery: </span>${dayEvents.surgeries.length} `;
                             surgBtn.onclick = (e) => {
                                 e.stopPropagation();
-                                this.showDetailsModal('Surgeries', dateKey, dayEvents.surgeries);
+                                this.showDetailsModal('Surgeries', dayDate, dayEvents.surgeries);
                             };
                             eventSummaryEl.appendChild(surgBtn);
                         }

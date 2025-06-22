@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../auth/auth.php';
+require_once __DIR__ . '/../services/LogService.php';
 
 /**
  * Handle staff availability API requests
@@ -17,6 +18,7 @@ require_once __DIR__ . '/../auth/auth.php';
  */
 function handle_staff_availability($action, $method, $db, $input = [])
 {
+    $logService = new LogService();
     switch ($action) {
         // STAFF ENDPOINTS - for staff managing their own availability
         case 'byRange':

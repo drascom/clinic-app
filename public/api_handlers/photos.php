@@ -1,6 +1,9 @@
 <?php
+require_once __DIR__ . '/../services/LogService.php';
+
 function handle_photos($action, $method, $db)
 {
+    $logService = new LogService();
     switch ($action) {
         case 'add':
         case 'upload':
@@ -23,9 +26,10 @@ function handle_photos($action, $method, $db)
                     ");
                     $stmt->execute([$photo_id]);
                     $photo = $stmt->fetch(PDO::FETCH_ASSOC);
-
+                    $logService->log('photos', 'success', 'Photo added successfully.', ['id' => $photo_id, 'patient_id' => $patient_id, 'album_type_id' => $album_type_id]);
                     return ['success' => true, 'id' => $photo_id, 'photo' => $photo];
                 }
+                $logService->log('photos', 'error', 'patient_id, photo_album_type_id, and file_path are required for add.', $_POST);
                 return ['success' => false, 'error' => 'patient_id, photo_album_type_id, and file_path are required.'];
             }
             break;
@@ -46,8 +50,10 @@ function handle_photos($action, $method, $db)
 
                     $stmt = $db->prepare("UPDATE patient_photos SET photo_album_type_id = ?, file_path = ?, updated_at = datetime('now') WHERE id = ?");
                     $stmt->execute([$album_type_id, $file_path, $id]);
+                    $logService->log('photos', 'success', 'Photo updated successfully.', ['id' => $id, 'album_type_id' => $album_type_id]);
                     return ['success' => true];
                 }
+                $logService->log('photos', 'error', 'ID, album type, and file path are required for update.', $_POST);
                 return ['success' => false, 'error' => 'ID, album type, and file path are required.'];
             }
             break;

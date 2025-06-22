@@ -13,25 +13,30 @@ $page_title = "Appointment Management";
 
     <!-- Appointments Table -->
     <div class="card ">
-        <div class="card-header">
+        <div class="card-header mb-2">
             <!-- Page Header -->
-            <div class="d-flex justify-content-between align-items-center p-2">
-                <h4 class="mb-0">
-                    <i class="far fa-calendar-check me-2 text-primary"></i>
-                    Appointments
-                </h4>
-                <div class="btn-group" role="group">
-                    <a href="add_appointment.php" class="btn  btn-outline-success">
-                        <i class="fas fa-plus me-1"></i>
-                        <span class="d-none d-sm-inline">Add Appointment</span>
-                        <span class="d-inline d-sm-none">Add</span>
-                    </a>
-                    <a href="/calendar/calendar.php" class="btn  btn-outline-primary">
-                        <i class="far fa-calendar me-1"></i>
-                        Calendar
-                    </a>
+            <div class="row align-items-center p-2 gx-2">
+                <div class="col">
+                    <h4 class="mb-0">
+                        <i class="far fa-calendar-check text-primary me-2"></i>
+                        Appointments
+                    </h4>
+                </div>
+
+                <div class="col-auto">
+                    <div class="btn-group" role="group">
+                        <a href="add_appointment.php" class="btn btn-outline-success d-flex align-items-center">
+                            <i class="fas fa-plus"></i>
+                            <span class="d-none d-sm-inline ms-1">Add Appointment</span>
+                        </a>
+                        <a href="/calendar/calendar.php" class="btn btn-outline-primary d-flex align-items-center">
+                            <i class="far fa-calendar"></i>
+                            <span class="d-none d-sm-inline ms-1">Calendar</span>
+                        </a>
+                    </div>
                 </div>
             </div>
+
             <!-- Search Bar -->
             <fieldset class="p-4 frosted">
                 <div class="input-group">
@@ -50,7 +55,7 @@ $page_title = "Appointment Management";
                 </div>
             </fieldset>
         </div>
-        <div class="card-body">
+        <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover  table-sm" id="appointments-table">
                     <thead class="table-light">
@@ -462,7 +467,7 @@ $page_title = "Appointment Management";
         <tr>
             <td>${formatDate(appointment.appointment_date)}</td>
             <td>${appointment.start_time} - ${appointment.end_time}</td>
-            <td><a href="http://localhost:8000/patient/patient_details.php?id=${appointment.patient_id}&tab=appointments">${appointment.patient_name}</a></td>
+            <td><a href="/patient/patient_details.php?id=${appointment.patient_id}&tab=appointments">${appointment.patient_name}</a></td>
             <td>${appointment.room_name}</td>
             <td>
                 <span class="badge bg-primary">
@@ -473,14 +478,14 @@ $page_title = "Appointment Management";
             <td>
                 <div class="btn-group btn-group-sm" role="group">
                    <a href="/appointment/add_appointment.php?id=${appointment.id}"
-                        class="btn  btn-sm btn-text text-info"
+                        class="btn  btn-text text-info"
                         title="Edit Surgery">
                         <i class="fas fa-edit"></i>
                         <span class="d-none d-lg-inline ms-1">Edit</span>
                     </a>
-                    <button type="button" class="btn btn-text text-primary" onclick="editAppointment(${appointment.id})" title="Edit">
+                  <!--  <button type="button" class="btn btn-text text-primary" onclick="editAppointment(${appointment.id})" title="Edit">
                         <i class="fas fa-edit"></i><span class="d-none d-lg-inline ms-1">Mini Edit</span>
-                    </button>
+                    </button> -->
                     <button type="button" class="btn btn-text text-danger" onclick="deleteAppointment(${appointment.id}, '${appointment.patient_name}')" title="Delete">
                         <i class="fas fa-trash"></i> <span class="d-none d-lg-inline ms-1">Delete</span>
                     </button>
@@ -539,7 +544,7 @@ $page_title = "Appointment Management";
         <tr>
             <td>${formatDate(appointment.appointment_date)}</td>
             <td>${appointment.start_time} - ${appointment.end_time}</td>
-            <td><a href="http://localhost:8000/patient/patient_details.php?id=${appointment.patient_id}&tab=appointments">${appointment.patient_name}</a></td>
+            <td><a href="/patient/patient_details.php?id=${appointment.patient_id}&tab=appointments">${appointment.patient_name}</a></td>
             <td>${appointment.room_name}</td>
             <td>
                 <span class="badge bg-primary">

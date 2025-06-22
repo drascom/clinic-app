@@ -1,6 +1,7 @@
 <?php
 // Include upload configuration
 require_once __DIR__ . '/../includes/upload_config.php';
+require_once __DIR__ . '/../services/LogService.php';
 
 /**
  * Check if a file is HEIC/HEIF format
@@ -88,6 +89,7 @@ function convert_heic_to_jpeg($source_path, $destination_path)
 
 function handle_patients($action, $method, $db, $input = [])
 {
+    $logService = new LogService();
     switch ($action) {
         case 'add':
             if ($method === 'POST') {
@@ -118,11 +120,11 @@ function handle_patients($action, $method, $db, $input = [])
                         return ['success' => true, 'message' => 'Patient added successfully.', 'id' => $new_patient_id, 'patient' => $new_patient];
                     } catch (PDOException $e) {
                         // Log the specific error for debugging
-                        error_log("Patient creation failed: " . $e->getMessage());
+                        $logService->log('patients', 'error', "Patient creation failed: " . $e->getMessage(), ['error' => $e->getMessage(), 'input' => $input]);
                         return ['success' => false, 'error' => 'Failed to create patient: ' . $e->getMessage()];
                     }
                 }
-
+                $logService->log('patients', 'error', 'Name and agency are required for add patient.', $input);
                 return ['success' => false, 'error' => 'Name and agency are required.'];
             }
             break;
@@ -157,11 +159,11 @@ function handle_patients($action, $method, $db, $input = [])
                         return ['success' => true, 'message' => 'Patient updated successfully.'];
                     } catch (PDOException $e) {
                         // Log the specific error for debugging
-                        error_log("Patient update failed: " . $e->getMessage());
+                        $logService->log('patients', 'error', "Patient update failed: " . $e->getMessage(), ['error' => $e->getMessage(), 'input' => $input]);
                         return ['success' => false, 'error' => 'Failed to update patient: ' . $e->getMessage()];
                     }
                 }
-
+                $logService->log('patients', 'error', 'ID and name are required for update patient.', $input);
                 return ['success' => false, 'error' => 'ID and name are required.'];
             }
             break;
@@ -171,9 +173,10 @@ function handle_patients($action, $method, $db, $input = [])
                 if ($id) {
                     $stmt = $db->prepare("DELETE FROM patients WHERE id = ?");
                     $stmt->execute([$id]);
+                    $logService->log('patients', 'success', 'Patient deleted successfully.', ['id' => $id]);
                     return ['success' => true, 'message' => 'Patient deleted successfully.'];
                 }
-
+                $logService->log('patients', 'error', 'ID is required for delete patient.', $input);
                 return ['success' => false, 'error' => 'ID is required.'];
             }
             break;

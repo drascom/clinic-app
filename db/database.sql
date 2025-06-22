@@ -33,6 +33,8 @@ CREATE TABLE surgeries (
   FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
 );
 INSERT INTO surgeries (id, date, notes, status, predicted_grafts_count, current_grafts_count, room_id, patient_id, is_recorded, updated_by, created_at, updated_at) VALUES (1, '2025-06-15', 'test', 'scheduled', NULL, NULL, 1, 1, 1, 1, '2025-06-15 09:38:22', '2025-06-15 09:38:22');
+INSERT INTO surgeries (id, date, notes, status, predicted_grafts_count, current_grafts_count, room_id, patient_id, is_recorded, updated_by, created_at, updated_at) VALUES (2, '2025-07-01', 'Follow-up for Jane Doe', 'scheduled', 2000, 0, 2, 2, 0, 1, '2025-06-21 10:10:00', '2025-06-21 10:10:00');
+INSERT INTO surgeries (id, date, notes, status, predicted_grafts_count, current_grafts_count, room_id, patient_id, is_recorded, updated_by, created_at, updated_at) VALUES (3, '2025-07-10', 'Initial consultation for John Smith', 'scheduled', 2500, 0, 3, 3, 0, 1, '2025-06-21 10:15:00', '2025-06-21 10:15:00');
 
 CREATE TABLE appointments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -71,6 +73,8 @@ CREATE TABLE patients (
   FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
 );
 INSERT INTO patients (id, name, email, dob, phone, city, gender, avatar, occupation, agency_id, photo_album_id, updated_by, created_at, updated_at) VALUES (1, 'emin colak', 'drascom07@gmail.com', '2025-06-12', '432424', 'Barnet', 'Male', NULL, '', 1, NULL, NULL, '2025-06-15 09:09:48', '2025-06-15 09:09:48');
+INSERT INTO patients (id, name, email, dob, phone, city, gender, avatar, occupation, agency_id, photo_album_id, updated_by, created_at, updated_at) VALUES (2, 'Jane Doe', 'jane.doe@example.com', '1990-01-01', '1112223333', 'London', 'Female', NULL, 'Engineer', 1, NULL, NULL, '2025-06-21 10:00:00', '2025-06-21 10:00:00');
+INSERT INTO patients (id, name, email, dob, phone, city, gender, avatar, occupation, agency_id, photo_album_id, updated_by, created_at, updated_at) VALUES (3, 'John Smith', 'john.smith@example.com', '1985-05-10', '4445556666', 'Manchester', 'Male', NULL, 'Designer', 1, NULL, NULL, '2025-06-21 10:05:00', '2025-06-21 10:05:00');
 
 
 CREATE TABLE photo_album_types (
@@ -188,8 +192,9 @@ CREATE TABLE IF NOT EXISTS staff_details (
     current_company TEXT,
     linkedin_profile TEXT,
     source TEXT CHECK (source IN ('Website', 'LinkedIn', 'Indeed', 'Referral', 'Agency', 'Other')),
-    salary_expectation TEXT NOT NULL,
-    willing_to_relocate INTEGER DEFAULT 0,
+    salary_expectation INTEGER DEFAULT 0,
+    daily_fee INTEGER NOT NULL DEFAULT 0,
+    willing_to_relocate INTEGER NOT NULL DEFAULT 0,
     updated_by INTEGER NULL,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
@@ -260,10 +265,12 @@ INSERT INTO photo_album_types (name, updated_by, created_at, updated_at) VALUES 
 
 
 
-INSERT INTO users (email, username, password,role, created_at, updated_at, agency_id, is_active) VALUES ('admin@example.com', 'Admin', '$2y$10$aEtcftk7GMX3bP3DqIRxQ.DmbuVMC.b18q96ziMwSQWyQO/TWuG5a','admin', datetime('now'), datetime('now'),1,1);
-INSERT INTO users (email, username, password,role, created_at, updated_at, agency_id, is_active) VALUES ('editor@example.com', 'Editor', '$2y$10$aEtcftk7GMX3bP3DqIRxQ.DmbuVMC.b18q96ziMwSQWyQO/TWuG5a','editor', datetime('now'), datetime('now'),1,1);
-INSERT INTO users (email, username, password,role, created_at, updated_at, agency_id,is_active) VALUES ('agent@example.com', 'Agent', '$2y$10$aEtcftk7GMX3bP3DqIRxQ.DmbuVMC.b18q96ziMwSQWyQO/TWuG5a','agent', datetime('now'), datetime('now'),2,1);
-INSERT INTO users (email, username, password,role, created_at, updated_at, agency_id,is_active) VALUES ('tech@example.com', 'Technician', '$2y$10$aEtcftk7GMX3bP3DqIRxQ.DmbuVMC.b18q96ziMwSQWyQO/TWuG5a','technician', datetime('now'), datetime('now'),3,1);
+INSERT INTO users (id,email, username, password,role, created_at, updated_at, agency_id, is_active) VALUES (1,'admin@example.com', 'Admin', '$2y$10$aEtcftk7GMX3bP3DqIRxQ.DmbuVMC.b18q96ziMwSQWyQO/TWuG5a','admin', datetime('now'), datetime('now'),1,1);
+INSERT INTO users (id,email, username, password,role, created_at, updated_at, agency_id, is_active) VALUES (2,'agent@example.com', 'Agent', '$2y$10$aEtcftk7GMX3bP3DqIRxQ.DmbuVMC.b18q96ziMwSQWyQO/TWuG5a','agent', datetime('now'), datetime('now'),2,1);
+INSERT INTO users (id,email, username, password,role, created_at, updated_at, agency_id, is_active) VALUES (3,'ebru.tok@livharleystreet.co.uk', 'EBRU', '$2y$10$aEtcftk7GMX3bP3DqIRxQ.DmbuVMC.b18q96ziMwSQWyQO/TWuG5a','editor', datetime('now'), datetime('now'),1,1);
+INSERT INTO users (id,email, username, password,role, created_at, updated_at, agency_id, is_active) VALUES (4,'sumeyye@livharleystreet.co.uk', 'SMY', '$2y$10$aEtcftk7GMX3bP3DqIRxQ.DmbuVMC.b18q96ziMwSQWyQO/TWuG5a','editor', datetime('now'), datetime('now'),1,1);
+INSERT INTO users (id,email, username, password,role, created_at, updated_at, agency_id, is_active) VALUES (5,'editor@example.com', 'ASLI ', '$2y$10$aEtcftk7GMX3bP3DqIRxQ.DmbuVMC.b18q96ziMwSQWyQO/TWuG5a','editor', datetime('now'), datetime('now'),1,1);
+INSERT INTO users (id,email, username, password,role, created_at, updated_at, agency_id, is_active) VALUES (6,'tech@example.com', 'Technician', '$2y$10$aEtcftk7GMX3bP3DqIRxQ.DmbuVMC.b18q96ziMwSQWyQO/TWuG5a','technician', datetime('now'), datetime('now'),3,1);
 
 
 
@@ -342,32 +349,32 @@ INSERT INTO procedures (name, is_active, updated_by) VALUES
 
 
 -- Insert sample staff from job_candidates-export.json
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type,updated_by) VALUES ('esra bilen', 'esrabilen07@gmail.com', 'update', 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type,updated_by) VALUES ('ferhat - emine demirtas', 'tahirferhatdemirtas@gmail.com', 'update', 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('goktug gokalp', 'goktuggokalp34@gmail.com', 'update', 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('irem cengiz', 'iremcngc@gmail.com', 'update', 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('muhammed arici', 'muhammetposof28@gmail.com', 'update', 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('ali emre dogan', 'aedogan.saglik@gmail.com', 'update', 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('naz ilhan', 'nazilhan1040@gmail.com', 'update', 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('nesibe idil karpuz', 'n.idilkrp@icloud.com', 'update', 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('onur meric bugan', 'onurmeric03@icloud.com', 'update', 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('sametcan balci', 'samet42550.97@gmail.com', 'update', 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('zelal celikten', 'zelalcelikten@gmail.com', 'update', 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type,updated_by) VALUES ('esra bilen', 'esrabilen07@gmail.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type,updated_by) VALUES ('ferhat - emine demirtas', 'tahirferhatdemirtas@gmail.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('goktug gokalp', 'goktuggokalp34@gmail.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('irem cengiz', 'iremcngc@gmail.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('muhammed arici', 'muhammetposof28@gmail.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('ali emre dogan', 'aedogan.saglik@gmail.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('naz ilhan', 'nazilhan1040@gmail.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('nesibe idil karpuz', 'n.idilkrp@icloud.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('onur meric bugan', 'onurmeric03@icloud.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('sametcan balci', 'samet42550.97@gmail.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('zelal celikten', 'zelalcelikten@gmail.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
 INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('jhon', 'test@rser.fds', '324242', 'csdsad', 'turkiye', 'candidate', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Shefiu', 'update', '07508400686', 'senior', 'UK', 'staff', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Phandira', 'update', '07424722738', 'senior', 'UK', 'staff', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Eniye', 'update', '07405497373', 'senior', 'UK', 'staff', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Nava', 'update', '07435525455', 'senior', 'UK', 'staff', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Chandu', 'update', '07435525358', 'senior', 'UK', 'staff', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Maryam', 'update', '07775541099', 'senior', 'UK', 'staff', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Milena', 'update', '07857273383', 'senior', 'UK', 'staff', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Mahsa – Zahra', 'update', '07914262872', 'senior', 'UK', 'staff', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Beverly', 'update', '07775434126', 'senior', 'UK', 'staff', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Claduio', 'update', '00393341817614', 'senior', 'UK', 'staff', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Sahnaz', 'update', '07404324662', 'senior', 'UK', 'staff', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Sravani', 'update', '07508858512', 'senior', 'UK', 'staff', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Sagun Khadka', 'update', '07380576839', 'senior', 'UK', 'staff', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Monisha', 'update', '07436422647', 'senior', 'UK', 'staff', 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Shefiu', '07508400686', 07508400686, 'senior', 'UK', 'staff', 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Phandira', 12345678, 07424722738, 'senior', 'UK', 'staff', 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Eniye','07424722738', 07405497373, 'senior', 'UK', 'staff', 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Nava', '07435525455', 07435525455, 'senior', 'UK', 'staff', 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Chandu', '07435525358', 07435525358, 'senior', 'UK', 'staff', 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Maryam', '07775541099', 07775541099, 'senior', 'UK', 'staff', 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Milena', '07857273383',07857273383, 'senior', 'UK', 'staff', 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Mahsa – Zahra', '07914262872',07914262872, 'senior', 'UK', 'staff', 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Beverly', '07775434126',07775434126, 'senior', 'UK', 'staff', 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Claduio', '00393341817614',00393341817614, 'senior', 'UK', 'staff', 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Sahnaz', '07404324662',07404324662, 'senior', 'UK', 'staff', 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Sravani', '07508858512',07508858512, 'senior', 'UK', 'staff', 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Sagun Khadka', '07380576839', 07380576839, 'senior', 'UK', 'staff', 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Monisha', '07436422647',07436422647, 'senior', 'UK', 'staff', 1);
 
 CREATE TABLE IF NOT EXISTS emails (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -386,6 +393,7 @@ CREATE TABLE IF NOT EXISTS emails (
     is_read BOOLEAN DEFAULT 0,
     folder TEXT DEFAULT 'INBOX',
     is_active BOOLEAN DEFAULT 1,
+    is_draft BOOLEAN DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
@@ -400,9 +408,10 @@ CREATE TABLE user_email_settings (
     smtp_secure VARCHAR(10) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+-- INSERT INTO user_email_settings (user_id, email_address, smtp_host, smtp_port, smtp_username, smtp_password, smtp_secure) VALUES (1, 'contact@livharleystreet.co.uk', 'gukm1005.siteground.biz', 465, 'ebru.tok@livharleystreet.co.uk', '051224..Uk', 'ssl');
 INSERT INTO user_email_settings (user_id, email_address, smtp_host, smtp_port, smtp_username, smtp_password, smtp_secure) VALUES (1, 'ayhan@livharleystreet.co.uk', 'gukm1005.siteground.biz', 465, 'ayhan@livharleystreet.co.uk', 'Doktor2024@', 'ssl');
--- INSERT INTO user_email_settings (user_id, email_address, smtp_host, smtp_port, smtp_username, smtp_password, smtp_secure) VALUES (2, 'ebru.tok@livharleystreet.co.uk', 'gukm1005.siteground.biz', 465, 'ebru.tok@livharleystreet.co.uk', '051224..Uk', 'ssl');
-INSERT INTO user_email_settings (user_id, email_address, smtp_host, smtp_port, smtp_username, smtp_password, smtp_secure) VALUES (2, 'contact@livharleystreet.co.uk', 'gukm1005.siteground.biz', 465, 'ebru.tok@livharleystreet.co.uk', '051224..Uk', 'ssl');
+INSERT INTO user_email_settings (user_id, email_address, smtp_host, smtp_port, smtp_username, smtp_password, smtp_secure) VALUES (3, 'ebru.tok@livharleystreet.co.uk', 'gukm1005.siteground.biz', 465, 'ebru.tok@livharleystreet.co.uk', '051224..Uk', 'ssl');
+
 CREATE TABLE IF NOT EXISTS email_attachments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     email_id INTEGER NOT NULL,
@@ -412,3 +421,172 @@ CREATE TABLE IF NOT EXISTS email_attachments (
     size INTEGER,
     FOREIGN KEY (email_id) REFERENCES emails(id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS `messages` (
+  `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+  `sender_id` INTEGER NOT NULL,
+  `receiver_id` INTEGER,
+  `related_table` VARCHAR(255) NOT NULL,
+  `related_id` INTEGER NOT NULL,
+  `message` TEXT NOT NULL,
+  `timestamp` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `is_read` INTEGER NOT NULL DEFAULT 0,
+  FOREIGN KEY (`sender_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`receiver_id`) REFERENCES `users`(`id`) ON DELETE SET NULL
+);
+CREATE TABLE IF NOT EXISTS message_reactions (
+`id` INTEGER PRIMARY KEY AUTOINCREMENT, 
+`message_id` INTEGER NOT NULL, 
+`user_id` INTEGER NOT NULL, 
+`emoji_code` VARCHAR(255) NOT NULL, 
+`timestamp` DATETIME DEFAULT CURRENT_TIMESTAMP, UNIQUE (message_id, user_id), 
+FOREIGN KEY (message_id) REFERENCES messages(id) ON DELETE CASCADE, 
+FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE);
+
+INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `related_id`, `message`, `is_read`) VALUES
+(1, 2, 'patients', 1, 'Patient Emin Colak has a new appointment scheduled for next week.', 0),
+(3, 1, 'surgery', 1, 'Surgery for patient Emin Colak confirmed for 2025-06-15.', 0),
+(1, NULL, 'staff', 348, 'New candidate Esra Bilen added to the system.', 1),
+(5, 1, 'emails', 1, 'Reminder: Follow up on the email regarding the new patient registration.', 0),
+(2, 3, 'patients', 1, 'Please update the contact details for Emin Colak.', 0),
+(1, 5, 'surgery', 1, 'Pre-surgery instructions sent to patient Emin Colak.', 0),
+(4, 1, 'staff', 360, 'Shefiu''s availability updated for next month.', 1),
+(1, 4, 'emails', 2, 'Action required: Review pending email drafts.', 0),
+(1, 2, 'appointment', 1, 'Appointment with Dr. Smith on 2025-06-25 at 10:00 AM.', 0),
+(3, 5, 'patients photos', 1, 'New post-surgery photos uploaded for patient Emin Colak.', 0);
+
+-- Messages for Patient 1 (Emin Colak) with Agent (receiver_id 2)
+INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `related_id`, `message`, `is_read`) VALUES
+(1, 2, 'patients', 1, 'Hi Agent, I have a question about my upcoming appointment.', 0),
+(2, 1, 'patients', 1, 'Certainly, how can I help you, Emin?', 0),
+(1, 2, 'patients', 1, 'I need to confirm the time for my surgery on the 15th.', 0),
+(2, 1, 'patients', 1, 'Your surgery on June 15th is confirmed for 9:00 AM. Room 1.', 0),
+(1, 2, 'patients', 1, 'Thank you for the confirmation!', 1),
+(2, 1, 'patients', 1, 'You are welcome. Is there anything else?', 1),
+(1, 2, 'patients', 1, 'No, that is all for now. Have a good day.', 1),
+(2, 1, 'patients', 1, 'You too, Emin. See you soon.', 1);
+
+-- Messages for Patient 2 (Jane Doe) with Agent (receiver_id 2)
+INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `related_id`, `message`, `is_read`) VALUES
+(1, 2, 'patients', 2, 'Hello, I am Jane Doe. I would like to schedule a follow-up.', 0),
+(2, 1, 'patients', 2, 'Hi Jane, I see you have a follow-up scheduled for July 1st. Is that correct?', 0),
+(1, 2, 'patients', 2, 'Yes, that is correct. I just wanted to make sure everything is in order.', 0),
+(2, 1, 'patients', 2, 'All details are confirmed. We look forward to seeing you.', 0),
+(1, 2, 'patients', 2, 'Great, thank you!', 1),
+(2, 1, 'patients', 2, 'My pleasure. Let me know if you need anything else.', 1),
+(1, 2, 'patients', 2, 'Will do. Thanks again!', 1),
+(2, 1, 'patients', 2, 'You are most welcome.', 1);
+
+-- Messages for Patient 3 (John Smith) with Agent (receiver_id 2)
+INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `related_id`, `message`, `is_read`) VALUES
+(1, 2, 'patients', 3, 'Hi, this is John Smith. I am interested in a consultation.', 0),
+(2, 1, 'patients', 3, 'Hello John. We have an initial consultation scheduled for July 10th. Does that work for you?', 0),
+(1, 2, 'patients', 3, 'Yes, that date works perfectly. What time is it?', 0),
+(2, 1, 'patients', 3, 'It is at 11:00 AM in Consultation Room. Please arrive 15 minutes early.', 0),
+(1, 2, 'patients', 3, 'Understood. Thank you for the information.', 1),
+(2, 1, 'patients', 3, 'You are welcome. We will send a reminder email closer to the date.', 1),
+(1, 2, 'patients', 3, 'Perfect. Looking forward to it.', 1),
+(2, 1, 'patients', 3, 'See you then!', 1);
+
+-- Messages for Surgery 1 (Emin Colak) with Technician (receiver_id 6)
+INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `related_id`, `message`, `is_read`) VALUES
+(1, 6, 'surgeries', 1, 'Technician, please prepare Room 1 for Emin Colak''s surgery on June 15th.', 0),
+(6, 1, 'surgeries', 1, 'Understood. Room 1 will be ready by 8:30 AM on the 15th.', 0),
+(1, 6, 'surgeries', 1, 'Ensure all necessary equipment is sterilized and available.', 0),
+(6, 1, 'surgeries', 1, 'Confirmed. All instruments will be sterilized and accounted for.', 0),
+(1, 6, 'surgeries', 1, 'Great. Let me know if you encounter any issues.', 1),
+(6, 1, 'surgeries', 1, 'Will do. Everything is on track.', 1),
+(1, 6, 'surgeries', 1, 'Thank you for your diligence.', 1),
+(6, 1, 'surgeries', 1, 'My pleasure.', 1);
+
+-- Messages for Surgery 2 (Jane Doe) with Technician (receiver_id 6)
+INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `related_id`, `message`, `is_read`) VALUES
+(1, 6, 'surgeries', 2, 'Technician, Jane Doe''s follow-up surgery on July 1st in Room 2. Prepare for graft count.', 0),
+(6, 1, 'surgeries', 2, 'Acknowledged. Room 2 will be set up for graft counting on July 1st.', 0),
+(1, 6, 'surgeries', 2, 'Ensure the microscope and counting tools are calibrated.', 0),
+(6, 1, 'surgeries', 2, 'Calibration will be performed prior to the procedure.', 0),
+(1, 6, 'surgeries', 2, 'Excellent. Keep me updated on the preparations.', 1),
+(6, 1, 'surgeries', 2, 'Will send a status report by end of day.', 1),
+(1, 6, 'surgeries', 2, 'Perfect. Thank you.', 1),
+(6, 1, 'surgeries', 2, 'You are welcome.', 1);
+
+-- New sample messages for grouping by entity (sender_id = 1, receiver_id = 3)
+
+-- Group 1: Patients, entity_id = 1 (Emin Colak)
+INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `related_id`, `message`, `is_read`) VALUES
+(1, 3, 'patients', 1, 'Admin to Ebru: Please check Emin Colak''s latest patient notes.', 0),
+(3, 1, 'patients', 1, 'Ebru to Admin: I have reviewed Emin Colak''s notes. All clear.', 0),
+(1, 3, 'patients', 1, 'Admin to Ebru: Confirm next appointment for Emin Colak.', 0),
+(3, 1, 'patients', 1, 'Ebru to Admin: Emin Colak''s next appointment is scheduled for July 5th.', 0);
+
+-- Group 2: Surgeries, entity_id = 1 (Emin Colak's surgery)
+INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `related_id`, `message`, `is_read`) VALUES
+(1, 3, 'surgeries', 1, 'Admin to Ebru: Update on Emin Colak''s surgery preparation.', 0),
+(3, 1, 'surgeries', 1, 'Ebru to Admin: Surgery for Emin Colak is on track. Room 1 prepared.', 0),
+(1, 3, 'surgeries', 1, 'Admin to Ebru: Any special requirements for this surgery?', 0),
+(3, 1, 'surgeries', 1, 'Ebru to Admin: No special requirements, standard procedure.', 0);
+
+-- Group 3: Staff, entity_id = 348 (Esra Bilen)
+INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `related_id`, `message`, `is_read`) VALUES
+(1, 3, 'staff', 348, 'Admin to Ebru: Esra Bilen''s performance review is due next week.', 0),
+(3, 1, 'staff', 348, 'Ebru to Admin: I will prepare Esra Bilen''s review by end of day.', 0),
+(1, 3, 'staff', 348, 'Admin to Ebru: Please include feedback on her recent training.', 0),
+(3, 1, 'staff', 348, 'Ebru to Admin: Noted. Feedback on training will be included.', 0);
+
+-- Messages for Technician (Ferhat Demirtas - staff_id 349) with Editor (receiver_id 4)
+INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `related_id`, `message`, `is_read`) VALUES
+(1, 4, 'staff', 349, 'Ferhat Demirtas, reminder to complete your training modules.', 0),
+(4, 1, 'staff', 349, 'Hi, I am working on the training modules now. Will complete them by end of day.', 0),
+(1, 4, 'staff', 349, 'Excellent. Please confirm once completed.', 0),
+(4, 1, 'staff', 349, 'Confirmed. All training modules are now complete.', 0),
+(1, 4, 'staff', 349, 'Thank you for the update, Ferhat.', 1),
+(4, 1, 'staff', 349, 'My pleasure.', 1),
+(1, 4, 'staff', 349, 'Good job.', 1),
+(4, 1, 'staff', 349, 'Thanks!', 1);
+
+-- General broadcast message (receiver_id NULL)
+INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `related_id`, `message`, `is_read`) VALUES
+(1, NULL, 'general', 0, 'All staff: Please remember to log your daily activities by 5 PM.', 0),
+(1, NULL, 'general', 0, 'Important announcement: Clinic will be closed on July 4th for holiday.', 0),
+(1, NULL, 'general', 0, 'New protocol for patient intake has been uploaded to the shared drive.', 0),
+(1, NULL, 'general', 0, 'Reminder: Annual fire safety drill next Tuesday at 10 AM.', 0),
+(1, NULL, 'general', 0, 'Please ensure all patient records are updated by end of week.', 1),
+(1, NULL, 'general', 0, 'New stock of medical supplies has arrived. Please check inventory.', 1),
+(1, NULL, 'general', 0, 'Team meeting scheduled for Monday at 9 AM in the main conference room.', 1),
+(1, NULL, 'general', 0, 'Wishing everyone a productive week!', 1);
+
+-- Message Reactions
+-- Message Reactions (message_id values adjusted to match auto-incremented IDs)
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (1, 2, '\u{1F44D}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (2, 3, '\u{2764}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (3, 4, '\u{1F602}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (4, 5, '\u{1F64F}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (5, 6, '\u{2705}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (6, 2, '\u{1F44D}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (7, 3, '\u{2764}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (8, 4, '\u{1F602}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (9, 5, '\u{1F64F}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (10, 6, '\u{2705}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (11, 2, '\u{1F44D}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (12, 3, '\u{2764}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (13, 4, '\u{1F602}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (14, 5, '\u{1F64F}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (15, 6, '\u{2705}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (16, 2, '\u{1F44D}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (17, 3, '\u{2764}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (18, 4, '\u{1F602}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (19, 5, '\u{1F64F}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (20, 6, '\u{2705}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (21, 2, '\u{1F44D}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (22, 3, '\u{2764}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (23, 4, '\u{1F602}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (24, 5, '\u{1F64F}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (25, 6, '\u{2705}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (26, 2, '\u{1F44D}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (27, 3, '\u{2764}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (28, 4, '\u{1F602}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (29, 5, '\u{1F64F}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (30, 6, '\u{2705}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (31, 2, '\u{1F44D}');
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (32, 3, '\u{2764}');
+

@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../auth/auth.php';
+require_once __DIR__ . '/../services/LogService.php';
 
 /**
  * Handle dashboard API requests
@@ -11,7 +12,8 @@ require_once __DIR__ . '/../auth/auth.php';
  */
 function handle_dashboard($action, $method, $db, $input = [])
 {
-    error_log("Dashboard API Request: Action=$action, Method=$method, Input=" . json_encode($input));
+    $logService = new LogService();
+    $logService->log('dashboard', 'info', "Dashboard API Request: Action=$action, Method=$method", ['input' => $input]);
 
     switch ($action) {
         case 'stats':

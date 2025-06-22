@@ -8,7 +8,7 @@
 </main>
 
 <!-- Footer - Hidden on mobile, visible on desktop -->
-<footer class="bg-dark text-light py-4 mt-5 d-none d-xl-block">
+<footer class="bg-dark text-light py-2  d-none d-xl-block">
     <div class="container">
         <div class="row">
             <div class="col-md-6">
@@ -99,6 +99,31 @@
 <script src="/assets/js/script.js"></script>
 <!-- API Helper for secure POST requests -->
 <script src="/assets/js/api-helper.js"></script>
+
+<script>
+    // Initialize tooltips globally
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    });
+</script>
+<script>
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            const html = document.documentElement;
+            html.dataset.bsTheme =
+                html.dataset.bsTheme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('theme', html.dataset.bsTheme);
+        });
+    }
+
+    // on load
+    document.documentElement.dataset.bsTheme =
+        localStorage.getItem('theme') ?? 'light';
+</script>
 
 </body>
 

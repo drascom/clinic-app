@@ -1,7 +1,12 @@
 <?php
+require_once __DIR__ . '/../services/LogService.php';
+
 function handle_calendar_events($action, $method, $db, $input = [])
 {
+    $logService = new LogService();
+
     if ($method !== 'POST' || $action !== 'get') {
+        $logService->log('calendar_events', 'error', 'Invalid request method or action.', ['method' => $method, 'action' => $action]);
         return ['success' => false, 'error' => 'Invalid request: Only POST method with "get" action is allowed.'];
     }
 
@@ -109,8 +114,7 @@ function handle_calendar_events($action, $method, $db, $input = [])
 
         return ['success' => true, 'events' => $events];
     } catch (PDOException $e) {
-        // In a real application, you would log the error message.
-        error_log('Database error in handle_calendar_events: ' . $e->getMessage());
+        $logService->log('calendar_events', 'error', 'Database error in handle_calendar_events: ' . $e->getMessage(), ['file' => $e->getFile(), 'line' => $e->getLine()]);
         return ['success' => false, 'error' => 'A database error occurred. Please try again later.'];
     }
 }

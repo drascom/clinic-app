@@ -1,6 +1,9 @@
 <?php
+require_once __DIR__ . '/../services/LogService.php';
+
 function handle_calendar_summary($action, $method, $db, $input = [])
 {
+    $logService = new LogService();
     if ($method === 'POST') {
         // Check if this is a month request
         $year = $input['year'] ?? null;
@@ -8,7 +11,7 @@ function handle_calendar_summary($action, $method, $db, $input = [])
 
         if ($year && $month) {
             // Return all appointment summaries for the entire month
-            return getMonthSummary($db, $year, $month);
+            return getMonthSummary($db, $year, $month, $logService);
         }
 
         // Legacy single room/date request
@@ -16,6 +19,7 @@ function handle_calendar_summary($action, $method, $db, $input = [])
         $date = $input['date'] ?? null;
 
         if (!$room_id || !$date) {
+            $logService->log('calendar_summary', 'error', 'Room ID and date are required for legacy summary.', $input);
             return ['success' => false, 'error' => 'Room ID and date are required'];
         }
 
@@ -55,14 +59,18 @@ function handle_calendar_summary($action, $method, $db, $input = [])
                 'surgery_label' => $surgery ? 'Hair Transplant' : null
             ];
         } catch (PDOException $e) {
+            $logService->log('calendar_summary', 'error', 'Database error in legacy calendar_summary: ' . $e->getMessage(), ['error' => $e->getMessage(), 'input' => $input]);
             return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
         }
+    } else {
+        $logService->log('calendar_summary', 'error', 'Invalid method for calendar_summary entity.', ['method' => $method]);
     }
 
     return ['success' => false, 'error' => 'Invalid method for calendar_summary entity'];
 }
 
-function getMonthSummary($db, $year, $month) {
+function getMonthSummary($db, $year, $month, $logService)
+{
     try {
         // Calculate date range for the month
         $startDate = sprintf('%04d-%02d-01', $year, $month);
@@ -137,10 +145,10 @@ function getMonthSummary($db, $year, $month) {
                 'status' => $surgery['status']
             ];
         }
-
+        $logService->log('calendar_summary', 'success', 'Monthly calendar summary retrieved successfully.', ['year' => $year, 'month' => $month]);
         return $result;
-
     } catch (PDOException $e) {
+        $logService->log('calendar_summary', 'error', 'Database error in getMonthSummary: ' . $e->getMessage(), ['error' => $e->getMessage(), 'year' => $year, 'month' => $month]);
         return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
     }
 }

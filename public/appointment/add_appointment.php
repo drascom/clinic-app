@@ -195,10 +195,10 @@ $page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
                                     <div class="mb-3">
                                         <label for="new_patient_agency_id" class="form-label">
                                             <i class="far fa-building me-1"></i>
-                                            Agency
+                                            Agency<span class="text-danger">*</span>
                                         </label>
-                                        <select class="form-select" id="new_patient_agency_id" name="agency_id">
-                                            <option value="">Select Agency ()</option>
+                                        <select class="form-select" id="new_patient_agency_id" name="agency_id" required>
+                                            <option value="">Select Agency</option>
                                         </select>
                                     </div>
                                 </div>
@@ -682,6 +682,22 @@ $page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
             }
         }
 
+        // Phone number validation
+        if (el.type === 'tel' && el.value) { // Changed from else if to if
+            const phoneRegex = /^[\+]?[0-9\s\-\(\)]{10,}$/;
+            if (!phoneRegex.test(el.value)) {
+                el.classList.add('is-invalid');
+                if (feedbackEl && feedbackEl.classList.contains('invalid-feedback')) {
+                    feedbackEl.textContent = 'Please enter a valid phone number.';
+                }
+            } else {
+                el.classList.remove('is-invalid');
+                if (feedbackEl && feedbackEl.classList.contains('invalid-feedback')) {
+                    feedbackEl.textContent = '';
+                }
+            }
+        }
+
         // Specific validation for start-time and end-time
         if (id === 'start-time' || id === 'end-time') {
             const startTime = document.getElementById('start-time').value;
@@ -748,7 +764,7 @@ $page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
                 agencySelect.value = userAgencyId;
             } else if (userRole === 'admin' || userRole === 'editor') {
 
-                agencySelect.innerHTML = '<option value="">Select Agency (Optional)</option>';
+                agencySelect.innerHTML = '<option value="">Select Agency</option>';
 
                 if (typeof allAgencies !== 'undefined' && Array.isArray(allAgencies)) {
                     allAgencies.forEach(agency => {
@@ -830,7 +846,7 @@ $page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
                 agencySelect.value = userAgencyId;
             } else if (userRole === 'admin' || userRole === 'editor') {
                 console.log('DEBUG: User is admin/editor, populating dropdown with allAgencies.');
-                agencySelect.innerHTML = '<option value="">Select Agency (Optional)</option>';
+                agencySelect.innerHTML = '<option value="">Select Agency</option>';
 
                 if (typeof allAgencies !== 'undefined' && Array.isArray(allAgencies)) {
                     allAgencies.forEach(agency => {

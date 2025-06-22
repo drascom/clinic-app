@@ -227,7 +227,6 @@ function fetch_new_emails($db, $user_id, $last_email_date = 0)
 {
     $settings = get_user_email_settings($db, $user_id);
     if (!$settings) {
-        // Fallback to environment variables if no user-specific settings are found
         $imap_host = '{' . $_ENV['EMAIL_HOST'] . ':993/imap/ssl}INBOX';
         $imap_user = $_ENV['EMAIL_USERNAME'];
         $imap_pass = $_ENV['EMAIL_PASSWORD'];
@@ -402,57 +401,43 @@ function fetch_junk_emails($db, $user_id)
             $email_data[] = $email_entry;
         }
     }
-
-    // Function to deactivate all emails from a specific sender in the database
-    function deactivate_emails_by_sender($db, $sender_email, $user_id)
-    {
-        // Check if 'is_active' column exists, if not, add it.
-// This is a defensive check for migration purposes. In a production environment,
-// schema migrations should be handled separately.
-        try {
-            $stmt = $db->query("PRAGMA table_info(emails)");
-            $columns = $stmt->fetchAll(PDO::FETCH_COLUMN, 1); // Get column names
-            if (!in_array('is_active', $columns)) {
-                $db->exec("ALTER TABLE emails ADD COLUMN is_active INTEGER DEFAULT 1");
-                log_message("Added 'is_active' column to 'emails' table.");
-            }
-        } catch (PDOException $e) {
-            log_message("Database error checking/adding 'is_active' column: " . $e->getMessage());
-            error_log("Database error checking/adding 'is_active' column: " . $e->getMessage());
-            return false;
-        }
-
-        $sql = "UPDATE emails SET is_active = 0 WHERE from_address = :sender_email AND user_id = :user_id AND is_active = 1";
-        try {
-            $stmt = $db->prepare($sql);
-            $stmt->bindValue(':sender_email', $sender_email);
-            $stmt->bindValue(':user_id', $user_id);
-            $stmt->execute();
-            $affected_rows = $stmt->rowCount();
-            log_message("Deactivated {$affected_rows} emails for sender: {$sender_email} (User ID: {$user_id})");
-            return $affected_rows;
-        } catch (PDOException $e) {
-            log_message("Database error in deactivate_emails_by_sender: " . $e->getMessage());
-            error_log("Database error in deactivate_emails_by_sender: " . $e->getMessage());
-            return false;
-        }
-    }
-
-    // Function to fetch SMTP settings for a specific user from the database.
-    function get_user_email_settings($db, $userId)
-    {
-        // This assumes a table named 'user_email_settings' exists with the required columns.
-        $stmt = $db->prepare("SELECT smtp_host, smtp_port, smtp_user, smtp_pass, smtp_secure FROM user_email_settings WHERE
-user_id = :user_id");
-        $stmt->execute([':user_id' => $userId]);
-        $settings = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        return $settings;
-    }
-
     imap_close($inbox);
 
     return $email_data;
+}
+// Function to deactivate all emails from a specific sender in the database
+function deactivate_emails_by_sender($db, $sender_email, $user_id)
+{
+    // Check if 'is_active' column exists, if not, add it.
+    // This is a defensive check for migration purposes. In a production environment,
+    // schema migrations should be handled separately.
+    try {
+        $stmt = $db->query("PRAGMA table_info(emails)");
+        $columns = $stmt->fetchAll(PDO::FETCH_COLUMN, 1); // Get column names
+        if (!in_array('is_active', $columns)) {
+            $db->exec("ALTER TABLE emails ADD COLUMN is_active INTEGER DEFAULT 1");
+            log_message("Added 'is_active' column to 'emails' table.");
+        }
+    } catch (PDOException $e) {
+        log_message("Database error checking/adding 'is_active' column: " . $e->getMessage());
+        error_log("Database error checking/adding 'is_active' column: " . $e->getMessage());
+        return false;
+    }
+
+    $sql = "UPDATE emails SET is_active = 0 WHERE from_address = :sender_email AND user_id = :user_id AND is_active = 1";
+    try {
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':sender_email', $sender_email);
+        $stmt->bindValue(':user_id', $user_id);
+        $stmt->execute();
+        $affected_rows = $stmt->rowCount();
+        log_message("Deactivated {$affected_rows} emails for sender: {$sender_email} (User ID: {$user_id})");
+        return $affected_rows;
+    } catch (PDOException $e) {
+        log_message("Database error in deactivate_emails_by_sender: " . $e->getMessage());
+        error_log("Database error in deactivate_emails_by_sender: " . $e->getMessage());
+        return false;
+    }
 }
 
 // Function to get all emails from the local database
@@ -473,8 +458,7 @@ function get_emails_from_db($db, $user_id, $is_active = null)
         $stmt->execute();
         $emails = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $attachment_stmt = $db->prepare("SELECT filename, file_path, mime_type, size FROM email_attachments WHERE email_id =
-:email_id");
+        $attachment_stmt = $db->prepare("SELECT filename, file_path, mime_type, size FROM email_attachments WHERE email_id =:email_id");
 
         // Re-format for consistency with the original email structure and add attachments
         $formatted_emails = [];
@@ -636,6 +620,79 @@ function delete_emails_by_sender($db, $sender_email, $user_id)
     } catch (PDOException $e) {
         log_message("Database error in delete_emails_by_sender (deleting from DB): " . $e->getMessage());
         error_log("Database error in delete_emails_by_sender (deleting from DB): " . $e->getMessage());
+        return false;
+    }
+}
+function get_user_email_settings($db, $user_id)
+{
+    $stmt = $db->prepare("SELECT * FROM user_email_settings WHERE user_id = :user_id");
+    $stmt->bindValue(':user_id', $user_id);
+    $stmt->execute();
+    $settings = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $settings;
+}
+
+// Function to get a specific draft email by its ID
+function get_draft_by_id($db, $draft_id, $user_id)
+{
+    try {
+        $stmt = $db->prepare("SELECT * FROM emails WHERE id = :id AND user_id = :user_id AND is_draft = 1");
+        $stmt->bindValue(':id', $draft_id, PDO::PARAM_INT);
+        $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        log_message("Database error in get_draft_by_id: " . $e->getMessage());
+        error_log("Database error in get_draft_by_id: " . $e->getMessage());
+        return false;
+    }
+}
+
+// Function to save an email (insert new or update existing draft)
+function save_email($db, $data)
+{
+    $is_update = !empty($data['draft_id']);
+
+    if ($is_update) {
+        // Update existing draft
+        $sql = "UPDATE emails SET to_address = :to_address, subject = :subject, body = :body, is_draft = :is_draft, from_address = :from_address, from_name = :from_name WHERE id = :id AND user_id = :user_id";
+    } else {
+        // Insert new email
+        $sql = "INSERT INTO emails (user_id, staff_id, to_address, subject, body, is_draft, from_address, from_name, uid, date_received) VALUES (:user_id, :staff_id, :to_address, :subject, :body, :is_draft, :from_address, :from_name, :uid, :date_received)";
+    }
+
+    try {
+        $stmt = $db->prepare($sql);
+
+        // Bind common parameters
+        $stmt->bindValue(':to_address', $data['to']);
+        $stmt->bindValue(':subject', $data['subject']);
+        $stmt->bindValue(':body', $data['body']);
+        $stmt->bindValue(':is_draft', $data['is_draft'], PDO::PARAM_INT);
+        $stmt->bindValue(':user_id', $data['user_id'], PDO::PARAM_INT);
+
+        // Hardcoded from_address and from_name for now
+        $stmt->bindValue(':from_address', 'hardcoded@example.com');
+        $stmt->bindValue(':from_name', 'Hardcoded Name');
+
+
+        if ($is_update) {
+            $stmt->bindValue(':id', $data['draft_id'], PDO::PARAM_INT);
+        } else {
+            // Bind parameters specific to new emails
+            $stmt->bindValue(':staff_id', $data['staff_id'], PDO::PARAM_INT);
+            $stmt->bindValue(':uid', uniqid(), PDO::PARAM_STR); // Generate a unique ID
+            $stmt->bindValue(':date_received', time(), PDO::PARAM_INT);
+        }
+
+        if ($stmt->execute()) {
+            return $is_update ? $data['draft_id'] : $db->lastInsertId();
+        } else {
+            return false;
+        }
+    } catch (PDOException $e) {
+        log_message("Database error in save_email: " . $e->getMessage());
+        error_log("Database error in save_email: " . $e->getMessage());
         return false;
     }
 }

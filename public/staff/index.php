@@ -4,7 +4,7 @@ include __DIR__ . '/../includes/header.php';
 $page_title = "Staff Management";
 ?>
 
-<div class="container emp ">
+<div class="container ">
     <!-- Loading Spinner -->
     <div id="loading-spinner" class="text-center py-4" style="display: none;">
         <div class="spinner-border text-primary" role="status">
@@ -88,9 +88,10 @@ $page_title = "Staff Management";
                                 <tr>
                                     <th>Name</th>
                                     <th>Email</th>
-                                    <th class="d-none d-md-table-cell">Phone</th>
+                                    <th>Phone</th>
                                     <th class="d-none d-lg-table-cell">Location</th>
                                     <th class="d-none d-lg-table-cell">Specialty</th>
+                                    <th class="d-none d-md-table-cell">Daily Fee</th>
                                     <th class="text-center">Actions</th>
                                 </tr>
                             </thead>
@@ -109,9 +110,10 @@ $page_title = "Staff Management";
                                 <tr>
                                     <th>Name</th>
                                     <th>Email</th>
-                                    <th class="d-none d-md-table-cell">Phone</th>
+                                    <th>Phone</th>
                                     <th class="d-none d-lg-table-cell">Location</th>
                                     <th class="d-none d-lg-table-cell">Specialty</th>
+                                    <th class="d-none d-md-table-cell">Daily Fee</th>
                                     <th class="text-center">Actions</th>
                                 </tr>
                             </thead>
@@ -163,10 +165,41 @@ $page_title = "Staff Management";
                             <input type="text" class="form-control" id="name" name="name" required>
                             <div class="invalid-feedback"></div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-sm-6 col-md-12 col-lg-6">
+                                    <label class="form-label">Status <span class="text-danger">*</span></label></br>
+                                    <div class="btn-group" role="group" aria-label="Staff status selection">
+                                        <input type="radio" class="btn-check" name="is_active" id="is_active_1" value="1" autocomplete="off" required>
+                                        <label class="btn btn-outline-success" for="is_active_1">Active</label>
 
+                                        <input type="radio" class="btn-check" name="is_active" id="is_active_0" value="0" autocomplete="off" required>
+                                        <label class="btn btn-outline-danger" for="is_active_0">Inactive</label>
+                                    </div>
+                                    <div class="invalid-feedback"></div>
+                                </div>
+                                <div class="col-sm-6 col-md-12 col-lg-6">
+                                    <label class="form-label">Staff Type <span class="text-danger">*</span></label></br>
+                                    <div class="btn-group" role="group" aria-label="Staff type selection">
+                                        <input type="radio" class="btn-check" name="staff_type" id="staff_type_candidate" value="candidate" autocomplete="off" required>
+                                        <label class="btn btn-outline-primary" for="staff_type_candidate">Candidate</label>
+
+                                        <input type="radio" class="btn-check" name="staff_type" id="staff_type_staff" value="staff" autocomplete="off" required>
+                                        <label class="btn btn-outline-primary" for="staff_type_staff">Staff</label>
+                                    </div>
+                                    <div class="invalid-feedback"></div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-md-6">
                             <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
                             <input type="email" class="form-control" id="email" name="email" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="location" class="form-label">Location <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="location" name="location" required>
                             <div class="invalid-feedback"></div>
                         </div>
 
@@ -177,31 +210,16 @@ $page_title = "Staff Management";
                             <div class="invalid-feedback"></div>
                         </div>
 
-                        <div class="col-md-6">
-                            <label for="location" class="form-label">Location <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="location" name="location" required>
+
+
+
+                        <div class="col-md-6 staff-detail-field">
+                            <label for="speciality" class="form-label">Specialty</label>
+                            <input type="text" class="form-control" id="speciality" name="speciality">
                             <div class="invalid-feedback"></div>
                         </div>
 
-                        <div class="col-md-6">
-                            <label for="staff_type" class="form-label">Staff Type <span
-                                    class="text-danger">*</span></label>
-                            <select class="form-select" id="staff_type" name="staff_type" required>
-                                <option value="">Select type...</option>
-                                <option value="candidate">candidate</option>
-                                <option value="staff">Staff</option>
-                            </select>
-                            <div class="invalid-feedback"></div>
-                        </div>
 
-                        <div class="col-md-6">
-                            <label for="is_active" class="form-label">Status <span class="text-danger">*</span></label>
-                            <select class="form-select" id="is_active" name="is_active" required>
-                                <option value="1">Active</option>
-                                <option value="0">Inactive</option>
-                            </select>
-                            <div class="invalid-feedback"></div>
-                        </div>
 
                         <!-- Staff Details (Conditional) -->
                         <div class="col-12 mt-4" id="staff-details-section">
@@ -213,38 +231,6 @@ $page_title = "Staff Management";
                         <div class="col-md-6 staff-detail-field">
                             <label for="position_applied" class="form-label">Position Applied</label>
                             <input type="text" class="form-control" id="position_applied" name="position_applied">
-                            <div class="invalid-feedback"></div>
-                        </div>
-
-                        <div class="col-md-6 staff-detail-field">
-                            <label for="speciality" class="form-label">Specialty</label>
-                            <input type="text" class="form-control" id="speciality" name="speciality">
-                            <div class="invalid-feedback"></div>
-                        </div>
-
-                        <div class="col-md-6 staff-detail-field">
-                            <label for="experience_level" class="form-label">Experience Level<span
-                                    class="text-danger">*</span></label>
-                            <select class="form-select" id="experience_level" name="experience_level" required>
-                                <option value="entry level">Entry Level</option>
-                                <option value="junior">Junior</option>
-                                <option value="mid-level">Mid level</option>
-                                <option value="senior">Senior</option>
-                                <option value="expert">Expert</option>
-                            </select>
-                            <div class="invalid-feedback"></div>
-                        </div>
-
-                        <div class="col-md-6 staff-detail-field">
-                            <label for="current_company" class="form-label">Current Company</label>
-                            <input type="text" class="form-control" id="current_company" name="current_company">
-                            <div class="invalid-feedback"></div>
-                        </div>
-
-                        <div class="col-md-6 staff-detail-field">
-                            <label for="linkedin_profile" class="form-label">LinkedIn Profile</label>
-                            <input type="url" class="form-control" id="linkedin_profile" name="linkedin_profile"
-                                placeholder="https://...">
                             <div class="invalid-feedback"></div>
                         </div>
 
@@ -262,24 +248,65 @@ $page_title = "Staff Management";
                             <div class="invalid-feedback"></div>
                         </div>
 
-                        <div class="col-md-6 staff-detail-field">
-                            <label for="salary_expectation" class="form-label">Salary Expectation</label>
-                            <input type="text" class="form-control" id="salary_expectation" name="salary_expectation"
-                                required>
-                            <div class="invalid-feedback"></div>
-                        </div>
 
                         <div class="col-md-6 staff-detail-field">
-                            <label for="willing_to_relocate" class="form-label">Willing to Relocate</label>
-                            <select class="form-select" id="willing_to_relocate" name="willing_to_relocate">
-                                <option value="0">No</option>
-                                <option value="1">Yes</option>
+                            <label for="experience_level" class="form-label">Experience Level<span
+                                    class="text-danger">*</span></label>
+                            <select class="form-select" id="experience_level" name="experience_level" required>
+                                <option value="">Select experience level...</option>
+                                <option value="entry level">Entry Level</option>
+                                <option value="junior">Junior</option>
+                                <option value="mid-level">Mid level</option>
+                                <option value="senior">Senior</option>
+                                <option value="expert">Expert</option>
                             </select>
                             <div class="invalid-feedback"></div>
                         </div>
+                        <div class="col-md-6 staff-detail-field">
+                            <label for="linkedin_profile" class="form-label">LinkedIn Profile</label>
+                            <input type="url" class="form-control" id="linkedin_profile" name="linkedin_profile"
+                                placeholder="https://...">
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-md-6 staff-detail-field">
+                            <label for="current_company" class="form-label">Current Company</label>
+                            <input type="text" class="form-control" id="current_company" name="current_company">
+                            <div class="invalid-feedback"></div>
+                        </div>
+
+
+
+
+                        <div class="col-md-6 staff-detail-field">
+                            <label for="salary_expectation" class="form-label">Salary Expectation</label>
+                            <div class="input-group">
+                                <div class="input-group-text" id="salary_expectation_input">£</div>
+                                <input type="number" class="form-control" placeholder="Enter Amount" aria-label="salary expectation" aria-describedby="salary_expectation_input" id="salary_expectation" name="salary_expectation">
+                            </div>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-md-6 staff-detail-field">
+                            <label for="willing_to_relocate" class="form-label">Willing to Relocate</label></br>
+                            <div class="btn-group" role="group" aria-label="Staff type selection">
+                                <input type="radio" class="btn-check" name="willing_to_relocate" id="willing_to_relocate_1" value="1" autocomplete="off" required>
+                                <label class="btn btn-outline-primary" for="willing_to_relocate_1">Yes</label>
+                                <input type="radio" class="btn-check" name="willing_to_relocate" id="willing_to_relocate_0" value="0" autocomplete="off" required>
+                                <label class="btn btn-outline-primary" for="willing_to_relocate_0">No</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 staff-detail-field">
+                            <label for="daily_fee" class="form-label">Daily Fee</label>
+                            <div class="input-group">
+                                <div class="input-group-text">£</div>
+                                <input type="number" class="form-control" placeholder="Enter Amount" aria-label="daily fee" aria-describedby="daily_fee_input" id="daily_fee_input" name="daily_fee" min="0">
+                            </div>
+                            <div class="invalid-feedback"></div>
+                        </div>
+
+
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer mb-4">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="fas fa-times me-1"></i>Cancel
                     </button>
@@ -376,7 +403,8 @@ $page_title = "Staff Management";
         const confirmActionBtn = document.getElementById('confirm-action-btn');
         const staffDetailsSection = document.getElementById('staff-details-section');
         const staffDetailFields = document.querySelectorAll('.staff-detail-field');
-        const staffTypeSelect = document.getElementById('staff_type');
+        const staffTypeRadios = document.querySelectorAll('input[name="staff_type"]');
+        const isActiveRadios = document.querySelectorAll('input[name="is_active"]');
         const editStaffFromViewBtn = document.getElementById('editStaffFromViewBtn');
 
         // Global variable to track current active tab
@@ -386,6 +414,8 @@ $page_title = "Staff Management";
         loadStaff(1, currentStaffTypeFilter); // Load candidates by default
         setupEventListeners();
         setupFormValidation();
+        updateFieldRequirements(); // Set initial state
+        updateSubmitButtonState(); // Set initial button state
 
         /**
          * Setup event listeners
@@ -444,7 +474,17 @@ $page_title = "Staff Management";
             });
 
             // Toggle staff details section based on staff type
-            staffTypeSelect.addEventListener('change', toggleStaffDetails);
+            staffTypeRadios.forEach(radio => {
+                radio.addEventListener('change', () => {
+                    toggleStaffDetails();
+                    updateFieldRequirements();
+                    updateSubmitButtonState();
+                });
+            });
+
+            isActiveRadios.forEach(radio => {
+                radio.addEventListener('change', () => validateField(radio));
+            });
 
             // Edit button from view modal
             editStaffFromViewBtn.addEventListener('click', function() {
@@ -471,50 +511,135 @@ $page_title = "Staff Management";
          * Toggle visibility of staff details fields based on staff type
          */
         function toggleStaffDetails() {
-            const staffType = staffTypeSelect.value;
-            if (staffType === 'candidate') {
-                staffDetailsSection.classList.remove('d-none');
-                staffDetailFields.forEach(field => field.classList.remove('d-none'));
-            } else {
-                staffDetailsSection.classList.add('d-none');
-                staffDetailFields.forEach(field => field.classList.add('d-none'));
-                // Clear values when hidden
+            const selectedStaffType = document.querySelector('input[name="staff_type"]:checked')?.value;
+            const isCandidate = selectedStaffType === 'candidate';
+
+            staffDetailsSection.classList.toggle('d-none', !isCandidate);
+            staffDetailFields.forEach(field => field.classList.toggle('d-none', !isCandidate));
+
+            if (!isCandidate) {
+                // Clear values and validation when hidden
                 staffDetailFields.forEach(field => {
-                    const input = field.querySelector('input, select');
+                    const input = field.querySelector('input:not([type="radio"]), select, textarea');
+                    const radioGroup = field.querySelector('.btn-group[role="group"]');
+
                     if (input) {
-                        if (input.type === 'select-one') {
-                            input.value = ''; // Reset select to default option
-                        } else if (input.type === 'checkbox') {
+                        if (input.type === 'checkbox' || input.type === 'radio') {
                             input.checked = false;
                         } else {
                             input.value = '';
                         }
-                        input.classList.remove('is-valid', 'is-invalid'); // Clear validation
+                        input.classList.remove('is-valid', 'is-invalid');
+                    } else if (radioGroup) {
+                        radioGroup.querySelectorAll('input[type="radio"]').forEach(radio => {
+                            radio.checked = false;
+                        });
+                        const feedback = radioGroup.nextElementSibling;
+                        if (feedback) feedback.textContent = '';
                     }
                 });
             }
         }
+
+
+        /**
+         * Dynamically set required attribute for candidate fields
+         */
+        function updateFieldRequirements() {
+            const selectedStaffType = document.querySelector('input[name="staff_type"]:checked')?.value;
+            const isCandidate = selectedStaffType === 'candidate';
+
+            const candidateFieldIds = [
+                'position_applied', 'source', 'experience_level', 'linkedin_profile',
+                'current_company', 'salary_expectation', 'daily_fee_input'
+            ];
+            const candidateRadioNames = ['willing_to_relocate'];
+
+            candidateFieldIds.forEach(id => {
+                const field = document.getElementById(id);
+                if (field) {
+                    if (isCandidate) {
+                        field.setAttribute('required', '');
+                    } else {
+                        field.removeAttribute('required');
+                        // Clean up validation state
+                        const container = field.closest('.input-group') || field;
+                        container.classList.remove('is-invalid', 'is-valid');
+                        field.classList.remove('is-invalid', 'is-valid');
+                        const formGroup = field.closest('.col-md-6');
+                        if (formGroup) {
+                            const feedback = formGroup.querySelector('.invalid-feedback');
+                            if (feedback) feedback.textContent = '';
+                        }
+                    }
+                }
+            });
+
+            candidateRadioNames.forEach(name => {
+                const radios = document.querySelectorAll(`input[name="${name}"]`);
+                if (radios.length > 0) {
+                    radios.forEach(radio => {
+                        if (isCandidate) {
+                            radio.setAttribute('required', '');
+                        } else {
+                            radio.removeAttribute('required');
+                        }
+                    });
+
+                    // Clean up validation state
+                    if (!isCandidate) {
+                        const container = radios[0].closest('.btn-group');
+                        if (container) {
+                            container.classList.remove('is-invalid', 'is-valid');
+                            const formGroup = container.closest('.col-md-6, .col-lg-6');
+                            if (formGroup) {
+                                const feedback = formGroup.querySelector('.invalid-feedback');
+                                if (feedback) feedback.textContent = '';
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+
+        /**
+         * Updates the state of the submit button based on form validity.
+         */
+        function updateSubmitButtonState() {
+            const isFormValid = validateForm(false); // Validate without showing errors
+            saveStaffBtn.disabled = !isFormValid;
+        }
+
 
         /**
          * Setup form validation
          */
         function setupFormValidation() {
             const form = staffForm;
-            const inputs = form.querySelectorAll('input, select, textarea');
+            const inputs = form.querySelectorAll(
+                'input:not([type="radio"]), select, textarea');
 
             inputs.forEach(input => {
-                // Real-time validation on blur
-                input.addEventListener('blur', function() {
-                    validateField(this);
+                const eventType = input.tagName === 'SELECT' ? 'change' : 'blur';
+                input.addEventListener(eventType, function() {
+                    validateField(this, true); // Show error on blur/change
+                    updateSubmitButtonState();
                 });
 
-                // Clear validation on input
                 input.addEventListener('input', function() {
                     if (this.classList.contains('is-invalid')) {
-                        this.classList.remove('is-invalid');
-                        const feedback = this.parentNode.querySelector('.invalid-feedback');
-                        if (feedback) feedback.textContent = '';
+                        validateField(this,
+                            true); // Re-validate on input to clear error when valid
                     }
+                    updateSubmitButtonState();
+                });
+            });
+
+            form.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    validateField(this, true); // Show error on change
+                    updateSubmitButtonState();
                 });
             });
         }
@@ -522,93 +647,117 @@ $page_title = "Staff Management";
         /**
          * Validate individual field
          */
-        function validateField(field) {
-            const value = field.value.trim();
+        function validateField(field, showUIError = false) {
             let isValid = true;
             let message = '';
+            const isRequired = field.hasAttribute('required');
 
-            // Required field validation
-            if (field.hasAttribute('required') && !value) {
+            // For radio buttons, check the whole group
+            if (field.type === 'radio') {
+                const groupName = field.name;
+                const group = document.querySelectorAll(`input[name="${groupName}"]`);
+                const isChecked = Array.from(group).some(radio => radio.checked);
+                if (isRequired && !isChecked) {
+                    isValid = false;
+                    message = 'Please select an option.';
+                }
+                // Apply feedback to the container
+                const container = field.closest('.btn-group');
+                if (container) {
+                    updateValidationUI(container, isValid, message, showUIError);
+                }
+                return isValid;
+            }
+
+
+            const value = field.value.trim();
+
+            if (isRequired && value === '') {
                 isValid = false;
                 message = 'This field is required.';
-            }
-            // Email validation
-            else if (field.type === 'email' && value) {
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(value)) {
-                    isValid = false;
-                    message = 'Please enter a valid email address.';
-                }
-            }
-            // URL validation
-            else if (field.type === 'url' && value) {
+            } else if (field.type === 'email' && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                isValid = false;
+                message = 'Please enter a valid email address.';
+            } else if (field.type === 'url' && value) {
                 try {
                     new URL(value);
-                } catch {
+                } catch (_) {
                     isValid = false;
-                    message = 'Please enter a valid URL.';
+                    message = 'Please enter a valid URL (e.g., https://example.com).';
+                }
+            } else if (field.type === 'number' && field.min && value !== '' && parseFloat(value) < parseFloat(field
+                    .min)) {
+                isValid = false;
+                message = `Value must be at least ${field.min}.`;
+            }
+
+            updateValidationUI(field, isValid, message, showUIError);
+            return isValid;
+        }
+
+
+        /**
+         * Updates the UI to show or hide validation feedback.
+         */
+        function updateValidationUI(element, isValid, message, showUIError) {
+            const container = element.closest('.input-group, .btn-group');
+            const elementToStyle = container || element;
+            let formGroup = element.closest('.col-md-6, .col-sm-6, .col-lg-6');
+            if (!formGroup) {
+                formGroup = element.closest('.staff-detail-field');
+            }
+            const feedbackElement = formGroup ? formGroup.querySelector('.invalid-feedback') : null;
+
+
+            // Always remove both classes before adding the correct one
+            elementToStyle.classList.remove('is-valid', 'is-invalid');
+            element.classList.remove('is-valid', 'is-invalid');
+
+            if (isValid) {
+                if (showUIError && (element.value || (element.type === 'radio' && document.querySelector(
+                        `input[name="${element.name}"]:checked`)))) {
+                    elementToStyle.classList.add('is-valid');
+                }
+                if (feedbackElement) feedbackElement.textContent = '';
+            } else { // If invalid
+                if (showUIError) {
+                    elementToStyle.classList.add('is-invalid');
+                    if (feedbackElement) feedbackElement.textContent = message;
                 }
             }
-
-            // Conditional validation for staff_details fields
-            if (staffTypeSelect.value === 'source') {
-
-            }
-            if (staffTypeSelect.value === 'experience_level') {
-
-            }
-            // Update field validation state
-            if (isValid) {
-                field.classList.remove('is-invalid');
-                field.classList.add('is-valid');
-            } else {
-                field.classList.remove('is-valid');
-                field.classList.add('is-invalid');
-                const feedback = field.parentNode.querySelector('.invalid-feedback');
-                if (feedback) feedback.textContent = message;
-            }
-
-            return isValid;
         }
 
         /**
          * Validate entire form
          */
-        function validateForm() {
-            const form = staffForm;
-            const inputs = form.querySelectorAll('input[required], select[required]');
-            let isValid = true;
+        function validateForm(showUIErrors = false) {
+            let isFormValid = true;
             let firstInvalidField = null;
 
-            inputs.forEach(input => {
-                if (!validateField(input)) {
-                    isValid = false;
-                    if (!firstInvalidField) {
-                        firstInvalidField = input;
+            // Get all fields that might require validation
+            const fieldsToValidate = staffForm.querySelectorAll(
+                'input, select, textarea'
+            );
+
+            fieldsToValidate.forEach(field => {
+                // Only validate visible fields
+                if (field.offsetParent !== null) {
+                    const isFieldValid = validateField(field, showUIErrors);
+                    if (!isFieldValid) {
+                        isFormValid = false;
+                        if (!firstInvalidField) {
+                            firstInvalidField = field;
+                        }
                     }
                 }
             });
 
-            // Also validate conditionally visible fields if staff type is candidate
-            if (staffTypeSelect.value === 'candidate') {
-                staffDetailFields.forEach(fieldContainer => {
-                    const input = fieldContainer.querySelector('input, select');
-                    // Add specific required checks for candidate fields if necessary
-                    // For example, if position_applied is required for candidates:
-                    // if (input && input.id === 'position_applied' && !validateField(input)) {
-                    //     isValid = false;
-                    //     if (!firstInvalidField) firstInvalidField = input;
-                    // }
-                });
-            }
-
-
-            if (!isValid && firstInvalidField) {
+            if (!isFormValid && showUIErrors && firstInvalidField) {
                 firstInvalidField.focus();
-                showFormError('Please correct the highlighted errors before submitting.');
+                showFormError('Please correct the highlighted errors.');
             }
 
-            return isValid;
+            return isFormValid;
         }
 
         /**
@@ -619,16 +768,19 @@ $page_title = "Staff Management";
 
             hideFormError();
 
-            if (!validateForm()) {
+            if (!validateForm(true)) { // Pass true to show errors on submit
                 return;
             }
             const formData = new FormData(staffForm);
             const data = Object.fromEntries(formData.entries());
             console.log('handleFormSubmit: Submitting form data', data);
 
-            // Convert is_active and willing_to_relocate to integers
+            // Convert relevant fields to integers
             data.is_active = parseInt(data.is_active);
             data.willing_to_relocate = parseInt(data.willing_to_relocate);
+            if (data.daily_fee) {
+                data.daily_fee = parseInt(data.daily_fee);
+            }
 
             const staffId = document.getElementById('staff_id').value;
             const action = staffId ? 'update' : 'add'; // Determine if adding or updating
@@ -748,27 +900,26 @@ $page_title = "Staff Management";
                     <tr>
                         <td><span class="fw-medium" style="cursor: pointer;" onclick="viewStaff(${staff.id})">${escapeHtml(staff.name)}</span></td>
                         <td><span class="text-truncate-mobile">${escapeHtml(staff.email)}</span></td>
-                        <td class="d-none d-md-table-cell">${escapeHtml(staff.phone || 'N/A')}</td>
+                        <td >${escapeHtml(staff.phone || 'N/A')}</td>
                         <td class="d-none d-lg-table-cell">${escapeHtml(staff.location || 'N/A')}</td>
                         <td class="d-none d-lg-table-cell">${escapeHtml(staff.speciality || 'N/A')}</td>
-                       <!-- <td>${staffTypeBadge} ${isActiveBadge}</td> -->
-                      
+                        <td class="d-none d-md-table-cell">${staff.daily_fee !== null ? escapeHtml(staff.daily_fee) : 'N/A'}</td>
                         <td>
-                            <div class="btn-group" role="group"> 
+                            <div class="btn-group" role="group">
                              ${staff.staff_type === 'candidate' ? `
-                                <a href="/staff/send_interview_invitation.php?candidate_id=${staff.id}" class="btn btn-sm btn-outline-success" title="Send Interview Invitation">
+                                <a href="/staff/send_interview_invitation.php?candidate_id=${staff.id}" class="btn btn-sm btn-outline-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Send Interview Invitation">
                                     <i class="fas fa-paper-plane"></i>
                                 </a>
                             ` : ''}
-                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="viewStaff(${staff.id})" title="View Details">
+                              <!--  <button type="button" class="btn btn-sm btn-outline-primary" onclick="viewStaff(${staff.id})" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-toggle="tooltip" data-bs-placement="top" title="View Details">
                                     <i class="fas fa-eye"></i>
-                                </button>
-                                ${isAdmin ? `
-                                <!-- <button type="button" class="btn btn-sm btn-outline-info" onclick="editStaff(${staff.id})" title="Edit">
-                                    <i class="fas fa-edit"></i>
                                 </button> -->
+                                ${isAdmin ? `
+                                <button type="button" class="btn btn-sm btn-outline-info" onclick="editStaff(${staff.id})" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
                             
-                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteStaff(${staff.id}, '${escapeHtml(staff.name)}')" title="Delete">
+                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteStaff(${staff.id}, '${escapeHtml(staff.name)}')" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete">
                                     <i class="fas fa-trash"></i>
                                 </button>
                                 ` : ''}
@@ -840,10 +991,22 @@ $page_title = "Staff Management";
             staffForm.classList.remove('was-validated');
             staffModalLabel.innerHTML = '<i class="fas fa-user-plus me-2"></i>Add New Staff'; // Reset modal title
 
-            // Clear validation states
-            const inputs = staffForm.querySelectorAll('input, select, textarea');
+            // Clear validation states for text/select inputs
+            const inputs = staffForm.querySelectorAll('input:not([type="radio"]), select, textarea');
             inputs.forEach(input => {
                 input.classList.remove('is-valid', 'is-invalid');
+            });
+
+            // Clear validation states for radio button groups
+            staffForm.querySelectorAll('.btn-group').forEach(group => {
+                group.classList.remove('is-valid', 'is-invalid');
+                const feedback = group.nextElementSibling;
+                if (feedback) feedback.textContent = '';
+            });
+
+            // Uncheck all radio buttons
+            staffForm.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.checked = false;
             });
 
             hideFormError();
@@ -990,6 +1153,12 @@ $page_title = "Staff Management";
                                     <span>${escapeHtml(staff.salary_expectation || 'N/A')}</span>
                                 </div>
                             </div>
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <span class="form-label fw-bold text-muted me-2">Daily Fee:</span>
+                                    <span>${staff.daily_fee !== null ? escapeHtml(staff.daily_fee) : 'N/A'}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -1087,11 +1256,20 @@ $page_title = "Staff Management";
                     document.getElementById('phone').value = staff.phone;
                     document.getElementById('location').value = staff.location;
                     document.getElementById('position_applied').value = staff.position_applied || '';
-                    document.getElementById('staff_type').value = staff.staff_type;
-                    document.getElementById('is_active').value = staff.is_active;
+                    // Set the correct radio button for staff_type
+                    document.getElementById(`staff_type_${staff.staff_type}`).checked = true;
+                    // Set the correct radio button for is_active
+                    document.getElementById(`is_active_${staff.is_active}`).checked = true;
+                    // Set the correct radio button for willing_to_relocate
+                    // document.getElementById(`willing_to_relocate_${staff.willing_to_relocate}`).checked = true;
+                    const willingToRelocateValue = staff.willing_to_relocate !== null ? staff.willing_to_relocate : '0';
+                    const willingToRelocateRadio = document.getElementById(`willing_to_relocate_${willingToRelocateValue == 1 ? '1' : '0'}`);
+                    if (willingToRelocateRadio) {
+                        willingToRelocateRadio.checked = true;
+                    }
 
-                    // Populate staff details if staff type is candidate
-                    if (staff.staff_type === 'candidate') {
+                    // Populate staff details if staff type is candidate or staff
+                    if (staff.staff_type === 'candidate' || staff.staff_type === 'staff') {
                         document.getElementById('speciality').value = staff.speciality || '';
                         document.getElementById('experience_level').value = staff.experience_level || '';
                         document.getElementById('current_company').value = staff.current_company || '';
@@ -1099,8 +1277,10 @@ $page_title = "Staff Management";
                         document.getElementById('source').value = staff.source || '';
                         document.getElementById('salary_expectation').value = staff.salary_expectation ||
                             '';
-                        document.getElementById('willing_to_relocate').value = staff.willing_to_relocate ||
-                            '0';
+
+                        document.getElementById('daily_fee_input').value = staff.daily_fee !== null ? staff
+                            .daily_fee :
+                            '';
                     }
                     toggleStaffDetails(); // Ensure correct fields are shown/hidden
                 } else {

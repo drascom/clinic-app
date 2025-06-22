@@ -1,12 +1,16 @@
 <?php
+require_once __DIR__ . '/../services/LogService.php';
+
 function handle_rooms($action, $method, $db, $input = [])
 {
+    $logService = new LogService();
     switch ($action) {
         case 'get':
             if ($method === 'POST') {
                 $id = $input['id'] ?? null;
 
                 if (!$id) {
+                    $logService->log('rooms', 'error', 'Room ID is required for get.', $input);
                     return ['success' => false, 'error' => 'Room ID is required.'];
                 }
 
@@ -15,9 +19,10 @@ function handle_rooms($action, $method, $db, $input = [])
                 $room = $stmt->fetch(PDO::FETCH_ASSOC);
 
                 if (!$room) {
+                    $logService->log('rooms', 'error', 'Room not found.', ['id' => $id]);
                     return ['success' => false, 'error' => 'Room not found.'];
                 }
-
+                $logService->log('rooms', 'success', 'Room retrieved successfully.', ['id' => $id]);
                 return ['success' => true, 'room' => $room];
             }
             break;
@@ -45,6 +50,7 @@ function handle_rooms($action, $method, $db, $input = [])
                 }
 
                 $rooms = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                $logService->log('rooms', 'success', 'Rooms listed successfully.', ['count' => count($rooms), 'date' => $date]);
                 return ['success' => true, 'rooms' => $rooms];
             }
             break;
@@ -56,6 +62,7 @@ function handle_rooms($action, $method, $db, $input = [])
                 $type = trim($_POST['type'] ?? '');
 
                 if (empty($name)) {
+                    $logService->log('rooms', 'error', 'Room name is required for create.', $_POST);
                     return ['success' => false, 'error' => 'Room name is required.'];
                 }
 
@@ -68,12 +75,14 @@ function handle_rooms($action, $method, $db, $input = [])
                     $stmt = $db->prepare("SELECT id, name, type, is_active FROM rooms WHERE id = ?");
                     $stmt->execute([$room_id]);
                     $room = $stmt->fetch(PDO::FETCH_ASSOC);
-
+                    $logService->log('rooms', 'success', 'Room created successfully.', ['id' => $room_id, 'name' => $name, 'type' => $type]);
                     return ['success' => true, 'message' => 'Room created successfully.', 'room' => $room];
                 } catch (PDOException $e) {
                     if ($e->getCode() == 23000) { // UNIQUE constraint violation
+                        $logService->log('rooms', 'error', 'A room with this name already exists.', ['name' => $name]);
                         return ['success' => false, 'error' => 'A room with this name already exists.'];
                     }
+                    $logService->log('rooms', 'error', 'Database error on create: ' . $e->getMessage(), ['error' => $e->getMessage(), 'input' => $_POST]);
                     return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
                 }
             }
@@ -87,6 +96,7 @@ function handle_rooms($action, $method, $db, $input = [])
                 $type = trim($_POST['type'] ?? $input['type'] ?? '');
 
                 if (!$id || empty($name)) {
+                    $logService->log('rooms', 'error', 'Room ID and name are required for update.', $_POST);
                     return ['success' => false, 'error' => 'Room ID and name are required.'];
                 }
 
@@ -95,14 +105,17 @@ function handle_rooms($action, $method, $db, $input = [])
                     $stmt->execute([$name, $type, $id]);
 
                     if ($stmt->rowCount() === 0) {
+                        $logService->log('rooms', 'error', 'Room not found for update.', ['id' => $id]);
                         return ['success' => false, 'error' => 'Room not found.'];
                     }
-
+                    $logService->log('rooms', 'success', 'Room updated successfully.', ['id' => $id, 'name' => $name, 'type' => $type]);
                     return ['success' => true, 'message' => 'Room updated successfully.'];
                 } catch (PDOException $e) {
                     if ($e->getCode() == 23000) { // UNIQUE constraint violation
+                        $logService->log('rooms', 'error', 'A room with this name already exists.', ['id' => $id, 'name' => $name]);
                         return ['success' => false, 'error' => 'A room with this name already exists.'];
                     }
+                    $logService->log('rooms', 'error', 'Database error on update: ' . $e->getMessage(), ['error' => $e->getMessage(), 'input' => $_POST]);
                     return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
                 }
             }
@@ -114,6 +127,7 @@ function handle_rooms($action, $method, $db, $input = [])
                 $status = $_POST['status'] ?? $input['status'] ?? null;
 
                 if (!$id) {
+                    $logService->log('rooms', 'error', 'Room ID is required for toggle.', $_POST);
                     return ['success' => false, 'error' => 'Room ID is required.'];
                 }
 
@@ -126,11 +140,14 @@ function handle_rooms($action, $method, $db, $input = [])
                         return ['success' => false, 'error' => 'Room not found.'];
                     }
                     if ($status === 0) {
+                        $logService->log('rooms', 'success', 'Room archived successfully.', ['id' => $id]);
                         return ['success' => true, 'message' => 'Room archived successfully.'];
                     } else {
+                        $logService->log('rooms', 'success', 'Room activated successfully.', ['id' => $id]);
                         return ['success' => true, 'message' => 'Room activated successfully.'];
                     }
                 } catch (PDOException $e) {
+                    $logService->log('rooms', 'error', 'Database error on toggle: ' . $e->getMessage(), ['error' => $e->getMessage(), 'input' => $_POST]);
                     return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
                 }
             }
@@ -141,6 +158,7 @@ function handle_rooms($action, $method, $db, $input = [])
                 $id = $_POST['id'] ?? $input['id'] ?? null;
 
                 if (!$id) {
+                    $logService->log('rooms', 'error', 'Room ID is required for delete.', $_POST);
                     return ['success' => false, 'error' => 'Room ID is required.'];
                 }
 
@@ -150,18 +168,22 @@ function handle_rooms($action, $method, $db, $input = [])
                     $stmt->execute([$id]);
 
                     if ($stmt->rowCount() === 0) {
+                        $logService->log('rooms', 'error', 'Room not found for delete.', ['id' => $id]);
                         return ['success' => false, 'error' => 'Room not found.'];
                     }
-
+                    $logService->log('rooms', 'success', 'Room deleted successfully.', ['id' => $id]);
                     return ['success' => true, 'message' => 'Room archived successfully.'];
                 } catch (PDOException $e) {
+                    $logService->log('rooms', 'error', 'Database error on delete: ' . $e->getMessage(), ['error' => $e->getMessage(), 'input' => $_POST]);
                     return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
                 }
             }
             break;
         default:
+            $logService->log('rooms', 'error', 'Invalid action for rooms entity.', ['action' => $action]);
             return ['success' => false, 'error' => 'Invalid action for rooms entity.'];
     }
 
+    $logService->log('rooms', 'error', 'Invalid request method for this action.', ['action' => $action, 'method' => $method]);
     return ['success' => false, 'error' => 'Invalid request method for this action.'];
 }

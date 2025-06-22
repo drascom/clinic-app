@@ -1,6 +1,9 @@
 <?php
+require_once __DIR__ . '/../services/LogService.php';
+
 function handle_users($action, $method, $db, $request_data = [])
 {
+    $logService = new LogService();
     // Use the request data passed from api.php instead of reading from php://input
     $input = $request_data;
     switch ($action) {

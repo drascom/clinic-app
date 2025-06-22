@@ -1,6 +1,9 @@
 <?php
+require_once __DIR__ . '/../services/LogService.php';
+
 function handle_surgeries($action, $method, $db, $input = [])
 {
+    $logService = new LogService();
     switch ($action) {
         case 'add':
             if ($method === 'POST') {

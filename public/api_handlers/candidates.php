@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../auth/auth.php';
+require_once __DIR__ . '/../services/LogService.php';
 
 /**
  * Handle job candidates API requests
@@ -17,6 +18,7 @@ require_once __DIR__ . '/../auth/auth.php';
  */
 function handle_candidates($action, $method, $db, $input = [])
 {
+    $logService = new LogService();
     // Check authentication and admin/editor access
     if (!is_logged_in()) {
         return ['success' => false, 'error' => 'Authentication required.'];
@@ -164,7 +166,6 @@ function get_candidates_list($db, $input)
                 'has_prev' => $page > 1
             ]
         ];
-
     } catch (Exception $e) {
         error_log("Get candidates list failed: " . $e->getMessage());
         return ['success' => false, 'error' => 'Failed to retrieve candidates list.'];
@@ -200,7 +201,6 @@ function get_candidate_details($db, $input)
         }
 
         return ['success' => true, 'candidate' => $candidate];
-
     } catch (Exception $e) {
         error_log("Get candidate details failed: " . $e->getMessage());
         return ['success' => false, 'error' => 'Failed to retrieve candidate details.'];
@@ -274,7 +274,6 @@ function add_candidate($db, $input)
         } else {
             return ['success' => false, 'error' => 'Failed to add candidate.'];
         }
-
     } catch (Exception $e) {
         error_log("Add candidate failed: " . $e->getMessage());
         return ['success' => false, 'error' => 'Failed to add candidate: ' . $e->getMessage()];
@@ -349,7 +348,6 @@ function edit_candidate($db, $input)
         } else {
             return ['success' => false, 'error' => 'No changes made or candidate not found.'];
         }
-
     } catch (Exception $e) {
         error_log("Edit candidate failed: " . $e->getMessage());
         return ['success' => false, 'error' => 'Failed to update candidate: ' . $e->getMessage()];
@@ -393,7 +391,6 @@ function delete_candidate($db, $input)
         } else {
             return ['success' => false, 'error' => 'Failed to delete candidate.'];
         }
-
     } catch (Exception $e) {
         error_log("Delete candidate failed: " . $e->getMessage());
         return ['success' => false, 'error' => 'Failed to delete candidate: ' . $e->getMessage()];
@@ -446,7 +443,6 @@ function add_candidate_note($db, $input)
         } else {
             return ['success' => false, 'error' => 'Failed to add note.'];
         }
-
     } catch (Exception $e) {
         error_log("Add candidate note failed: " . $e->getMessage());
         return ['success' => false, 'error' => 'Failed to add note: ' . $e->getMessage()];
@@ -479,7 +475,6 @@ function get_candidate_notes($db, $input)
         $notes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return ['success' => true, 'notes' => $notes];
-
     } catch (Exception $e) {
         error_log("Get candidate notes failed: " . $e->getMessage());
         return ['success' => false, 'error' => 'Failed to retrieve notes.'];
@@ -510,7 +505,6 @@ function delete_candidate_note($db, $input)
         } else {
             return ['success' => false, 'error' => 'Note not found or already deleted.'];
         }
-
     } catch (Exception $e) {
         error_log("Delete candidate note failed: " . $e->getMessage());
         return ['success' => false, 'error' => 'Failed to delete note: ' . $e->getMessage()];
@@ -570,7 +564,6 @@ function get_candidate_stats($db)
                 'by_status' => $status_counts
             ]
         ];
-
     } catch (Exception $e) {
         error_log("Get candidate stats failed: " . $e->getMessage());
         return ['success' => false, 'error' => 'Failed to retrieve statistics.'];

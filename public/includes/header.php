@@ -16,7 +16,7 @@ if (
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 
 <head>
     <meta charset="UTF-8">
@@ -32,11 +32,12 @@ if (
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- Bootstrap Icons (for tooltips) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
     <!-- Dropzone CSS -->
     <link href="https://unpkg.com/dropzone@6.0.0-beta.1/dist/dropzone.css" rel="stylesheet" type="text/css" />
 
-    <!-- Tom-Select CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
     <!-- Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <!-- Custom CSS -->
@@ -80,14 +81,14 @@ if (
                     </a>
                 </div>
                 <div class="d-flex align-items-center gap-2">
-                    <button id="theme-btn" aria-label="Toggle theme">
+                    <button id="theme-btn" class="btn btn-outline-secondary" aria-label="Toggle theme">
                         <i class="fas fa-moon"></i>
                     </button>
                 </div>
             </div>
         </header>
     <?php else: ?>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-body shadow-sm">
             <div class="container-fluid pe-2 ">
                 <a class="navbar-brand fw-bold" href="/index.php">
                     <i class="fas fa-heartbeat me-2"></i>
@@ -143,13 +144,20 @@ if (
                                         <span class="d-lg-inline">Patients</span>
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/app-msg">
+                                        <i class="fas fa-sms me-1"></i>
+                                        <span class="d-lg-inline">Messages</span>
+                                    </a>
+                                </li>
                                 <?php if (is_editor() || is_admin()): ?>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="/emailapp">
+                                        <a class="nav-link" href="/app-email">
                                             <i class="fas fa-envelope me-1"></i>
                                             <span class="d-lg-inline">Emails</span>
                                         </a>
                                     </li>
+
                                     <!-- HR Management - for Editor -->
                                     <li class="nav-item dropdown">
                                         <a class="nav-link dropdown-toggle" href="#" id="hrDropdown" role="button"
@@ -261,7 +269,7 @@ if (
                     ?>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false" style=" color: mediumblue;">
+                            data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-user-circle me-1"></i>
                             <span class="d-none d-md-inline"><?php echo htmlspecialchars($username); ?></span>
                         </a>
@@ -305,9 +313,9 @@ if (
             <?php endif; ?>
             <ul class="navbar-nav">
                 <li>
-                    <a id="theme-btn" class="nav-link" href="">
+                    <button id="theme-btn" class="ms-2 nav-link btn btn-lg btn-outline-secondary" aria-label="Toggle theme">
                         <i class="fas fa-moon"></i>
-                    </a>
+                    </button>
                 </li>
             </ul>
                 </div>

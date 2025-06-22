@@ -1,7 +1,10 @@
 <?php
 require_once __DIR__ . '/../auth/auth.php';
+require_once __DIR__ . '/../services/LogService.php';
+
 function handle_agencies($action, $method, $db, $input = [])
 {
+    $logService = new LogService();
     switch ($action) {
         case 'create':
             if ($method === 'POST') {
@@ -20,12 +23,15 @@ function handle_agencies($action, $method, $db, $input = [])
 
                 $stmt = $db->prepare("INSERT INTO agencies (name, created_at, updated_at) VALUES (?, datetime('now'), datetime('now'))");
                 $stmt->execute([$name]);
-
+                $newId = $db->lastInsertId();
+                $logService->log('agencies', 'success', 'Agency created successfully.', ['id' => $newId, 'name' => $name]);
                 return [
                     'success' => true,
-                    'id' => $db->lastInsertId(),
+                    'id' => $newId,
                     'message' => 'Agency created successfully.'
                 ];
+            } else {
+                $logService->log('agencies', 'error', 'Invalid method for create action.', ['method' => $method]);
             }
             break;
 
@@ -54,8 +60,10 @@ function handle_agencies($action, $method, $db, $input = [])
 
                 $stmt = $db->prepare("UPDATE agencies SET name = ?, updated_at = datetime('now') WHERE id = ?");
                 $stmt->execute([$name, $id]);
-
+                $logService->log('agencies', 'success', 'Agency updated successfully.', ['id' => $id, 'name' => $name]);
                 return ['success' => true, 'message' => 'Agency updated successfully.'];
+            } else {
+                $logService->log('agencies', 'error', 'Invalid method for update action.', ['method' => $method]);
             }
             break;
 
@@ -92,8 +100,10 @@ function handle_agencies($action, $method, $db, $input = [])
 
                 $stmt = $db->prepare("DELETE FROM agencies WHERE id = ?");
                 $stmt->execute([$id]);
-
+                $logService->log('agencies', 'success', 'Agency deleted successfully.', ['id' => $id]);
                 return ['success' => true, 'message' => 'Agency deleted successfully.'];
+            } else {
+                $logService->log('agencies', 'error', 'Invalid method for delete action.', ['method' => $method]);
             }
             break;
 
@@ -113,7 +123,10 @@ function handle_agencies($action, $method, $db, $input = [])
                     return ['success' => false, 'error' => 'Agency not found.'];
                 }
 
+                $logService->log('agencies', 'success', 'Agency retrieved successfully.', ['id' => $id]);
                 return ['success' => true, 'agency' => $agency];
+            } else {
+                $logService->log('agencies', 'error', 'Invalid method for get action.', ['method' => $method]);
             }
             break;
 
@@ -126,11 +139,13 @@ function handle_agencies($action, $method, $db, $input = [])
 
                 $stmt = $db->query("SELECT * FROM agencies ORDER BY name");
                 $agencies = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+                $logService->log('agencies', 'success', 'Agencies listed successfully.', ['count' => count($agencies)]);
                 return ['success' => true, 'agencies' => $agencies];
+            } else {
+                $logService->log('agencies', 'error', 'Invalid method for list action.', ['method' => $method]);
             }
             break;
     }
-
+    $logService->log('agencies', 'error', "Invalid request for action '{$action}' with method '{$method}'.", ['action' => $action, 'method' => $method]);
     return ['success' => false, 'error' => "Invalid request for action '{$action}' with method '{$method}'."];
 }
