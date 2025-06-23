@@ -96,7 +96,7 @@ $page_title = "Login";
                     </li>
                     <li class="nav-item">
                         <a id="theme-btn" class="nav-link" href="#">
-                            <i class="fas fa-moon"></i>dasd
+                            <i class="fas fa-sun"></i>
                         </a>
                     </li>
                 </ul>
@@ -217,7 +217,7 @@ $page_title = "Login";
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Login Form JavaScript -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const loginForm = document.getElementById('loginForm');
             const emailInput = document.getElementById('email');
             const passwordInput = document.getElementById('password');
@@ -232,7 +232,7 @@ $page_title = "Login";
 
             // Quick login functionality
             quickLoginButtons.forEach(button => {
-                button.addEventListener('click', function () {
+                button.addEventListener('click', function() {
                     const email = this.getAttribute('data-email');
                     const password = this.getAttribute('data-password');
 
@@ -268,12 +268,12 @@ $page_title = "Login";
 
                 inputs.forEach(input => {
                     // Real-time validation on blur
-                    input.addEventListener('blur', function () {
+                    input.addEventListener('blur', function() {
                         validateField(this);
                     });
 
                     // Clear validation on input
-                    input.addEventListener('input', function () {
+                    input.addEventListener('input', function() {
                         if (this.classList.contains('is-invalid')) {
                             this.classList.remove('is-invalid');
                             const feedback = this.parentNode.querySelector('.invalid-feedback');
@@ -379,7 +379,10 @@ $page_title = "Login";
                 const errorMessage = document.getElementById('form-error-message');
                 errorMessage.textContent = message;
                 errorDiv.classList.remove('d-none');
-                errorDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                errorDiv.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'nearest'
+                });
             }
 
             /**

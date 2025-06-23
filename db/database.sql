@@ -404,22 +404,27 @@ CREATE TABLE user_email_settings (
     email_address VARCHAR(255) NOT NULL,
     smtp_host VARCHAR(255) NOT NULL,
     smtp_port INTEGER NOT NULL,
-    smtp_username VARCHAR(255) NOT NULL,
-    smtp_password VARCHAR(255) NOT NULL,
+    smtp_user VARCHAR(255) NOT NULL,
+    smtp_pass VARCHAR(255) NOT NULL,
     smtp_secure VARCHAR(10) NOT NULL,
+    imap_host VARCHAR(255) NOT NULL,
+    imap_user VARCHAR(255) NOT NULL,
+    imap_pass VARCHAR(255) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
--- INSERT INTO user_email_settings (user_id, email_address, smtp_host, smtp_port, smtp_username, smtp_password, smtp_secure) VALUES (1, 'contact@livharleystreet.co.uk', 'gukm1005.siteground.biz', 465, 'ebru.tok@livharleystreet.co.uk', '051224..Uk', 'ssl');
-INSERT INTO user_email_settings (user_id, email_address, smtp_host, smtp_port, smtp_username, smtp_password, smtp_secure) VALUES (1, 'ayhan@livharleystreet.co.uk', 'gukm1005.siteground.biz', 465, 'ayhan@livharleystreet.co.uk', 'Doktor2024@', 'ssl');
-INSERT INTO user_email_settings (user_id, email_address, smtp_host, smtp_port, smtp_username, smtp_password, smtp_secure) VALUES (3, 'ebru.tok@livharleystreet.co.uk', 'gukm1005.siteground.biz', 465, 'ebru.tok@livharleystreet.co.uk', '051224..Uk', 'ssl');
+-- INSERT INTO user_email_settings (user_id, email_address, smtp_host, smtp_port, smtp_user, smtp_pass, smtp_secure, imap_host, imap_user, imap_pass) VALUES (1, 'contact@livharleystreet.co.uk', 'gukm1005.siteground.biz', 465, 'ebru.tok@livharleystreet.co.uk', '051224..Uk', 'ssl', 'gukm1005.siteground.biz', 'ebru.tok@livharleystreet.co.uk', '051224..Uk');
+INSERT INTO user_email_settings (user_id, email_address, smtp_host, smtp_port, smtp_user, smtp_pass, smtp_secure, imap_host, imap_user, imap_pass) VALUES (1, 'ayhan@livharleystreet.co.uk', 'gukm1005.siteground.biz', 465, 'ayhan@livharleystreet.co.uk', 'Doktor2024@', 'ssl', 'gukm1005.siteground.biz', 'ayhan@livharleystreet.co.uk', 'Doktor2024@');
+INSERT INTO user_email_settings (user_id, email_address, smtp_host, smtp_port, smtp_user, smtp_pass, smtp_secure, imap_host, imap_user, imap_pass) VALUES (3, 'ebru.tok@livharleystreet.co.uk', 'gukm1005.siteground.biz', 465, 'ebru.tok@livharleystreet.co.uk', '051224..Uk', 'ssl', 'gukm1005.siteground.biz', 'ebru.tok@livharleystreet.co.uk', '051224..Uk');
 
 CREATE TABLE IF NOT EXISTS email_attachments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     email_id INTEGER NOT NULL,
     filename TEXT NOT NULL,
-    file_path TEXT NOT NULL UNIQUE,
     mime_type TEXT,
     size INTEGER,
+    file_path TEXT,
+    email_uid INTEGER,
+    part_index TEXT,
     FOREIGN KEY (email_id) REFERENCES emails(id) ON DELETE CASCADE
 );
 

@@ -56,6 +56,11 @@ if ($method === 'POST') {
     $action = $_GET['action'] ?? null;
 }
 
+// For GET requests, ensure the input array is populated from $_GET
+if ($method === 'GET') {
+    $input = $_GET;
+}
+
 $response = ['success' => false, 'message' => "Invalid request: Missing entity or action.", 'details' => ['entity' => $entity, 'action' => $action, 'method' => $method]];
 
 try {

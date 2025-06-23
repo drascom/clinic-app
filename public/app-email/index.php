@@ -247,6 +247,28 @@ $page_title = "Email Dashboard";
     </div>
 </div>
 
+<!-- Attachment Modal -->
+<div class="modal fade" id="attachmentModal" tabindex="-1" aria-labelledby="attachmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="attachmentModalLabel">Attachment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="attachment-viewer" style="height: 70vh;">
+                    <!-- Attachment content will be loaded here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="#" id="attachment-download-btn" class="btn btn-primary" download>Download</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <?php require_once '../includes/footer.php'; ?>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -260,6 +282,10 @@ $page_title = "Email Dashboard";
         const progressBar = document.getElementById('progress-bar');
         const progressText = document.getElementById('progress-text');
         const folderText = document.getElementById('folder-text');
+        const attachmentModal = new bootstrap.Modal(document.getElementById('attachmentModal'));
+        const attachmentViewer = document.getElementById('attachment-viewer');
+        const attachmentDownloadBtn = document.getElementById('attachment-download-btn');
+        const attachmentModalLabel = document.getElementById('attachmentModalLabel');
 
         let currentFolder = 'inbox';
         let activeConversationEmail = null; // To keep track of the currently active conversation
@@ -603,7 +629,6 @@ $page_title = "Email Dashboard";
                 loadConversation(senderEmail, listItem);
             }
         });
-
         // Function to load and display a conversation
         function loadConversation(senderEmail, targetElement) {
             emailContent.innerHTML = `
@@ -669,17 +694,16 @@ $page_title = "Email Dashboard";
                                         <small>To: ${email.to}</small><hr>
                                         <div class="email-body">${email.body}</div>
                                         ${email.attachments?.length
-                                    ? `<hr><h6>Attachments:</h6><ul class="list-unstyled">
-                                                ${email.attachments.map(a => `
-                                                    <li>
-                                                        <a href="serve-file.php?file_id=${a.id}"
-                                                        class="download-attachment-btn" target="_blank">
-                                                            <i class="fas fa-paperclip me-1"></i>
-                                                            ${a.filename} (${(a.size / 1024).toFixed(2)} KB)
-                                                        </a>
-                                                    </li>`).join('')}
-                                            </ul>`
-                                    : ''}
+                                     ? `<hr><h6>Attachments:</h6><ul class="list-unstyled">
+                                                 ${email.attachments.map(a => `
+                                                     <li>
+                                                         <a href="#" class="attachment-link" data-attachment-id="${a.id}" data-filename="${a.filename}" data-mime-type="${a.mime_type}">
+                                                             <i class="fas fa-paperclip me-1"></i>
+                                                             ${a.filename} (${(a.size / 1024).toFixed(2)} KB)
+                                                         </a>
+                                                     </li>`).join('')}
+                                             </ul>`
+                                     : ''}
                                     </div>
                                 </div>
                             </div>
@@ -697,5 +721,32 @@ $page_title = "Email Dashboard";
                         '<p class="text-center p-4 text-danger">An error occurred while fetching the conversation.</p>';
                 });
         }
+
+        emailContent.addEventListener('click', function(event) {
+            const target = event.target.closest('.attachment-link');
+            if (target) {
+                event.preventDefault();
+                const attachmentId = target.dataset.attachmentId;
+                const filename = target.dataset.filename;
+                const mimeType = target.dataset.mimeType;
+
+                const viewUrl = `/download.php?action=view&attachment_id=${attachmentId}`;
+                const downloadUrl = `/download.php?action=download&attachment_id=${attachmentId}`;
+
+                attachmentModalLabel.textContent = filename;
+                attachmentDownloadBtn.href = downloadUrl;
+                attachmentDownloadBtn.setAttribute('download', filename);
+
+                if (mimeType.toLowerCase().startsWith('image/')) {
+                    attachmentViewer.innerHTML = `<img src="${viewUrl}" class="img-fluid">`;
+                } else if (mimeType.toLowerCase() === 'application/pdf') {
+                    attachmentViewer.innerHTML = `<iframe src="${viewUrl}" width="100%" height="100%"></iframe>`;
+                } else {
+                    attachmentViewer.innerHTML = `<p>Preview not available for this file type. Please download the file to view it.</p>`;
+                }
+
+                attachmentModal.show();
+            }
+        });
     });
 </script>

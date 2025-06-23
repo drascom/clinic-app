@@ -184,7 +184,6 @@ function handle_emails($action, $method, $db, $input)
                 return ['success' => false, 'message' => 'Failed to retrieve draft.'];
             }
             break;
-
         case 'save_email':
             // Basic validation
             if (empty($input['to'])) {

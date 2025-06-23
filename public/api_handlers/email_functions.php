@@ -71,8 +71,33 @@ function get_email_body($inbox, $email_number, $structure)
     return $body;
 }
 
+// Helper function to map IMAP type numbers to MIME type strings
+function get_mime_type_from_number($type_number)
+{
+    switch ($type_number) {
+        case 0:
+            return 'text';
+        case 1:
+            return 'multipart';
+        case 2:
+            return 'message';
+        case 3:
+            return 'application';
+        case 4:
+            return 'audio';
+        case 5:
+            return 'image';
+        case 6:
+            return 'video';
+        case 7:
+            return 'other';
+        default:
+            return 'application'; // Default for unknown types
+    }
+}
+
 // Function to get email attachments
-function get_email_attachments($inbox, $email_number, $structure)
+function get_email_attachments($inbox, $email_uid, $structure)
 {
     $attachments = [];
     if (isset($structure->parts)) {
@@ -107,34 +132,24 @@ function get_email_attachments($inbox, $email_number, $structure)
             }
 
             if ($is_attachment && !empty($filename)) {
-                $attachment_content = imap_fetchbody($inbox, $email_number, $part_index);
-                $decoded_content = decode_email_part($attachment_content, $part->encoding);
+                $mime_type_str = get_mime_type_from_number($part->type);
+                $mime_type = $mime_type_str . '/' . strtolower($part->subtype);
 
-                // Generate a unique filename to prevent conflicts
-                $unique_filename = uniqid() . '_' . basename($filename);
-                $upload_dir = __DIR__ . '/../../uploads/email_attachments/';
-                if (!is_dir($upload_dir)) {
-                    mkdir($upload_dir, 0777, true);
-                }
-                $file_path = $upload_dir . $unique_filename;
-
-                if (file_put_contents($file_path, $decoded_content) !== false) {
-                    $attachments[] = [
-                        'filename' => $filename,
-                        'file_path' => str_replace(__DIR__ . '/..', '', $file_path), // Store relative path
-                        'mime_type' => $part->type . '/' . $part->subtype,
-                        'size' => strlen($decoded_content),
-                    ];
-                    log_message("Saved attachment: {$filename} to {$file_path}");
-                } else {
-                    log_message("Failed to save attachment: {$filename}");
-                }
+                // We no longer download the file, just store metadata
+                $attachments[] = [
+                    'filename' => $filename,
+                    'mime_type' => $mime_type,
+                    'size' => $part->bytes ?? 0,
+                    'email_uid' => $email_uid,
+                    'part_index' => $part_index,
+                    'file_path' => null // Set to null as it's not downloaded yet
+                ];
+                log_message("Found attachment metadata: {$filename} with MIME type: {$mime_type}");
             }
         }
     }
     return $attachments;
 }
-
 // Function to get the date of the last email stored in the database
 function get_last_email_date($db, $user_id)
 {
@@ -161,8 +176,8 @@ function store_emails($db, $emails)
     $sql = "INSERT OR IGNORE INTO emails (uid, message_id, subject, from_address, from_name, to_address, date_received, body, is_read, folder, user_id)
             VALUES (:uid, :message_id, :subject, :from_address, :from_name, :to_address, :date_received, :body, :is_read, :folder, :user_id)";
 
-    $attachment_sql = "INSERT INTO email_attachments (email_id, filename, file_path, mime_type, size)
-                       VALUES (:email_id, :filename, :file_path, :mime_type, :size)";
+    $attachment_sql = "INSERT INTO email_attachments (email_id, filename, mime_type, size, file_path, email_uid, part_index)
+                       VALUES (:email_id, :filename, :mime_type, :size, :file_path, :email_uid, :part_index)";
 
     try {
         $stmt = $db->prepare($sql);
@@ -203,9 +218,11 @@ function store_emails($db, $emails)
                         foreach ($email['attachments'] as $attachment) {
                             $attachment_stmt->bindValue(':email_id', $email_id);
                             $attachment_stmt->bindValue(':filename', $attachment['filename']);
-                            $attachment_stmt->bindValue(':file_path', $attachment['file_path']);
                             $attachment_stmt->bindValue(':mime_type', $attachment['mime_type']);
                             $attachment_stmt->bindValue(':size', $attachment['size']);
+                            $attachment_stmt->bindValue(':file_path', $attachment['file_path']);
+                            $attachment_stmt->bindValue(':email_uid', $attachment['email_uid']);
+                            $attachment_stmt->bindValue(':part_index', $attachment['part_index']);
                             $attachment_stmt->execute();
                         }
                         log_message("Stored " . count($email['attachments']) . " attachments for email ID: {$email_id}");
@@ -227,14 +244,17 @@ function fetch_new_emails($db, $user_id, $last_email_date = 0)
 {
     $settings = get_user_email_settings($db, $user_id);
     if (!$settings) {
-        $imap_host = '{' . $_ENV['EMAIL_HOST'] . ':993/imap/ssl}INBOX';
-        $imap_user = $_ENV['EMAIL_USERNAME'];
-        $imap_pass = $_ENV['EMAIL_PASSWORD'];
-    } else {
-        $imap_host = '{' . $settings['smtp_host'] . ':993/imap/ssl}INBOX';
-        $imap_user = $settings['smtp_username'];
-        $imap_pass = $settings['smtp_password'];
+        log_message("IMAP settings not found for user_id: {$user_id}. Cannot fetch new emails.");
+        error_log("IMAP settings not found for user_id: {$user_id}.");
+        return [];
     }
+    // Always use standard IMAP SSL port and secure setting for IMAP connection
+    $imap_host_base = $settings['imap_host'] ?? $_ENV['EMAIL_HOST'];
+    $imap_user = $settings['imap_user'] ?? $_ENV['EMAIL_USERNAME'];
+    $imap_pass = $settings['imap_pass'] ?? $_ENV['EMAIL_PASSWORD'];
+
+    // Construct IMAP host string with standard IMAP SSL port (993) and /ssl flag
+    $imap_host = '{' . $imap_host_base . ':993/imap/ssl}INBOX';
 
     // Log the IMAP settings used for fetching new emails
     $settings_log = "IMAP Settings Used for Fetching New Emails (User ID: {$user_id}):\n";
@@ -259,15 +279,10 @@ function fetch_new_emails($db, $user_id, $last_email_date = 0)
     log_message("IMAP connection successful.");
 
     // Search for emails since the last stored email date
+    // Always fetch all emails to ensure no emails are missed due to IMAP search limitations.
+    // Filtering by date will be done after fetching.
     $search_criteria = 'ALL';
-    if ($last_email_date > 0) {
-        // Format date for IMAP search (e.g., "25-Mar-2024")
-        $search_date = date("d-M-Y", $last_email_date);
-        $search_criteria = 'SINCE "' . $search_date . '"';
-        log_message("Searching for emails with criteria: " . $search_criteria);
-    } else {
-        log_message("Searching for all emails in inbox (no last date).");
-    }
+    log_message("Searching for all emails in inbox.");
     $emails = imap_search($inbox, $search_criteria);
 
     if (!$emails) {
@@ -282,31 +297,38 @@ function fetch_new_emails($db, $user_id, $last_email_date = 0)
 
     $email_data = [];
     foreach ($emails as $email_number) {
-        log_message("Fetching details for email number: {$email_number}");
         $overview = imap_fetch_overview($inbox, $email_number, 0);
-        $header = imap_headerinfo($inbox, $email_number);
-        $structure = imap_fetchstructure($inbox, $email_number);
-        $body = get_email_body($inbox, $email_number, $structure);
-        $attachments = get_email_attachments($inbox, $email_number, $structure);
-
         if ($overview && !empty($overview)) {
-            $from_raw = isset($overview[0]->from) ? $overview[0]->from : 'Unknown Sender';
-            $subject_raw = isset($overview[0]->subject) ? $overview[0]->subject : 'No Subject';
+            $email_date = isset($overview[0]->date) ? strtotime($overview[0]->date) : time();
 
-            $email_entry = [
-                'id' => $overview[0]->uid,
-                'message_id' => isset($overview[0]->message_id) ? $overview[0]->message_id : null,
-                'subject' => iconv_mime_decode($subject_raw, 0, "UTF-8"),
-                'from' => imap_utf8($from_raw),
-                'to' => isset($header->toaddress) ? $header->toaddress : 'Unknown Recipient',
-                'date' => isset($overview[0]->date) ? strtotime($overview[0]->date) : time(),
-                'body' => $body,
-                'is_read' => (bool) $overview[0]->seen,
-                'attachments' => $attachments, // Add attachments here
-            ];
-            $email_data[] = $email_entry;
-            log_message("Fetched email: Subject='{$email_entry['subject']}', From='{$email_entry['from']}', Attachments: " .
-                count($attachments));
+            // Only process emails newer than the last_email_date
+            if ($email_date > $last_email_date) {
+                log_message("Fetching details for new email number: {$email_number}");
+                $header = imap_headerinfo($inbox, $email_number);
+                $structure = imap_fetchstructure($inbox, $email_number);
+                $body = get_email_body($inbox, $email_number, $structure);
+                $attachments = get_email_attachments($inbox, $overview[0]->uid, $structure);
+
+                $from_raw = isset($overview[0]->from) ? $overview[0]->from : 'Unknown Sender';
+                $subject_raw = isset($overview[0]->subject) ? $overview[0]->subject : 'No Subject';
+
+                $email_entry = [
+                    'id' => $overview[0]->uid,
+                    'message_id' => isset($overview[0]->message_id) ? $overview[0]->message_id : null,
+                    'subject' => iconv_mime_decode($subject_raw, 0, "UTF-8"),
+                    'from' => imap_utf8($from_raw),
+                    'to' => isset($header->toaddress) ? $header->toaddress : 'Unknown Recipient',
+                    'date' => $email_date,
+                    'body' => $body,
+                    'is_read' => (bool) $overview[0]->seen,
+                    'attachments' => $attachments, // Add attachments here
+                ];
+                $email_data[] = $email_entry;
+                log_message("Fetched new email: Subject='{$email_entry['subject']}', From='{$email_entry['from']}', Attachments: " .
+                    count($attachments));
+            } else {
+                log_message("Skipping old email number: {$email_number} (Date: " . date("Y-m-d H:i:s", $email_date) . ", Last Email Date: " . date("Y-m-d H:i:s", $last_email_date) . ")");
+            }
         } else {
             log_message("Failed to fetch overview for email number: {$email_number}");
         }
@@ -324,16 +346,13 @@ function fetch_junk_emails($db, $user_id)
     $settings = get_user_email_settings($db, $user_id);
     $junk_folder = 'Junk'; // Common name for junk folder, might need to be configurable
 
-    if (!$settings) {
-        $imap_host = '{' . $_ENV['EMAIL_HOST'] . ':993/imap/ssl}' . $junk_folder;
-        $imap_user = $_ENV['EMAIL_USERNAME'];
-        $imap_pass = $_ENV['EMAIL_PASSWORD'];
-    } else {
-        $imap_host = '{' . $settings['smtp_host'] . ':' . $settings['smtp_port'] . '/imap/' . $settings['smtp_secure'] . '}' .
-            $junk_folder;
-        $imap_user = $settings['smtp_username'];
-        $imap_pass = $settings['smtp_password'];
-    }
+    // Always use standard IMAP SSL port and secure setting for IMAP connection
+    $imap_host_base = $settings['smtp_host'] ?? $_ENV['EMAIL_HOST'];
+    $imap_user = $settings['smtp_username'] ?? $_ENV['EMAIL_USERNAME'];
+    $imap_pass = $settings['smtp_password'] ?? $_ENV['EMAIL_PASSWORD'];
+
+    // Construct IMAP host string with standard IMAP SSL port (993) and /ssl flag
+    $imap_host = '{' . $imap_host_base . ':993/imap/ssl}' . $junk_folder;
 
     // Log the IMAP settings used for fetching junk emails
     $settings_log = "IMAP Settings Used for Fetching Junk Emails (User ID: {$user_id}):\n";
@@ -458,7 +477,7 @@ function get_emails_from_db($db, $user_id, $is_active = null)
         $stmt->execute();
         $emails = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $attachment_stmt = $db->prepare("SELECT filename, file_path, mime_type, size FROM email_attachments WHERE email_id =:email_id");
+        $attachment_stmt = $db->prepare("SELECT id, filename, mime_type, size, file_path FROM email_attachments WHERE email_id = :email_id");
 
         // Re-format for consistency with the original email structure and add attachments
         $formatted_emails = [];
@@ -580,10 +599,10 @@ function delete_emails_by_sender($db, $sender_email, $user_id)
         $imap_user = $_ENV['EMAIL_USERNAME'];
         $imap_pass = $_ENV['EMAIL_PASSWORD'];
     } else {
-        $imap_host = '{' . $settings['smtp_host'] . ':' . $settings['smtp_port'] . '/imap/' .
-            $settings['smtp_secure'] . '}INBOX';
-        $imap_user = $settings['smtp_username'];
-        $imap_pass = $settings['smtp_password'];
+        // Correctly construct the IMAP host string for deletion
+        $imap_host = '{' . $settings['imap_host'] . ':993/imap/ssl}INBOX';
+        $imap_user = $settings['imap_user'];
+        $imap_pass = $settings['imap_pass'];
     }
 
     log_message("Attempting IMAP connection for deletion to host: {$imap_host} with user: {$imap_user}");
