@@ -10,6 +10,7 @@ $page_title = $message_id > 0 ? 'Edit Message' : 'Add New Message';
 // Placeholder for current user ID - replace with actual session/auth logic
 $current_user_id = 1;
 ?>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 
 <div class="container mt-4">
     <h2><?php echo $page_title; ?></h2>
@@ -19,8 +20,17 @@ $current_user_id = 1;
         <input type="hidden" id="senderId" value="<?php echo $current_user_id; ?>">
 
         <div class="mb-3">
-            <label for="receiverId" class="form-label">Receiver ID (Optional):</label>
-            <input type="number" class="form-control" id="receiverId" placeholder="Enter receiver user ID">
+            <label for="receiverId" class="form-label">Receiver (Optional):</label>
+            <select class="form-control" id="receiverId" style="width: 100%;">
+                <option value="">Select Receiver</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="patientId" class="form-label">Patient (Optional):</label>
+            <select class="form-control" id="patientId" style="width: 100%;">
+                <option value="">Select Patient</option>
+            </select>
         </div>
 
         <div class="mb-3">
@@ -55,17 +65,94 @@ $current_user_id = 1;
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 <script src="../assets/js/api-helper.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', async function() {
         const messageId = document.getElementById('messageId').value;
         const senderId = document.getElementById('senderId').value;
-        const receiverIdInput = document.getElementById('receiverId');
+        const receiverIdSelect = document.getElementById('receiverId'); // Renamed for clarity
+        const patientIdSelect = document.getElementById('patientId'); // New patientId select
         const relatedTableSelect = document.getElementById('relatedTable');
         const relatedIdInput = document.getElementById('relatedId');
         const messageContentTextarea = document.getElementById('messageContent');
         const submitMessageBtn = document.getElementById('submitMessageBtn');
         const messageForm = document.getElementById('messageForm');
+
+        // Initialize Select2 for receiverId
+        $('#receiverId').select2({
+            placeholder: 'Search for a receiver',
+            allowClear: true,
+            ajax: {
+                delay: 250,
+                transport: function(params, success, failure) {
+                    const requestData = {
+                        search: params.data.term,
+                        page: params.data.page || 1
+                    };
+                    apiRequest('users', 'list', requestData)
+                        .then(success)
+                        .catch(failure);
+                },
+                processResults: function(data, params) {
+                    params.page = params.page || 1;
+                    if (data.success && data.data) { // Assuming the handler returns data in a 'data' property
+                        return {
+                            results: data.data.map(user => ({
+                                id: user.id,
+                                text: `${user.username} (ID: ${user.id})`
+                            })),
+                            pagination: {
+                                more: (params.page * 10) < data.total // Adjust based on API response
+                            }
+                        };
+                    }
+                    return {
+                        results: []
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 1
+        });
+
+
+        // Initialize Select2 for patientId
+        $('#patientId').select2({
+            placeholder: 'Search for a patient',
+            allowClear: true,
+            ajax: {
+                delay: 250,
+                transport: function(params, success, failure) {
+                    const requestData = {
+                        search: params.data.term,
+                        page: params.data.page || 1
+                    };
+                    apiRequest('patients', 'list', requestData)
+                        .then(success)
+                        .catch(failure);
+                },
+                processResults: function(data, params) {
+                    params.page = params.page || 1;
+                    if (data.success && data.data) {
+                        return {
+                            results: data.data.map(patient => ({
+                                id: patient.id,
+                                text: `${patient.name} (ID: ${patient.id})`
+                            })),
+                            pagination: {
+                                more: (params.page * 10) < data.total
+                            }
+                        };
+                    }
+                    return {
+                        results: []
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 1
+        });
 
 
         // Function to validate a single field
@@ -162,11 +249,35 @@ $current_user_id = 1;
             });
             if (response.success && response.message_data) {
                 const message = response.message_data;
-                receiverIdInput.value = message.receiver_id || '';
-                relatedTableSelect.value = message.related_table;
-                // Populate relatedId options and then set the value
-                await populateRelatedIdOptions(message.related_table);
-                relatedIdInput.value = message.related_id;
+                // Set receiverIdSelect value for Select2
+                if (message.receiver_id) {
+                    const receiverOption = new Option(message.receiver_username + ' (ID: ' + message.receiver_id + ')', message.receiver_id, true, true);
+                    receiverIdSelect.append(receiverOption).trigger('change');
+                }
+
+                // Set patientIdSelect value for Select2
+                if (message.patient_id) {
+                    // You might need to fetch patient name if not available in message_data
+                    // For now, assuming message_data might contain patient_name or similar
+                    const patientName = message.patient_name || 'Patient'; // Placeholder
+                    const patientOption = new Option(patientName + ' (ID: ' + message.patient_id + ')', message.patient_id, true, true);
+                    patientIdSelect.append(patientOption).trigger('change');
+                }
+
+                // Handle related_tables which is now a JSON array
+                if (message.related_tables) {
+                    try {
+                        const relatedEntities = JSON.parse(message.related_tables);
+                        if (Array.isArray(relatedEntities) && relatedEntities.length > 0) {
+                            const firstEntity = relatedEntities[0]; // Assuming only one related entity for now
+                            relatedTableSelect.value = firstEntity.table_name;
+                            await populateRelatedIdOptions(firstEntity.table_name);
+                            relatedIdInput.value = firstEntity.id;
+                        }
+                    } catch (e) {
+                        console.error("Error parsing related_tables JSON:", e);
+                    }
+                }
                 messageContentTextarea.value = message.message;
                 updateSubmitButtonState(); // Update button state after populating
             } else {
@@ -184,11 +295,42 @@ $current_user_id = 1;
             }
 
             const action = messageId > 0 ? 'update' : 'create';
+
+            const relatedTableValue = relatedTableSelect.value;
+            const relatedIdValue = relatedIdInput.value;
+            let relatedTablesPayload = null;
+
+            if (relatedTableValue && relatedIdValue) {
+                // Find the display text from the selected option to get the field_name logic
+                const selectedOption = Array.from(relatedIdInput.options).find(opt => opt.value === relatedIdValue);
+                const selectedText = selectedOption ? selectedOption.textContent : '';
+
+                // This map should ideally come from a centralized config or API
+                const tableFieldMap = {
+                    'patients': 'name',
+                    'staff': 'name',
+                    'users': 'username',
+                    'appointments': 'title',
+                    'rooms': 'name',
+                    'agencies': 'name',
+                    'procedures': 'name',
+                    'surgeries': 'title',
+                    'candidates': 'name'
+                };
+                const fieldName = tableFieldMap[relatedTableValue] || 'id';
+
+                relatedTablesPayload = JSON.stringify([{
+                    table_name: relatedTableValue,
+                    field_name: fieldName,
+                    id: parseInt(relatedIdValue, 10)
+                }]);
+            }
+
             const payload = {
                 sender_id: senderId,
-                receiver_id: receiverIdInput.value || null,
-                related_table: relatedTableSelect.value,
-                related_id: relatedIdInput.value,
+                receiver_id: receiverIdSelect.value || null,
+                patient_id: patientIdSelect.value || null, // Add patient_id to payload
+                related_tables: relatedTablesPayload,
                 message: messageContentTextarea.value
             };
 
@@ -197,8 +339,8 @@ $current_user_id = 1;
             // apiRequest('messages', 'create', {
             //     sender_id: 1,
             //     receiver_id: null, // Optional
-            //     related_table: 'patients',
-            //     related_id: 123,
+            //     related_table: [{"table_name":"patients","field_name":"name","id":1}],
+            //     patient_id: 1,
             //     message: 'This is a new message related to patient 123.'
             // });
             //
@@ -206,10 +348,10 @@ $current_user_id = 1;
             // apiRequest('messages', 'update', {
             //     message_id: messageId,
             //     sender_id: 1,
-            //     receiver_id: 456, // Optional
-            //     related_table: 'staff',
-            //     related_id: 789,
-            //     message: 'Updated message content for staff 789.'
+            //     receiver_id: 2, // Optional
+            //     related_table: [{"table_name":"staff","field_name":"name","id":6}]
+            //     patient_id: null,
+            //     message: 'Updated message content for staff 6.'
             // });
 
             if (messageId > 0) {
@@ -220,7 +362,7 @@ $current_user_id = 1;
 
             if (response.success) {
                 alert('Message ' + (action === 'create' ? 'created' : 'updated') + ' successfully!');
-                window.location.href = 'index.php'; // Redirect to message list
+                // window.location.href = 'index.php'; // Redirect to message list
             } else {
                 alert('Error ' + (action === 'create' ? 'creating' : 'updating') + ' message: ' + response.message);
             }

@@ -81,6 +81,7 @@ if (
                     </a>
                 </div>
                 <div class="d-flex align-items-center gap-2">
+                    <?php echo $current_user_id; ?>
                     <button id="theme-btn" class="btn btn-outline-secondary" aria-label="Toggle theme">
                         <i class="fas fa-moon"></i>
                     </button>
@@ -109,6 +110,12 @@ if (
                                     <a class="nav-link" href="/technician/technician.php">
                                         <i class="fas fa-calendar me-1"></i>
                                         <span class="d-lg-inline">Avaliability Calendar</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/app-msg">
+                                        <i class="fas fa-sms me-1"></i>
+                                        <span class="d-lg-inline">Messages</span>
                                     </a>
                                 </li>
                             <?php endif; ?>
@@ -271,7 +278,7 @@ if (
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-user-circle me-1"></i>
-                            <span class="d-none d-md-inline"><?php echo htmlspecialchars($username); ?></span>
+                            <span class="d-none d-md-inline"><?php echo  $user_id . '-' . htmlspecialchars($username); ?></span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
                             <li>

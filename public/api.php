@@ -91,10 +91,10 @@ try {
 
                 // Pass the input data to the handler function
                 $response = $handler_function($action, $method, $db, $input ?? []);
-                if (!$response['success']) {
-                    $logService->log($entity, $response['success'] ? 'success' : 'error', "Action: {$action}", $response);
-                }
-                $logService->log($entity, $response['success'] ? 'success' : 'error', "File: {$entity} Action: {$action}", []);
+                // Log the response based on success status
+                $log_level = $response['success'] ? 'success' : 'error';
+                $log_message = "File: {$entity} Action: {$action}";
+                $logService->log($entity, $log_level, $log_message, $response);
             } else {
                 $response = ['success' => false, 'message' => "Function {$handler_function} not found."];
                 $logService->log($entity, 'error', "Handler function not found: {$handler_function}");

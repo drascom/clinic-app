@@ -100,8 +100,34 @@ function handle_users($action, $method, $db, $request_data = [])
 
         case 'list':
             if ($method === 'POST') {
-                $stmt = $db->query("SELECT * FROM users ORDER BY username");
-                return ['success' => true, 'users' => $stmt->fetchAll(PDO::FETCH_ASSOC)];
+                $search = $input['search'] ?? '';
+                $page = isset($input['page']) ? (int)$input['page'] : 1;
+                $limit = 10;
+                $offset = ($page - 1) * $limit;
+
+                $sql = "SELECT id, username FROM users";
+                $count_sql = "SELECT COUNT(id) FROM users";
+                $params = [];
+
+                if (!empty($search)) {
+                    $sql .= " WHERE username LIKE ?";
+                    $count_sql .= " WHERE username LIKE ?";
+                    $params[] = '%' . $search . '%';
+                }
+
+                $sql .= " ORDER BY username LIMIT ? OFFSET ?";
+
+                // Get total count for pagination
+                $count_stmt = $db->prepare($count_sql);
+                $count_stmt->execute($params);
+                $total = $count_stmt->fetchColumn();
+
+                // Get paginated results
+                $stmt = $db->prepare($sql);
+                $stmt->execute(array_merge($params, [$limit, $offset]));
+                $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                return ['success' => true, 'data' => $users, 'total' => $total];
             }
             break;
             break;

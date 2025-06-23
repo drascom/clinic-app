@@ -68,13 +68,14 @@ CREATE TABLE patients (
   agency_id INTEGER NOT NULL,
   photo_album_id INTEGER,
   updated_by INTEGER NULL,
+  created_by INTEGER NOT NULL,
   created_at TEXT DEFAULT CURRENT_TIMESTAMP,
   updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
 );
-INSERT INTO patients (id, name, email, dob, phone, city, gender, avatar, occupation, agency_id, photo_album_id, updated_by, created_at, updated_at) VALUES (1, 'emin colak', 'drascom07@gmail.com', '2025-06-12', '432424', 'Barnet', 'Male', NULL, '', 1, NULL, NULL, '2025-06-15 09:09:48', '2025-06-15 09:09:48');
-INSERT INTO patients (id, name, email, dob, phone, city, gender, avatar, occupation, agency_id, photo_album_id, updated_by, created_at, updated_at) VALUES (2, 'Jane Doe', 'jane.doe@example.com', '1990-01-01', '1112223333', 'London', 'Female', NULL, 'Engineer', 1, NULL, NULL, '2025-06-21 10:00:00', '2025-06-21 10:00:00');
-INSERT INTO patients (id, name, email, dob, phone, city, gender, avatar, occupation, agency_id, photo_album_id, updated_by, created_at, updated_at) VALUES (3, 'John Smith', 'john.smith@example.com', '1985-05-10', '4445556666', 'Manchester', 'Male', NULL, 'Designer', 1, NULL, NULL, '2025-06-21 10:05:00', '2025-06-21 10:05:00');
+INSERT INTO patients (id, name, email, dob, phone, city, gender, avatar, occupation, agency_id, photo_album_id, created_by, created_at, updated_at) VALUES (1, 'emin colak', 'drascom07@gmail.com', '2025-06-12', '432424', 'Barnet', 'Male', NULL, '', 1, NULL, 1, '2025-06-15 09:09:48', '2025-06-15 09:09:48');
+INSERT INTO patients (id, name, email, dob, phone, city, gender, avatar, occupation, agency_id, photo_album_id, created_by, created_at, updated_at) VALUES (2, 'Jane Doe', 'jane.doe@example.com', '1990-01-01', '1112223333', 'London', 'Female', NULL, 'Engineer', 2, NULL, 2, '2025-06-21 10:00:00', '2025-06-21 10:00:00');
+INSERT INTO patients (id, name, email, dob, phone, city, gender, avatar, occupation, agency_id, photo_album_id, created_by, created_at, updated_at) VALUES (3, 'John Smith', 'john.smith@example.com', '1985-05-10', '4445556666', 'Manchester', 'Male', NULL, 'Designer', 3, NULL, 3, '2025-06-21 10:05:00', '2025-06-21 10:05:00');
 
 
 CREATE TABLE photo_album_types (
@@ -426,13 +427,14 @@ CREATE TABLE IF NOT EXISTS `messages` (
   `id` INTEGER PRIMARY KEY AUTOINCREMENT,
   `sender_id` INTEGER NOT NULL,
   `receiver_id` INTEGER,
-  `related_table` VARCHAR(255) NOT NULL,
-  `related_id` INTEGER NOT NULL,
+  `related_table` TEXT,
+  `patient_id` INTEGER,
   `message` TEXT NOT NULL,
   `timestamp` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `is_read` INTEGER NOT NULL DEFAULT 0,
   FOREIGN KEY (`sender_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`receiver_id`) REFERENCES `users`(`id`) ON DELETE SET NULL
+  FOREIGN KEY (`receiver_id`) REFERENCES `users`(`id`) ON DELETE SET NULL,
+  FOREIGN KEY (`patient_id`) REFERENCES `patients`(`id`) ON DELETE SET NULL
 );
 CREATE TABLE IF NOT EXISTS message_reactions (
 `id` INTEGER PRIMARY KEY AUTOINCREMENT, 
@@ -443,117 +445,106 @@ CREATE TABLE IF NOT EXISTS message_reactions (
 FOREIGN KEY (message_id) REFERENCES messages(id) ON DELETE CASCADE, 
 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE);
 
-INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `related_id`, `message`, `is_read`) VALUES
-(1, 2, 'patients', 1, 'Patient Emin Colak has a new appointment scheduled for next week.', 0),
-(3, 1, 'surgery', 1, 'Surgery for patient Emin Colak confirmed for 2025-06-15.', 0),
-(1, NULL, 'staff', 348, 'New candidate Esra Bilen added to the system.', 1),
-(5, 1, 'emails', 1, 'Reminder: Follow up on the email regarding the new patient registration.', 0),
-(2, 3, 'patients', 1, 'Please update the contact details for Emin Colak.', 0),
-(1, 5, 'surgery', 1, 'Pre-surgery instructions sent to patient Emin Colak.', 0),
-(4, 1, 'staff', 360, 'Shefiu''s availability updated for next month.', 1),
-(1, 4, 'emails', 2, 'Action required: Review pending email drafts.', 0),
-(1, 2, 'appointment', 1, 'Appointment with Dr. Smith on 2025-06-25 at 10:00 AM.', 0),
-(3, 5, 'patients photos', 1, 'New post-surgery photos uploaded for patient Emin Colak.', 0);
 
 -- Messages for Patient 1 (Emin Colak) with Agent (receiver_id 2)
-INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `related_id`, `message`, `is_read`) VALUES
-(1, 2, 'patients', 1, 'Hi Agent, I have a question about my upcoming appointment.', 0),
-(2, 1, 'patients', 1, 'Certainly, how can I help you, Emin?', 0),
-(1, 2, 'patients', 1, 'I need to confirm the time for my surgery on the 15th.', 0),
-(2, 1, 'patients', 1, 'Your surgery on June 15th is confirmed for 9:00 AM. Room 1.', 0),
-(1, 2, 'patients', 1, 'Thank you for the confirmation!', 1),
-(2, 1, 'patients', 1, 'You are welcome. Is there anything else?', 1),
-(1, 2, 'patients', 1, 'No, that is all for now. Have a good day.', 1),
-(2, 1, 'patients', 1, 'You too, Emin. See you soon.', 1);
+INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `patient_id`, `message`, `is_read`) VALUES
+(1, 2, '[{"table_name":"patients","field_name":"name","id":1}]', 1, 'Hi Agent, I have a question about my upcoming appointment.', 0),
+(2, 1, '[{"table_name":"patients","field_name":"name","id":1}]', 1, 'Certainly, how can I help you, Emin?', 0),
+(1, 2, '[{"table_name":"patients","field_name":"name","id":1}]', 1, 'I need to confirm the time for my surgery on the 15th.', 0),
+(2, 1, '[{"table_name":"patients","field_name":"name","id":2}]', 2, 'Your surgery on June 15th is confirmed for 9:00 AM. Room 1.', 0),
+(1, 2, '[{"table_name":"patients","field_name":"name","id":2}]', 2, 'Thank you for the confirmation!', 1),
+(2, 1, '[{"table_name":"patients","field_name":"name","id":2}]', 2, 'You are welcome. Is there anything else?', 1),
+(1, 2, '[{"table_name":"patients","field_name":"name","id":2}]', 2, 'No, that is all for now. Have a good day.', 1),
+(2, 1, '[{"table_name":"patients","field_name":"name","id":2}]', 2, 'You too, Emin. See you soon.', 1);
 
--- Messages for Patient 2 (Jane Doe) with Agent (receiver_id 2)
-INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `related_id`, `message`, `is_read`) VALUES
-(1, 2, 'patients', 2, 'Hello, I am Jane Doe. I would like to schedule a follow-up.', 0),
-(2, 1, 'patients', 2, 'Hi Jane, I see you have a follow-up scheduled for July 1st. Is that correct?', 0),
-(1, 2, 'patients', 2, 'Yes, that is correct. I just wanted to make sure everything is in order.', 0),
-(2, 1, 'patients', 2, 'All details are confirmed. We look forward to seeing you.', 0),
-(1, 2, 'patients', 2, 'Great, thank you!', 1),
-(2, 1, 'patients', 2, 'My pleasure. Let me know if you need anything else.', 1),
-(1, 2, 'patients', 2, 'Will do. Thanks again!', 1),
-(2, 1, 'patients', 2, 'You are most welcome.', 1);
+-- -- Messages for Patient 2 (Jane Doe) with Agent (receiver_id 2)
+-- INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `patient_id`, `message`, `is_read`) VALUES
+-- (1, 2, '[{"table_name":"patients","field_name":"name","id":2}]', 2, 'Hello, I am Jane Doe. I would like to schedule a follow-up.', 0),
+-- (2, 1, '[{"table_name":"patients","field_name":"name","id":2}]', 2, 'Hi Jane, I see you have a follow-up scheduled for July 1st. Is that correct?', 0),
+-- (1, 2, '[{"table_name":"patients","field_name":"name","id":2}]', 2, 'Yes, that is correct. I just wanted to make sure everything is in order.', 0),
+-- (2, 1, '[{"table_name":"patients","field_name":"name","id":2}]', 2, 'All details are confirmed. We look forward to seeing you.', 0),
+-- (1, 2, '[{"table_name":"patients","field_name":"name","id":2}]', 2, 'Great, thank you!', 1),
+-- (2, 1, '[{"table_name":"patients","field_name":"name","id":2}]', 2, 'My pleasure. Let me know if you need anything else.', 1),
+-- (1, 2, '[{"table_name":"patients","field_name":"name","id":2}]', 2, 'Will do. Thanks again!', 1),
+-- (2, 1, '[{"table_name":"patients","field_name":"name","id":2}]', 2, 'You are most welcome.', 1);
 
--- Messages for Patient 3 (John Smith) with Agent (receiver_id 2)
-INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `related_id`, `message`, `is_read`) VALUES
-(1, 2, 'patients', 3, 'Hi, this is John Smith. I am interested in a consultation.', 0),
-(2, 1, 'patients', 3, 'Hello John. We have an initial consultation scheduled for July 10th. Does that work for you?', 0),
-(1, 2, 'patients', 3, 'Yes, that date works perfectly. What time is it?', 0),
-(2, 1, 'patients', 3, 'It is at 11:00 AM in Consultation Room. Please arrive 15 minutes early.', 0),
-(1, 2, 'patients', 3, 'Understood. Thank you for the information.', 1),
-(2, 1, 'patients', 3, 'You are welcome. We will send a reminder email closer to the date.', 1),
-(1, 2, 'patients', 3, 'Perfect. Looking forward to it.', 1),
-(2, 1, 'patients', 3, 'See you then!', 1);
+-- -- Messages for Patient 3 (John Smith) with Agent (receiver_id 2)
+-- INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `patient_id`, `message`, `is_read`) VALUES
+-- (1, 2, '[{"table_name":"patients","field_name":"name","id":3}]', 3, 'Hi, this is John Smith. I am interested in a consultation.', 0),
+-- (2, 1, '[{"table_name":"patients","field_name":"name","id":3}]', 3, 'Hello John. We have an initial consultation scheduled for July 10th. Does that work for you?', 0),
+-- (1, 2, '[{"table_name":"patients","field_name":"name","id":3}]', 3, 'Yes, that date works perfectly. What time is it?', 0),
+-- (2, 1, '[{"table_name":"patients","field_name":"name","id":3}]', 3, 'It is at 11:00 AM in Consultation Room. Please arrive 15 minutes early.', 0),
+-- (1, 2, '[{"table_name":"patients","field_name":"name","id":3}]', 3, 'Understood. Thank you for the information.', 1),
+-- (2, 1, '[{"table_name":"patients","field_name":"name","id":3}]', 3, 'You are welcome. We will send a reminder email closer to the date.', 1),
+-- (1, 2, '[{"table_name":"patients","field_name":"name","id":3}]', 3, 'Perfect. Looking forward to it.', 1),
+-- (2, 1, '[{"table_name":"patients","field_name":"name","id":3}]', 3, 'See you then!', 1);
 
--- Messages for Surgery 1 (Emin Colak) with Technician (receiver_id 6)
-INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `related_id`, `message`, `is_read`) VALUES
-(1, 6, 'surgeries', 1, 'Technician, please prepare Room 1 for Emin Colak''s surgery on June 15th.', 0),
-(6, 1, 'surgeries', 1, 'Understood. Room 1 will be ready by 8:30 AM on the 15th.', 0),
-(1, 6, 'surgeries', 1, 'Ensure all necessary equipment is sterilized and available.', 0),
-(6, 1, 'surgeries', 1, 'Confirmed. All instruments will be sterilized and accounted for.', 0),
-(1, 6, 'surgeries', 1, 'Great. Let me know if you encounter any issues.', 1),
-(6, 1, 'surgeries', 1, 'Will do. Everything is on track.', 1),
-(1, 6, 'surgeries', 1, 'Thank you for your diligence.', 1),
-(6, 1, 'surgeries', 1, 'My pleasure.', 1);
+-- -- Messages to Technician (receiver_id=6, table_name:patient,id:1) talk about patient and treatments
+-- INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `patient_id`, `message`, `is_read`) VALUES
+-- (1, 6, '[{"table_name":"patients","field_name":"name","id":1}]', 1, 'Technician, please review Emin Colak''s treatment plan for next session.', 0),
+-- (6, 1, '[{"table_name":"patients","field_name":"name","id":1}]', 1, 'Understood. I will review Emin Colak''s treatment plan and prepare accordingly.', 0),
+-- (1, 6, '[{"table_name":"patients","field_name":"name","id":1}]', 1, 'Ensure all necessary medications and equipment for his specific treatment are ready.', 0),
+-- (6, 1, '[{"table_name":"patients","field_name":"name","id":1}]', 1, 'Confirmed. All required items for Emin Colak''s treatment will be prepared.', 0),
+-- (1, 6, '[{"table_name":"patients","field_name":"name","id":1}]', 1, 'Great. Let me know if there are any concerns regarding the treatment.', 1),
+-- (6, 1, '[{"table_name":"patients","field_name":"name","id":1}]', 1, 'Will do. Everything seems to be in order for his treatment.', 1),
+-- (1, 6, '[{"table_name":"patients","field_name":"name","id":1}]', 1, 'Thank you for your attention to detail on this treatment.', 1),
+-- (6, 1, '[{"table_name":"patients","field_name":"name","id":1}]', 1, 'My pleasure. Patient care is our priority.', 1);
 
--- Messages for Surgery 2 (Jane Doe) with Technician (receiver_id 6)
-INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `related_id`, `message`, `is_read`) VALUES
-(1, 6, 'surgeries', 2, 'Technician, Jane Doe''s follow-up surgery on July 1st in Room 2. Prepare for graft count.', 0),
-(6, 1, 'surgeries', 2, 'Acknowledged. Room 2 will be set up for graft counting on July 1st.', 0),
-(1, 6, 'surgeries', 2, 'Ensure the microscope and counting tools are calibrated.', 0),
-(6, 1, 'surgeries', 2, 'Calibration will be performed prior to the procedure.', 0),
-(1, 6, 'surgeries', 2, 'Excellent. Keep me updated on the preparations.', 1),
-(6, 1, 'surgeries', 2, 'Will send a status report by end of day.', 1),
-(1, 6, 'surgeries', 2, 'Perfect. Thank you.', 1),
-(6, 1, 'surgeries', 2, 'You are welcome.', 1);
+-- -- New sample messages for grouping by entity (sender_id = 1, receiver_id = 3)
 
--- New sample messages for grouping by entity (sender_id = 1, receiver_id = 3)
+-- -- Group 1: Patients, entity_id = 1 (Emin Colak)
+-- INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `patient_id`, `message`, `is_read`) VALUES
+-- (1, 3, '[{"table_name":"patients","field_name":"name","id":1}]', 1, 'Please check Emin Colak''s latest patient notes.', 0),
+-- (3, 1, '[{"table_name":"patients","field_name":"name","id":1}]', 1, 'I have reviewed Emin Colak''s notes. All clear.', 0),
+-- (1, 3, '[{"table_name":"patients","field_name":"name","id":1}]', 1, 'Confirm next appointment for Emin Colak.', 0),
+-- (3, 1, '[{"table_name":"patients","field_name":"name","id":1}]', 1, 'Emin Colak''s next appointment is scheduled for July 5th.', 0);
 
--- Group 1: Patients, entity_id = 1 (Emin Colak)
-INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `related_id`, `message`, `is_read`) VALUES
-(1, 3, 'patients', 1, 'Admin to Ebru: Please check Emin Colak''s latest patient notes.', 0),
-(3, 1, 'patients', 1, 'Ebru to Admin: I have reviewed Emin Colak''s notes. All clear.', 0),
-(1, 3, 'patients', 1, 'Admin to Ebru: Confirm next appointment for Emin Colak.', 0),
-(3, 1, 'patients', 1, 'Ebru to Admin: Emin Colak''s next appointment is scheduled for July 5th.', 0);
+-- -- Group 2: Surgeries, entity_id = 2 (Jane Doe's surgery)
+-- INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `patient_id`, `message`, `is_read`) VALUES
+-- (1, 3, '[{"table_name":"surgeries","field_name":"notes","id":2}]', 2, 'Jane Doe''s surgery on July 1st needs final confirmation.', 0),
+-- (3, 1, '[{"table_name":"surgeries","field_name":"notes","id":2}]', 2, 'Confirmed. Jane Doe''s surgery is all set for July 1st.', 0),
+-- (1, 3, '[{"table_name":"surgeries","field_name":"notes","id":2}]', 2, 'Please ensure all pre-op documents are signed.', 0),
+-- (3, 1, '[{"table_name":"surgeries","field_name":"notes","id":2}]', 2, 'All documents for Jane Doe''s surgery are signed and filed.', 0);
 
--- Group 2: Surgeries, entity_id = 1 (Emin Colak's surgery)
-INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `related_id`, `message`, `is_read`) VALUES
-(1, 3, 'surgeries', 1, 'Admin to Ebru: Update on Emin Colak''s surgery preparation.', 0),
-(3, 1, 'surgeries', 1, 'Ebru to Admin: Surgery for Emin Colak is on track. Room 1 prepared.', 0),
-(1, 3, 'surgeries', 1, 'Admin to Ebru: Any special requirements for this surgery?', 0),
-(3, 1, 'surgeries', 1, 'Ebru to Admin: No special requirements, standard procedure.', 0);
+-- -- Group 3: Staff messages
+-- -- Messages between sender:1 and receiver:3 talk about patient: 2
+-- INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `patient_id`, `message`, `is_read`) VALUES
+-- (1, 3, '[{"table_name":"patients","field_name":"name","id":2}]', 2, 'Patient Jane Doe needs a follow-up on her recent consultation.', 0),
+-- (3, 1, '[{"table_name":"patients","field_name":"name","id":2}]', 2, 'I will check Jane Doe''s file and schedule a call.', 0);
+-- -- Messages between sender:1 and receiver:2 talk about staff id:6
+-- INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `patient_id`, `message`, `is_read`) VALUES
+-- (1, 2, '[{"table_name":"staff","field_name":"name","id":6}]', NULL, 'Technician (ID 6) has updated their availability.', 0),
+-- (2, 1, '[{"table_name":"staff","field_name":"name","id":6}]', NULL, 'Noted. I will update the schedule accordingly for Technician (ID 6).', 0);
+-- -- Messages between sender:2 and receiver:3 talk about staff id:6
+-- INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `patient_id`, `message`, `is_read`) VALUES
+-- (2, 3, '[{"table_name":"staff","field_name":"name","id":6}]', NULL, 'Can you confirm Technician (ID 6)''s training completion?', 0),
+-- (3, 2, '[{"table_name":"staff","field_name":"name","id":6}]', NULL, 'Yes, Technician (ID 6) completed all modules yesterday.', 0);
 
--- Group 3: Staff, entity_id = 348 (Esra Bilen)
-INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `related_id`, `message`, `is_read`) VALUES
-(1, 3, 'staff', 348, 'Admin to Ebru: Esra Bilen''s performance review is due next week.', 0),
-(3, 1, 'staff', 348, 'Ebru to Admin: I will prepare Esra Bilen''s review by end of day.', 0),
-(1, 3, 'staff', 348, 'Admin to Ebru: Please include feedback on her recent training.', 0),
-(3, 1, 'staff', 348, 'Ebru to Admin: Noted. Feedback on training will be included.', 0);
+-- General broadcast message (receiver_id 0)
+INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `patient_id`, `message`, `is_read`) VALUES
+(1, 0, NULL, NULL, 'All staff: Please remember to log your daily activities by 5 PM.', 0),
+(1, 0, NULL, NULL, 'Important announcement: Clinic will be closed on July 4th for holiday.', 0),
+(1, 0, NULL, NULL, 'New protocol for patient intake has been uploaded to the shared drive.', 0),
+(1, 0, NULL, NULL, 'Reminder: Annual fire safety drill next Tuesday at 10 AM.', 0),
+(1, 0, NULL, NULL, 'Please ensure all patient records are updated by end of week.', 1),
+(1, 0, NULL, NULL, 'New stock of medical supplies has arrived. Please check inventory.', 1),
+(1, 0, NULL, NULL, 'Team meeting scheduled for Monday at 9 AM in the main conference room.', 1),
+(1, 0, NULL, NULL, 'Wishing everyone a productive week!', 1);
 
--- Messages for Technician (Ferhat Demirtas - staff_id 349) with Editor (receiver_id 4)
-INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `related_id`, `message`, `is_read`) VALUES
-(1, 4, 'staff', 349, 'Ferhat Demirtas, reminder to complete your training modules.', 0),
-(4, 1, 'staff', 349, 'Hi, I am working on the training modules now. Will complete them by end of day.', 0),
-(1, 4, 'staff', 349, 'Excellent. Please confirm once completed.', 0),
-(4, 1, 'staff', 349, 'Confirmed. All training modules are now complete.', 0),
-(1, 4, 'staff', 349, 'Thank you for the update, Ferhat.', 1),
-(4, 1, 'staff', 349, 'My pleasure.', 1),
-(1, 4, 'staff', 349, 'Good job.', 1),
-(4, 1, 'staff', 349, 'Thanks!', 1);
+-- Messages related to Appointments (hypothetical appointment ID 1, patient ID 1)
+INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `patient_id`, `message`, `is_read`) VALUES
+(1, 2, '[{"table_name":"appointments","field_name":"appointment_date","id":1}]', 1, 'Appointment for Emin Colak (ID 1) on 2025-07-05 needs confirmation.', 0),
+(2, 1, '[{"table_name":"appointments","field_name":"appointment_date","id":1}]', 1, 'Confirmed. Emin Colak''s appointment is all set.', 0);
 
--- General broadcast message (receiver_id NULL)
-INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `related_id`, `message`, `is_read`) VALUES
-(1, NULL, 'general', 0, 'All staff: Please remember to log your daily activities by 5 PM.', 0),
-(1, NULL, 'general', 0, 'Important announcement: Clinic will be closed on July 4th for holiday.', 0),
-(1, NULL, 'general', 0, 'New protocol for patient intake has been uploaded to the shared drive.', 0),
-(1, NULL, 'general', 0, 'Reminder: Annual fire safety drill next Tuesday at 10 AM.', 0),
-(1, NULL, 'general', 0, 'Please ensure all patient records are updated by end of week.', 1),
-(1, NULL, 'general', 0, 'New stock of medical supplies has arrived. Please check inventory.', 1),
-(1, NULL, 'general', 0, 'Team meeting scheduled for Monday at 9 AM in the main conference room.', 1),
-(1, NULL, 'general', 0, 'Wishing everyone a productive week!', 1);
+-- Messages related to Rooms (room ID 4, patient ID 3)
+INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `patient_id`, `message`, `is_read`) VALUES
+(1, 3, '[{"table_name":"rooms","field_name":"name","id":4}]', 3, 'Consultation Room (ID 4) is reserved for John Smith (ID 3) on July 10th.', 0),
+(3, 1, '[{"table_name":"rooms","field_name":"name","id":4}]', 3, 'Noted. Consultation Room (ID 4) reservation confirmed for John Smith.', 0);
+
+-- Messages related to Procedures (procedure ID 1, patient ID 2)
+INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `patient_id`, `message`, `is_read`) VALUES
+(1, 5, '[{"table_name":"procedures","field_name":"name","id":1}]', 2, 'Jane Doe (ID 2) is scheduled for a Consultation (ID 1).', 0),
+(5, 1, '[{"table_name":"procedures","field_name":"name","id":1}]', 2, 'Understood. I will prepare for Jane Doe''s Consultation.', 0);
 
 -- Message Reactions
 -- Message Reactions (message_id values adjusted to match auto-incremented IDs)

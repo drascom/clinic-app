@@ -120,7 +120,7 @@ $current_user_id = $_SESSION['user_id'] ?? null;
         async function fetchAndDisplayContacts() {
             peopleList.innerHTML = '<p class="text-center p-3">Loading contacts...</p>';
             try {
-                const response = await apiRequest('messages', 'list_senders', {
+                const response = await apiRequest('conversations', 'list_senders', {
                     user_id: currentUserId
                 });
                 if (response.success && response.senders) {
@@ -189,7 +189,7 @@ $current_user_id = $_SESSION['user_id'] ?? null;
             if (!activeParticipantId) return;
 
             try {
-                const response = await apiRequest('messages', 'delete_conversation', {
+                const response = await apiRequest('conversations', 'delete_conversation', {
                     user_id: currentUserId,
                     participant_id: activeParticipantId
                 });
@@ -222,13 +222,13 @@ $current_user_id = $_SESSION['user_id'] ?? null;
             chatName.textContent = participantName;
 
             try {
-                await apiRequest('messages', 'mark_conversation_as_read', {
+                await apiRequest('conversations', 'mark_conversation_as_read', {
                     user_id: currentUserId,
                     participant_id: participantId
                 });
                 fetchAndDisplayContacts(); // Refresh list to remove unread badge
 
-                const response = await apiRequest('messages', 'get_conversation', {
+                const response = await apiRequest('conversations', 'get_conversation', {
                     user_id: currentUserId,
                     participant_id: participantId
                 });
@@ -302,7 +302,7 @@ $current_user_id = $_SESSION['user_id'] ?? null;
             messageInput.value = "";
 
             try {
-                const response = await apiRequest('messages', 'send_message', {
+                const response = await apiRequest('conversations', 'send_message', {
                     sender_id: currentUserId,
                     receiver_id: activeParticipantId,
                     message: text
