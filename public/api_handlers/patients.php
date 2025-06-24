@@ -102,14 +102,15 @@ function handle_patients($action, $method, $db, $input = [])
                 $city = trim($input['city'] ?? '');
                 $occupation = trim($input['occupation'] ?? '');
                 $gender = trim($input['gender'] ?? '');
+                $created_by = $input['authenticated_user_id'] ?? null;
 
                 // Handle gender field - set to 'N/A' if empty to provide consistent default value
                 $gender = !empty($gender) ? $gender : 'N/A';
 
                 if (!empty($name) && !empty($agency_id)) {
                     try {
-                        $stmt = $db->prepare("INSERT INTO patients (name, dob, phone, email, created_at, updated_at, agency_id, city, occupation, gender) VALUES (?, ?, ?, ?, datetime('now'), datetime('now'), ?, ?, ?, ?)");
-                        $stmt->execute([$name, $dob, $phone, $email, $agency_id, $city, $occupation, $gender]);
+                        $stmt = $db->prepare("INSERT INTO patients (name, dob, phone, email, created_at, updated_at, agency_id, city, occupation, gender, created_by) VALUES (?, ?, ?, ?, datetime('now'), datetime('now'), ?, ?, ?, ?, ?)");
+                        $stmt->execute([$name, $dob, $phone, $email, $agency_id, $city, $occupation, $gender, $created_by]);
                         $new_patient_id = $db->lastInsertId();
 
                         // Fetch the newly created patient to return its data
@@ -141,14 +142,15 @@ function handle_patients($action, $method, $db, $input = [])
                 $city = trim($input['city'] ?? '');
                 $occupation = trim($input['occupation'] ?? '');
                 $gender = trim($input['gender'] ?? '');
+                $updated_by = $input['authenticated_user_id'] ?? null;
 
                 // Handle gender field - set to 'N/A' if empty to provide consistent default value
                 $gender = !empty($gender) ? $gender : 'N/A';
 
                 if ($id && $name) {
                     try {
-                        $sql = "UPDATE patients SET name = ?, dob = ?, agency_id = ?, phone = ?, email = ?, city = ?, occupation = ?, gender = ?, updated_at = datetime('now')";
-                        $params = [$name, $dob, $agency_id, $phone, $email, $city, $occupation, $gender];
+                        $sql = "UPDATE patients SET name = ?, dob = ?, agency_id = ?, phone = ?, email = ?, city = ?, occupation = ?, gender = ?, updated_at = datetime('now'), updated_by = ?";
+                        $params = [$name, $dob, $agency_id, $phone, $email, $city, $occupation, $gender, $updated_by];
 
                         $sql .= " WHERE id = ?";
                         $params[] = $id;
@@ -195,6 +197,7 @@ function handle_patients($action, $method, $db, $input = [])
                 }
 
                 $patient_id = $input['id'] ?? null;
+                $updated_by = $input['authenticated_user_id'] ?? null;
 
                 // Debug logging
                 error_log("Avatar upload request - Patient ID: " . ($patient_id ?? 'null'));
@@ -314,8 +317,8 @@ function handle_patients($action, $method, $db, $input = [])
                         }
 
                         // Update the database with the new avatar path
-                        $stmt = $db->prepare("UPDATE patients SET avatar = ? WHERE id = ?");
-                        $stmt->execute([$final_web_file_path, $patient_id]);
+                        $stmt = $db->prepare("UPDATE patients SET avatar = ?, updated_by = ? WHERE id = ?");
+                        $stmt->execute([$final_web_file_path, $updated_by, $patient_id]);
 
                         error_log("Avatar uploaded successfully - Patient ID: " . $patient_id . ", Path: " . $final_web_file_path . ($conversion_performed ? " (converted from HEIC)" : ""));
 
@@ -347,6 +350,7 @@ function handle_patients($action, $method, $db, $input = [])
             if ($method === 'POST') {
                 $patient_id = $input['patient_id'] ?? null;
                 $avatar_url = $input['avatar_url'] ?? null;
+                $updated_by = $input['authenticated_user_id'] ?? null;
 
                 error_log("Avatar delete request - Patient ID: " . ($patient_id ?? 'null'));
                 error_log("Avatar delete request - Avatar URL: " . ($avatar_url ?? 'null'));
@@ -397,8 +401,8 @@ function handle_patients($action, $method, $db, $input = [])
                     }
 
                     // Update the database to remove the avatar path
-                    $stmt = $db->prepare("UPDATE patients SET avatar = NULL WHERE id = ?");
-                    $stmt->execute([$patient_id]);
+                    $stmt = $db->prepare("UPDATE patients SET avatar = NULL, updated_by = ? WHERE id = ?");
+                    $stmt->execute([$updated_by, $patient_id]);
 
                     error_log("Avatar deleted successfully for patient ID: " . $patient_id);
                     return ['success' => true, 'message' => 'Avatar deleted successfully.'];

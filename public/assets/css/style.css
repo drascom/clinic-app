@@ -21,17 +21,25 @@
   --font-family-sans-serif: "Klavika", -apple-system, BlinkMacSystemFont,
     "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
-  /* Light Theme Variables */
+  /* Theme-agnostic variables */
   --color-bg: var(--bs-body-bg);
-  --color-bg-gradient: var(--bs-body-bg);
   --color-bg-secondary: var(--bs-secondary-bg);
   --color-text: var(--bs-body-color);
-  --color-text-secondary: var(--bs-secondary-color);
   --color-border: var(--bs-border-color);
   --shadow-sm: var(--bs-box-shadow-sm);
   --shadow: var(--bs-box-shadow);
   --shadow-lg: var(--bs-box-shadow-lg);
-  --frosted-bg: rgba(var(--bs-body-bg-rgb), 0.7);
+}
+
+[data-bs-theme="light"] {
+  --color-bg: #ffffff;
+  --color-bg-secondary: #f8f9fa;
+  --color-text: #212529;
+  --color-border: #dee2e6;
+  --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  --shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+  --frosted-bg: rgba(255, 255, 255, 0.7);
 }
 
 /* Dark Theme Variables - Bootstrap handles these automatically with data-bs-theme="dark" */
@@ -40,9 +48,7 @@
 /* Base Styles */
 body {
   font-family: var(--font-family-sans-serif);
-  background: var(
-    --color-bg-gradient
-  ); /* Use custom gradient or Bootstrap var */
+  background-color: var(--bs-body-bg);
   color: var(--color-text);
   min-height: 100vh;
   display: flex;
@@ -142,7 +148,7 @@ body {
 .form-select {
   border-radius: var(--border-radius-sm);
   border: 1px solid var(--color-border);
-  background-color: var(--color-bg-secondary);
+  background-color: var(--bs-body-bg);
   color: var(--color-text);
   transition: all 0.3s ease;
 }
@@ -742,7 +748,6 @@ table.table {
   max-width: 90%;
   padding: 0;
   border-radius: 0.5rem;
-  background: var(--color-bg-secondary);
 }
 
 .emp-5 {
@@ -750,7 +755,6 @@ table.table {
   max-width: 85%;
   padding: 1rem;
   border-radius: 0.5rem;
-  background: var(--color-bg-secondary);
 }
 
 .emp-10 {
@@ -758,7 +762,6 @@ table.table {
   max-width: 80%;
   padding: 1rem;
   border-radius: 0.5rem;
-  background: var(--color-bg-secondary);
 }
 
 .emp-20 {
@@ -766,7 +769,6 @@ table.table {
   max-width: 75%;
   padding: 1rem;
   border-radius: 0.5rem;
-  background: var(--color-bg-secondary);
 }
 
 .profile-img {

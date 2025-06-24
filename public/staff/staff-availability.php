@@ -7,14 +7,14 @@ if (!is_logged_in()) {
     header('Location: ../auth/login.php');
     exit();
 }
-
+$surgery_id = $_GET['surgery_id'] ?? null;
 $page_title = "Staff Availability";
 require_once '../includes/header.php';
 ?>
 
 <link rel="stylesheet" href="/assets/css/staff-calendar.css">
 
-<div class="container-fluid emp">
+<div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-2 pt-4 px-4 flex-wrap">
         <a href="index.php" class="d-inline-block d-sm-none btn btn-sm btn-outline-secondary mb-2 mb-md-0">
             <i class="fas fa-arrow-left me-1"></i>
@@ -22,18 +22,25 @@ require_once '../includes/header.php';
         <h4 class="mb-0 text-primary">
             <i class="fas fa-user-clock me-2"></i>Staff Availability
         </h4>
-        <a href="index.php" class="d-none d-sm-inline-block btn btn-sm btn-outline-secondary mb-2 mb-md-0">
-            <i class="fas fa-arrow-left me-1"></i>
-            Back to Staff
-        </a>
+        <?php if ($surgery_id): ?>
+            <a href="/surgery/add_edit_surgery.php?id=<?php echo $surgery_id; ?>" class="d-sm-inline-block btn btn-sm btn-outline-primary mb-2 mb-md-0">
+                <i class="fas fa-arrow-left me-1"></i>
+                Back to Surgery
+            </a>
+        <?php else: ?>
+            <a href="index.php" class="d-none d-sm-inline-block btn  btn-outline-primary mb-2 mb-md-0">
+                <i class="fas fa-arrow-left me-1"></i>
+                Back to Staff
+            </a>
 
+        <?php endif; ?>
         <div id="loading-spinner" class="spinner-border spinner-border-sm text-primary" role="status"
             style="display: none;">
             <span class="visually-hidden">Loading...</span>
         </div>
     </div>
 
-    <div class="table-container">
+    <div class="table-container px-0">
         <!-- Month header and controls -->
         <div class="d-flex justify-content-between align-items-center mb-2">
             <button id="todayBtn" style="display: none;" class="btn btn-sm btn-primary">Today</button>
@@ -49,7 +56,7 @@ require_once '../includes/header.php';
 
             <div class="d-flex align-items-center">
                 <select class="form-select form-select-sm" id="staffTypeFilter" style="width: auto;">
-                    <option value="all">All Staff Types</option>
+                    <option value="all">Select Staff Types</option>
                     <option value="staff">Staff</option>
                     <option value="candidate">Candidate</option>
                 </select>
@@ -224,10 +231,12 @@ require_once '../includes/header.php';
                         const availKey = `${staff.id}-${dateStr}`;
                         const status = this.availability[availKey] || 'unselected';
 
-                        td.className = status; // 'available', 'not_available', 'unselected'
-                        if (status === 'available') {
+                        td.className = status.replace(' ', '-'); // 'full-day', 'half-day', 'unavailable', 'unselected'
+                        if (status === 'full_day') {
                             td.innerHTML = '<i class="fas fa-check text-success"></i>';
-                        } else if (status === 'not_available') {
+                        } else if (status === 'half_day') {
+                            td.innerHTML = '<i class="fas fa-adjust text-warning"></i>';
+                        } else if (status === 'unavailable') {
                             td.innerHTML = '<i class="fas fa-times text-danger"></i>';
                         }
                         // No icon for unselected to reduce visual clutter
@@ -273,7 +282,7 @@ require_once '../includes/header.php';
         }
 
         showLoading(show) {
-            this.loadingSpinner.style.display = show ? 'inline-block' : 'none';
+            // this.loadingSpinner.style.display = show ? 'inline-block' : 'none';
         }
 
         escapeHtml(text) {

@@ -13,7 +13,11 @@ CREATE TABLE users (
   reset_expiry DATETIME NULL,
 
   phone TEXT NULL,
-  is_active INTEGER DEFAULT 0
+  is_active INTEGER DEFAULT 0,
+  created_by INTEGER NULL,
+  updated_by INTEGER NULL,
+  FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
+  FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
 );
 
 CREATE TABLE surgeries (
@@ -29,8 +33,10 @@ CREATE TABLE surgeries (
   updated_by INTEGER NULL,
   created_at TEXT DEFAULT CURRENT_TIMESTAMP,
   updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  created_by INTEGER NULL,
   FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
-  FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
+  FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
+  FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
 );
 INSERT INTO surgeries (id, date, notes, status, predicted_grafts_count, current_grafts_count, room_id, patient_id, is_recorded, updated_by, created_at, updated_at) VALUES (1, '2025-06-15', 'test', 'scheduled', NULL, NULL, 1, 1, 1, 1, '2025-06-15 09:38:22', '2025-06-15 09:38:22');
 INSERT INTO surgeries (id, date, notes, status, predicted_grafts_count, current_grafts_count, room_id, patient_id, is_recorded, updated_by, created_at, updated_at) VALUES (2, '2025-07-01', 'Follow-up for Jane Doe', 'scheduled', 2000, 0, 2, 2, 0, 1, '2025-06-21 10:10:00', '2025-06-21 10:10:00');
@@ -49,11 +55,13 @@ CREATE TABLE appointments (
     updated_by INTEGER NULL,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    created_by INTEGER NULL,
     FOREIGN KEY (room_id) REFERENCES rooms(id) ON DELETE CASCADE,
     FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
     FOREIGN KEY (procedure_id) REFERENCES procedures(id) ON DELETE SET NULL,
-    FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
-);
+    FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
+  );
 
 CREATE TABLE patients (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -71,7 +79,8 @@ CREATE TABLE patients (
   created_by INTEGER NOT NULL,
   created_at TEXT DEFAULT CURRENT_TIMESTAMP,
   updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
+  FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
+  FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
 );
 INSERT INTO patients (id, name, email, dob, phone, city, gender, avatar, occupation, agency_id, photo_album_id, created_by, created_at, updated_at) VALUES (1, 'emin colak', 'drascom07@gmail.com', '2025-06-12', '432424', 'Barnet', 'Male', NULL, '', 1, NULL, 1, '2025-06-15 09:09:48', '2025-06-15 09:09:48');
 INSERT INTO patients (id, name, email, dob, phone, city, gender, avatar, occupation, agency_id, photo_album_id, created_by, created_at, updated_at) VALUES (2, 'Jane Doe', 'jane.doe@example.com', '1990-01-01', '1112223333', 'London', 'Female', NULL, 'Engineer', 2, NULL, 2, '2025-06-21 10:00:00', '2025-06-21 10:00:00');
@@ -84,7 +93,9 @@ CREATE TABLE photo_album_types (
   updated_by INTEGER NULL,
   created_at TEXT DEFAULT CURRENT_TIMESTAMP,
   updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
+  created_by INTEGER NULL,
+  FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
+  FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
 );
 
 CREATE TABLE patient_photos (
@@ -95,7 +106,9 @@ CREATE TABLE patient_photos (
   updated_by INTEGER NULL,
   created_at TEXT DEFAULT CURRENT_TIMESTAMP,
   updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
+  created_by INTEGER NULL,
+  FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
+  FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
 );
 
 CREATE TABLE agencies (
@@ -104,7 +117,9 @@ CREATE TABLE agencies (
   updated_by INTEGER NULL,
   created_at TEXT DEFAULT CURRENT_TIMESTAMP,
   updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
+  created_by INTEGER NULL,
+  FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
+  FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
 );
 
 CREATE TABLE invitations (
@@ -118,9 +133,11 @@ CREATE TABLE invitations (
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
     used_at TEXT,
+    created_by INTEGER NULL,
     FOREIGN KEY (agency_id) REFERENCES agencies(id),
-    FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
-);
+    FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
+  );
 
 
 CREATE TABLE IF NOT EXISTS interview_invitations (
@@ -153,8 +170,10 @@ CREATE TABLE rooms (
     updated_by INTEGER NULL,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
-);
+    created_by INTEGER NULL,
+    FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
+  );
 
 CREATE TABLE room_reservations (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -164,10 +183,20 @@ CREATE TABLE room_reservations (
     updated_by INTEGER NULL,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    created_by INTEGER NULL,
     FOREIGN KEY (room_id) REFERENCES rooms(id) ON DELETE CASCADE,
     FOREIGN KEY (surgery_id) REFERENCES surgeries(id) ON DELETE CASCADE,
     FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
-    UNIQUE(room_id, reserved_date)
+    UNIQUE(room_id, reserved_date),
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
+  );
+CREATE TABLE closed_days (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date DATE NOT NULL UNIQUE,
+    reason TEXT,
+    closed_by_user_id INTEGER,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (closed_by_user_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS staff (
@@ -182,8 +211,10 @@ CREATE TABLE IF NOT EXISTS staff (
     updated_by INTEGER NULL,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
-);
+    created_by INTEGER NULL,
+    FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
+  );
 
 CREATE TABLE IF NOT EXISTS staff_details (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -199,22 +230,26 @@ CREATE TABLE IF NOT EXISTS staff_details (
     updated_by INTEGER NULL,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    created_by INTEGER NULL,
     FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE CASCADE,
-    FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
-);
+    FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
+  );
 
 CREATE TABLE IF NOT EXISTS staff_availability (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     staff_id INTEGER NOT NULL,
     available_on DATE NOT NULL,
-    status TEXT NOT NULL DEFAULT 'available' CHECK (status IN ('available', 'not_available')),
+    status TEXT NOT NULL DEFAULT 'available' CHECK (status IN ('full_day', 'half_day','unavailable')),
     updated_by INTEGER NULL,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    created_by INTEGER NULL,
     FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE CASCADE,
     FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
-    UNIQUE (staff_id, available_on)
-);
+    UNIQUE (staff_id, available_on),
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
+  );
 
 
 
@@ -226,11 +261,13 @@ CREATE TABLE surgery_staff (
     updated_by INTEGER NULL,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    created_by INTEGER NULL,
     FOREIGN KEY (surgery_id) REFERENCES surgeries(id) ON DELETE CASCADE,
     FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE CASCADE,
     FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
-    UNIQUE (surgery_id, staff_id)
-);
+    UNIQUE (surgery_id, staff_id),
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
+  );
 
 CREATE TABLE IF NOT EXISTS procedures (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -239,12 +276,18 @@ CREATE TABLE IF NOT EXISTS procedures (
     updated_by INTEGER NULL,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
-);
+    created_by INTEGER NULL,
+    FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
+  );
 
 CREATE TABLE settings (
   key TEXT PRIMARY KEY UNIQUE,
-  value TEXT
+  value TEXT,
+  created_by INTEGER NULL,
+  updated_by INTEGER NULL,
+  FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
+  FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
 );
 
 INSERT INTO photo_album_types (name, updated_by, created_at, updated_at) VALUES ('Pre-Surgery', 1, datetime('now'), datetime('now'));
@@ -396,8 +439,12 @@ CREATE TABLE IF NOT EXISTS emails (
     is_active BOOLEAN DEFAULT 1,
     is_draft BOOLEAN DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id)
-);
+    created_by INTEGER NULL,
+    updated_by INTEGER NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
+  );
 CREATE TABLE user_email_settings (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
@@ -410,8 +457,12 @@ CREATE TABLE user_email_settings (
     imap_host VARCHAR(255) NOT NULL,
     imap_user VARCHAR(255) NOT NULL,
     imap_pass VARCHAR(255) NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id)
-);
+    created_by INTEGER NULL,
+    updated_by INTEGER NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
+  );
 -- INSERT INTO user_email_settings (user_id, email_address, smtp_host, smtp_port, smtp_user, smtp_pass, smtp_secure, imap_host, imap_user, imap_pass) VALUES (1, 'contact@livharleystreet.co.uk', 'gukm1005.siteground.biz', 465, 'ebru.tok@livharleystreet.co.uk', '051224..Uk', 'ssl', 'gukm1005.siteground.biz', 'ebru.tok@livharleystreet.co.uk', '051224..Uk');
 INSERT INTO user_email_settings (user_id, email_address, smtp_host, smtp_port, smtp_user, smtp_pass, smtp_secure, imap_host, imap_user, imap_pass) VALUES (1, 'ayhan@livharleystreet.co.uk', 'gukm1005.siteground.biz', 465, 'ayhan@livharleystreet.co.uk', 'Doktor2024@', 'ssl', 'gukm1005.siteground.biz', 'ayhan@livharleystreet.co.uk', 'Doktor2024@');
 INSERT INTO user_email_settings (user_id, email_address, smtp_host, smtp_port, smtp_user, smtp_pass, smtp_secure, imap_host, imap_user, imap_pass) VALUES (3, 'ebru.tok@livharleystreet.co.uk', 'gukm1005.siteground.biz', 465, 'ebru.tok@livharleystreet.co.uk', '051224..Uk', 'ssl', 'gukm1005.siteground.biz', 'ebru.tok@livharleystreet.co.uk', '051224..Uk');
@@ -425,8 +476,12 @@ CREATE TABLE IF NOT EXISTS email_attachments (
     file_path TEXT,
     email_uid INTEGER,
     part_index TEXT,
-    FOREIGN KEY (email_id) REFERENCES emails(id) ON DELETE CASCADE
-);
+    created_by INTEGER NULL,
+    updated_by INTEGER NULL,
+    FOREIGN KEY (email_id) REFERENCES emails(id) ON DELETE CASCADE,
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
+  );
 
 CREATE TABLE IF NOT EXISTS `messages` (
   `id` INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -437,18 +492,28 @@ CREATE TABLE IF NOT EXISTS `messages` (
   `message` TEXT NOT NULL,
   `timestamp` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `is_read` INTEGER NOT NULL DEFAULT 0,
+  `created_by` INTEGER,
+  `updated_by` INTEGER,
   FOREIGN KEY (`sender_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
   FOREIGN KEY (`receiver_id`) REFERENCES `users`(`id`) ON DELETE SET NULL,
-  FOREIGN KEY (`patient_id`) REFERENCES `patients`(`id`) ON DELETE SET NULL
+  FOREIGN KEY (`patient_id`) REFERENCES `patients`(`id`) ON DELETE SET NULL,
+  FOREIGN KEY (`created_by`) REFERENCES `users`(`id`) ON DELETE SET NULL,
+  FOREIGN KEY (`updated_by`) REFERENCES `users`(`id`) ON DELETE SET NULL
 );
 CREATE TABLE IF NOT EXISTS message_reactions (
 `id` INTEGER PRIMARY KEY AUTOINCREMENT, 
 `message_id` INTEGER NOT NULL, 
 `user_id` INTEGER NOT NULL, 
 `emoji_code` VARCHAR(255) NOT NULL, 
-`timestamp` DATETIME DEFAULT CURRENT_TIMESTAMP, UNIQUE (message_id, user_id), 
-FOREIGN KEY (message_id) REFERENCES messages(id) ON DELETE CASCADE, 
-FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE);
+`timestamp` DATETIME DEFAULT CURRENT_TIMESTAMP,
+`created_by` INTEGER,
+`updated_by` INTEGER,
+UNIQUE (message_id, user_id),
+FOREIGN KEY (message_id) REFERENCES messages(id) ON DELETE CASCADE,
+FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+FOREIGN KEY (`created_by`) REFERENCES `users`(`id`) ON DELETE SET NULL,
+FOREIGN KEY (`updated_by`) REFERENCES `users`(`id`) ON DELETE SET NULL
+);
 
 
 -- Messages for Patient 1 (Emin Colak) with Agent (receiver_id 2)

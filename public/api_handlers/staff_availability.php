@@ -100,17 +100,22 @@ function handle_staff_availability($action, $method, $db, $input = [])
                     $new_status = 'unselected';
 
                     if (!$existing_availability) {
-                        // From unselected to available
-                        $stmt = $db->prepare("INSERT INTO staff_availability (staff_id, available_on, status, updated_by) VALUES (?, ?, 'available', ?)");
+                        // From unselected to full_day
+                        $stmt = $db->prepare("INSERT INTO staff_availability (staff_id, available_on, status, updated_by) VALUES (?, ?, 'full_day', ?)");
                         $stmt->execute([$staff_id, $date, get_user_id()]);
-                        $new_status = 'available';
-                    } elseif ($existing_availability['status'] === 'available') {
-                        // From available to not_available
-                        $stmt = $db->prepare("UPDATE staff_availability SET status = 'not_available', updated_by = ? WHERE id = ?");
+                        $new_status = 'full_day';
+                    } elseif ($existing_availability['status'] === 'full_day') {
+                        // From full_day to half_day
+                        $stmt = $db->prepare("UPDATE staff_availability SET status = 'half_day', updated_by = ? WHERE id = ?");
                         $stmt->execute([get_user_id(), $existing_availability['id']]);
-                        $new_status = 'not_available';
-                    } else {
-                        // From not_available to unselected (delete)
+                        $new_status = 'half_day';
+                    } elseif ($existing_availability['status'] === 'half_day') {
+                        // From half_day to unavailable
+                        $stmt = $db->prepare("UPDATE staff_availability SET status = 'unavailable', updated_by = ? WHERE id = ?");
+                        $stmt->execute([get_user_id(), $existing_availability['id']]);
+                        $new_status = 'unavailable';
+                    } else { // status is 'unavailable'
+                        // From unavailable to unselected (delete)
                         $stmt = $db->prepare("DELETE FROM staff_availability WHERE id = ?");
                         $stmt->execute([$existing_availability['id']]);
                         $new_status = 'unselected';
@@ -193,17 +198,22 @@ function handle_staff_availability($action, $method, $db, $input = [])
                     $new_status = 'unselected';
 
                     if (!$existing) {
-                        // 1. From unselected to available
-                        $stmt = $db->prepare("INSERT INTO staff_availability (staff_id, available_on, status, updated_by) VALUES (?, ?, 'available', ?)");
-                        $stmt->execute([$staff_id, $date, get_user_id()]);
-                        $new_status = 'available';
-                    } elseif ($existing['status'] === 'available') {
-                        // 2. From available to not_available
-                        $stmt = $db->prepare("UPDATE staff_availability SET status = 'not_available', updated_by = ? WHERE id = ?");
+                        // 1. From unselected to full_day
+                        $stmt = $db->prepare("INSERT INTO staff_availability (staff_id, available_on, status, updated_by,created_by) VALUES (?, ?, 'full_day', ?,?)");
+                        $stmt->execute([$staff_id, $date, get_user_id(), get_user_id()]);
+                        $new_status = 'full_day';
+                    } elseif ($existing['status'] === 'full_day') {
+                        // 2. From full_day to half_day
+                        $stmt = $db->prepare("UPDATE staff_availability SET status = 'half_day', updated_by = ?  WHERE id = ?");
                         $stmt->execute([get_user_id(), $existing['id']]);
-                        $new_status = 'not_available';
+                        $new_status = 'half_day';
+                    } elseif ($existing['status'] === 'half_day') {
+                        // 3. From half_day to unavailable
+                        $stmt = $db->prepare("UPDATE staff_availability SET status = 'unavailable', updated_by = ?  WHERE id = ?");
+                        $stmt->execute([get_user_id(), $existing['id']]);
+                        $new_status = 'unavailable';
                     } else {
-                        // 3. From not_available to unselected (delete)
+                        // 4. From unavailable to unselected (delete)
                         $stmt = $db->prepare("DELETE FROM staff_availability WHERE id = ?");
                         $stmt->execute([$existing['id']]);
                         $new_status = 'unselected';
@@ -219,7 +229,7 @@ function handle_staff_availability($action, $method, $db, $input = [])
         case 'byDate':
             if ($method === 'POST') {
                 $date = $input['date'] ?? null;
-                $status_filter = $input['status'] ?? 'available'; // Default to available
+                $status_filter = $input['status'] ?? 'full_day'; // Default to full_day
 
                 if (!$date) {
                     return ['success' => false, 'error' => 'Date is required.'];
@@ -231,8 +241,8 @@ function handle_staff_availability($action, $method, $db, $input = [])
                 }
 
                 // Validate status filter
-                if (!in_array($status_filter, ['available', 'not_available', 'all'])) {
-                    return ['success' => false, 'error' => 'Status filter must be available, not_available, or all.'];
+                if (!in_array($status_filter, ['unavailable', 'half_day', 'full_day', 'all'])) {
+                    return ['success' => false, 'error' => 'Status filter must be unavailable, half_day, full_day, or all.'];
                 }
 
                 try {
@@ -297,7 +307,7 @@ function handle_staff_availability($action, $method, $db, $input = [])
             if ($method === 'POST') {
                 $staff_id = $_POST['staff_id'] ?? $input['staff_id'] ?? null;
                 $date = $_POST['available_on'] ?? $_POST['date'] ?? $input['available_on'] ?? $input['date'] ?? null;
-                $status = $_POST['status'] ?? $input['status'] ?? 'available'; // Default to 'available'
+                $status = $_POST['status'] ?? $input['status'] ?? 'full_day'; // Default to 'full_day'
 
                 if (!$staff_id || !$date) {
                     return ['success' => false, 'error' => 'Staff ID and date are required.'];
@@ -309,8 +319,8 @@ function handle_staff_availability($action, $method, $db, $input = [])
                 }
 
                 // Validate status
-                if (!in_array($status, ['available', 'not_available'])) {
-                    return ['success' => false, 'error' => 'Status must be available or not_available.'];
+                if (!in_array($status, ['unavailable', 'half_day', 'full_day'])) {
+                    return ['success' => false, 'error' => 'Status must be unavailable, half_day, or full_day.'];
                 }
 
                 try {
@@ -375,8 +385,8 @@ function handle_staff_availability($action, $method, $db, $input = [])
                 }
 
                 // Validate status
-                if (!in_array($status, ['available', 'not_available'])) {
-                    return ['success' => false, 'error' => 'Status must be available or not_available.'];
+                if (!in_array($status, ['unavailable', 'half_day', 'full_day'])) {
+                    return ['success' => false, 'error' => 'Status must be unavailable, half_day, or full_day.'];
                 }
 
                 try {
@@ -524,7 +534,7 @@ function handle_staff_availability($action, $method, $db, $input = [])
                     $available_days = [];
                     foreach ($availability_records as $record) {
                         // Mark the day as true only if the status is 'available'
-                        if ($record['status'] === 'available') {
+                        if (in_array($record['status'], ['full_day', 'half_day'])) {
                             $available_days[$record['date']] = true;
                         }
                     }

@@ -31,11 +31,17 @@ require_once __DIR__ . '/../includes/header.php';
                     <i class="fas fa-hospital me-2 text-primary"></i>
                     Surgeries
                 </h4>
-                <a href="/surgery/add_edit_surgery.php" class="btn btn-outline-success">
-                    <i class="fas fa-plus me-1"></i>
-                    <span class="d-none d-sm-inline">Add New Surgery</span>
-                    <span class="d-inline d-sm-none">Add</span>
-                </a>
+                <div class="btn-group" role="group">
+                    <a href="/surgery/add_edit_surgery.php" class="btn btn-outline-success">
+                        <i class="fas fa-plus me-1"></i>
+                        <span class="d-none d-sm-inline">Add New Surgery</span>
+                        <span class="d-inline d-sm-none">Add</span>
+                    </a>
+                    <a href="/calendar/calendar.php" class="btn  btn-outline-primary">
+                        <i class="far fa-calendar me-1"></i>
+                        Calendar
+                    </a>
+                </div>
             </div>
             <!-- Search Bar -->
             <fieldset class="p-4 frosted">
@@ -80,7 +86,7 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 </div>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const surgeriesTable = document.getElementById('surgeries-table');
 
         // Function to fetch and display surgeries
@@ -202,7 +208,7 @@ require_once __DIR__ . '/../includes/header.php';
 
 
         // Delete surgery function
-        surgeriesTable.addEventListener('click', function (event) {
+        surgeriesTable.addEventListener('click', function(event) {
             if (event.target.classList.contains('delete-surgery-btn')) {
                 const surgeryId = event.target.dataset.surgeryId;
                 if (confirm('Are you sure you want to delete this surgery?')) {
@@ -212,9 +218,9 @@ require_once __DIR__ . '/../includes/header.php';
                     formData.append('id', surgeryId);
 
                     fetch('/api.php', {
-                        method: 'POST',
-                        body: formData
-                    })
+                            method: 'POST',
+                            body: formData
+                        })
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
@@ -263,7 +269,7 @@ require_once __DIR__ . '/../includes/header.php';
         }
 
         if (searchInput) {
-            searchInput.addEventListener('keyup', function (event) {
+            searchInput.addEventListener('keyup', function(event) {
                 const searchTerm = searchInput.value.toLowerCase();
                 if (searchTerm.length >= 2 || searchTerm.length === 0) {
                     filterSurgeries();
@@ -278,7 +284,7 @@ require_once __DIR__ . '/../includes/header.php';
         }
 
         if (clearSearchBtn) {
-            clearSearchBtn.addEventListener('click', function () {
+            clearSearchBtn.addEventListener('click', function() {
                 searchInput.value = '';
                 fetchAndDisplaySurgeries();
             });

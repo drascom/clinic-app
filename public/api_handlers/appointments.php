@@ -14,6 +14,8 @@ function handle_appointments($action, $method, $db, $input = [])
                 $end_time = $_POST['end_time'] ?? $input['end_time'] ?? null;
                 $procedure_id = $_POST['procedure_id'] ?? $input['procedure_id'] ?? null;
                 $notes = $_POST['notes'] ?? $input['notes'] ?? null;
+                $created_by = $input['authenticated_user_id'] ?? null;
+                $consultation_type = $_POST['consultation_type'] ?? $input['consultation_type'] ?? 'face-to-face';
 
                 if (!$room_id || !$patient_id || !$appointment_date || !$start_time || !$end_time || !$procedure_id) {
                     $logService->log('appointments', 'error', 'Missing required fields for create appointment.', $input);
@@ -36,10 +38,10 @@ function handle_appointments($action, $method, $db, $input = [])
 
                 try {
                     $stmt = $db->prepare("
-                        INSERT INTO appointments (room_id, patient_id, appointment_date, start_time, end_time, procedure_id, notes)
-                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                        INSERT INTO appointments (room_id, patient_id, appointment_date, start_time, end_time, procedure_id, notes, created_by, consultation_type)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                     ");
-                    $stmt->execute([$room_id, $patient_id, $appointment_date, $start_time, $end_time, $procedure_id, $notes]);
+                    $stmt->execute([$room_id, $patient_id, $appointment_date, $start_time, $end_time, $procedure_id, $notes, $created_by, $consultation_type]);
                     $newId = $db->lastInsertId();
                     $logService->log('appointments', 'success', 'Appointment created successfully.', ['id' => $newId, 'patient_id' => $patient_id, 'date' => $appointment_date]);
                     return ['success' => true, 'id' => $newId];
@@ -62,6 +64,8 @@ function handle_appointments($action, $method, $db, $input = [])
                 $end_time = $_POST['end_time'] ?? $input['end_time'] ?? null;
                 $procedure_id = $_POST['procedure_id'] ?? $input['procedure_id'] ?? null;
                 $notes = $_POST['notes'] ?? $input['notes'] ?? null;
+                $updated_by = $input['authenticated_user_id'] ?? null;
+                $consultation_type = $_POST['consultation_type'] ?? $input['consultation_type'] ?? 'face-to-face';
 
                 if (!$id || !$room_id || !$patient_id || !$appointment_date || !$start_time || !$end_time || !$procedure_id) {
                     $logService->log('appointments', 'error', 'Missing required fields for update appointment.', $input);
@@ -86,10 +90,10 @@ function handle_appointments($action, $method, $db, $input = [])
                     $stmt = $db->prepare("
                         UPDATE appointments
                         SET room_id = ?, patient_id = ?, appointment_date = ?, start_time = ?, end_time = ?,
-                            procedure_id = ?, notes = ?, updated_at = datetime('now')
+                            procedure_id = ?, notes = ?, updated_at = datetime('now'), updated_by = ?, consultation_type = ?
                         WHERE id = ?
                     ");
-                    $stmt->execute([$room_id, $patient_id, $appointment_date, $start_time, $end_time, $procedure_id, $notes, $id]);
+                    $stmt->execute([$room_id, $patient_id, $appointment_date, $start_time, $end_time, $procedure_id, $notes, $updated_by, $consultation_type, $id]);
                     $logService->log('appointments', 'success', 'Appointment updated successfully.', ['id' => $id, 'patient_id' => $patient_id, 'date' => $appointment_date]);
                     return ['success' => true, 'message' => 'Appointment updated successfully'];
                 } catch (PDOException $e) {

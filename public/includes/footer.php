@@ -98,7 +98,6 @@
 <!-- Custom JS -->
 <script src="/assets/js/script.js"></script>
 <!-- API Helper for secure POST requests -->
-<script src="/assets/js/api-helper.js"></script>
 
 <script>
     // Initialize tooltips globally

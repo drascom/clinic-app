@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../services/LogService.php';
 
-function handle_photos($action, $method, $db)
+function handle_photos($action, $method, $db, $input = [])
 {
     $logService = new LogService();
     switch ($action) {
@@ -60,8 +60,8 @@ function handle_photos($action, $method, $db)
 
         case 'delete':
             if ($method === 'POST') {
-                $id = $_POST['id'] ?? null;
-                error_log("Photos delete handler reached. ID: " . $id); // Add logging
+                $id = $input['id'] ?? $_POST['id'] ?? null; // Check both $input and $_POST
+                $logService->log('photos', 'info', 'Photos delete handler reached.', ['id' => $id, 'method' => $method]);
                 if ($id) {
                     $stmt = $db->prepare("SELECT file_path FROM patient_photos WHERE id = ?");
                     $stmt->execute([$id]);
@@ -69,7 +69,7 @@ function handle_photos($action, $method, $db)
 
                     if (!$photo) {
                         $response = ['success' => false, 'error' => 'Photo not found.'];
-                        error_log("Photos delete failed: Photo not found. Response: " . json_encode($response)); // Add logging
+                        $logService->log('photos', 'warning', 'Photos delete failed: Photo not found.', ['id' => $id]);
                         return $response;
                     }
 
@@ -78,33 +78,34 @@ function handle_photos($action, $method, $db)
                         $stmt = $db->prepare("DELETE FROM patient_photos WHERE id = ?");
                         $stmt->execute([$id]);
 
-                        $absolute_file_path = realpath($photo['file_path']);
-                        $uploads_dir = realpath(dirname(__FILE__) . '/../uploads/');
+                        // Construct the absolute path to the uploads directory
+                        $uploads_base_dir = realpath(__DIR__ . '/../../uploads/');
+                        $relative_file_path = $photo['file_path'];
 
-                        if ($absolute_file_path && $uploads_dir && strpos($absolute_file_path, $uploads_dir) === 0) {
-                            if (file_exists($absolute_file_path)) {
-                                @unlink($absolute_file_path);
-                                error_log("Deleted photo file: " . $absolute_file_path); // Add logging
-                            } else {
-                                error_log("Photo file not found for deletion: " . $absolute_file_path); // Add logging
-                            }
+                        // Ensure the file path is within the designated uploads directory
+                        // and remove the 'uploads/' prefix if it exists in the stored path
+                        $file_to_delete = $uploads_base_dir . '/' . str_replace('uploads/', '', $relative_file_path);
+
+                        if (file_exists($file_to_delete)) {
+                            @unlink($file_to_delete);
+                            $logService->log('photos', 'info', 'Deleted photo file.', ['file_path' => $file_to_delete]);
                         } else {
-                            error_log("Photo file path outside uploads directory or invalid: " . $absolute_file_path); // Add logging
+                            $logService->log('photos', 'warning', 'Photo file not found for deletion (might have been deleted already or path is incorrect).', ['file_path' => $file_to_delete]);
                         }
 
                         $db->commit();
                         $response = ['success' => true];
-                        error_log("Photos delete successful. Response: " . json_encode($response)); // Add logging
+                        $logService->log('photos', 'success', 'Photos delete successful.', ['id' => $id]);
                         return $response;
                     } catch (\PDOException $e) {
                         $db->rollBack();
-                        error_log("Database error during photo delete: " . $e->getMessage()); // Add logging
+                        $logService->log('photos', 'error', 'Database error during photo delete.', ['error' => $e->getMessage(), 'id' => $id]);
                         $response = ['success' => false, 'error' => 'Database error during deletion.'];
                         return $response;
                     }
                 }
                 $response = ['success' => false, 'error' => 'ID is required.'];
-                error_log("Photos delete failed: ID missing. Response: " . json_encode($response)); // Add logging
+                $logService->log('photos', 'error', 'Photos delete failed: ID missing.', ['input' => $input]); // Use $input as it's the primary source for JSON
                 return $response;
             }
             break;

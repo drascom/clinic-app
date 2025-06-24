@@ -51,6 +51,7 @@ function handle_procedures($action, $method, $db, $input = [])
         case 'create':
             if ($method === 'POST') {
                 $name = trim($_POST['name'] ?? $input['name'] ?? '');
+                $created_by = $_POST['created_by'] ?? $input['created_by'] ?? null;
 
                 if (!$name) {
                     $logService->log('procedures', 'error', 'Procedure name is required for create.', $input);
@@ -58,8 +59,8 @@ function handle_procedures($action, $method, $db, $input = [])
                 }
 
                 try {
-                    $stmt = $db->prepare("INSERT INTO procedures (name, is_active, created_at, updated_at) VALUES (?, 1, datetime('now'), datetime('now'))");
-                    $stmt->execute([$name]);
+                    $stmt = $db->prepare("INSERT INTO procedures (name, is_active, created_at, updated_at, created_by) VALUES (?, 1, datetime('now'), datetime('now'), ?)");
+                    $stmt->execute([$name, $created_by]);
                     $newId = $db->lastInsertId();
                     $logService->log('procedures', 'success', 'Procedure created successfully.', ['id' => $newId, 'name' => $name]);
                     return ['success' => true, 'id' => $newId, 'message' => 'Procedure created successfully'];
@@ -79,6 +80,7 @@ function handle_procedures($action, $method, $db, $input = [])
                 $id = $_POST['id'] ?? $input['id'] ?? null;
                 $name = trim($_POST['name'] ?? $input['name'] ?? '');
                 $is_active = $_POST['is_active'] ?? $input['is_active'] ?? 1;
+                $updated_by = $_POST['updated_by'] ?? $input['updated_by'] ?? null;
 
                 if (!$id || !$name) {
                     $logService->log('procedures', 'error', 'Procedure ID and name are required for update.', $input);
@@ -93,8 +95,8 @@ function handle_procedures($action, $method, $db, $input = [])
                         return ['success' => false, 'error' => 'Procedure not found'];
                     }
 
-                    $stmt = $db->prepare("UPDATE procedures SET name = ?, is_active = ?, updated_at = datetime('now') WHERE id = ?");
-                    $stmt->execute([$name, $is_active, $id]);
+                    $stmt = $db->prepare("UPDATE procedures SET name = ?, is_active = ?, updated_at = datetime('now'), updated_by = ? WHERE id = ?");
+                    $stmt->execute([$name, $is_active, $updated_by, $id]);
                     $logService->log('procedures', 'success', 'Procedure updated successfully.', ['id' => $id, 'name' => $name, 'is_active' => $is_active]);
                     return ['success' => true, 'message' => 'Procedure updated successfully'];
                 } catch (PDOException $e) {

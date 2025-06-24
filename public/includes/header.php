@@ -11,7 +11,7 @@ if (
     $current_page !== 'signup.php' &&
     $current_page !== 'api.php'
 ) {
-    header('Location: login.php');
+    header('Location: /login.php');
     exit();
 }
 ?>
@@ -53,6 +53,9 @@ if (
 
     <!-- API Helper for secure POST requests -->
     <script src="/assets/js/api-helper.js"></script>
+    <script>
+        const currentUserId = <?php echo json_encode($_SESSION['user_id'] ?? null); ?>;
+    </script>
 </head>
 
 <body>
@@ -81,7 +84,6 @@ if (
                     </a>
                 </div>
                 <div class="d-flex align-items-center gap-2">
-                    <?php echo $current_user_id; ?>
                     <button id="theme-btn" class="btn btn-outline-secondary" aria-label="Toggle theme">
                         <i class="fas fa-moon"></i>
                     </button>
@@ -264,7 +266,13 @@ if (
                     <?php endif; ?>
                 <?php endif; ?>
                 </ul>
-
+                <ul class="navbar-nav">
+                    <li>
+                        <button id="theme-btn" class="m-2 nav-link btn btn-lg text-white" aria-label="Toggle theme">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                    </li>
+                </ul>
                 <ul class="navbar-nav">
                     <?php
                         // Fetch username for the logged-in user
@@ -278,7 +286,7 @@ if (
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-user-circle me-1"></i>
-                            <span class="d-none d-md-inline"><?php echo  $user_id . '-' . htmlspecialchars($username); ?></span>
+                            <span class="d-none d-md-inline"><?php htmlspecialchars($username); ?></span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
                             <li>
@@ -318,13 +326,7 @@ if (
                     </li>
                 </ul>
             <?php endif; ?>
-            <ul class="navbar-nav">
-                <li>
-                    <button id="theme-btn" class="ms-2 nav-link btn btn-lg btn-outline-secondary" aria-label="Toggle theme">
-                        <i class="fas fa-moon"></i>
-                    </button>
-                </li>
-            </ul>
+
                 </div>
             </div>
         </nav>

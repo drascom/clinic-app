@@ -164,6 +164,7 @@ require_once __DIR__ . '/../includes/header.php';
                                             <th class="fw-semibold fs-6">Date</th>
                                             <th class="fw-semibold fs-6">Time</th>
                                             <th class="fw-semibold fs-6">Reason</th>
+                                            <th class="fw-semibold fs-6">Type</th>
                                             <th class="fw-semibold fs-6 text-center">Actions</th>
                                         </tr>
                                     </thead>
@@ -329,7 +330,7 @@ require_once __DIR__ . '/../includes/header.php';
         Dropzone.autoDiscover = false;
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const patientId = <?php echo json_encode($patient_id); ?>;
         const patientAvatarImg = document.getElementById('patient-avatar');
         const patientInfoLeft = document.getElementById('patient-info-left');
@@ -356,53 +357,44 @@ require_once __DIR__ . '/../includes/header.php';
             return statusColors[status] || 'secondary';
         }
 
+        function getConsultationTypeClass(type) {
+            switch (type) {
+                case 'face-to-face':
+                    return 'bg-info text-dark';
+                case 'video-to-video':
+                    return 'bg-success';
+                default:
+                    return 'bg-secondary';
+            }
+        }
+
         function sanitizeHTML(str) {
             const temp = document.createElement('div');
             temp.textContent = str;
             return temp.innerHTML;
         }
 
-        // Custom apiRequest function for this page with correct relative path
-        async function apiRequest(entity, action, data = {}) {
-            const formData = new FormData();
-            formData.append('entity', entity);
-            formData.append('action', action);
-
-            // Add any additional data
-            Object.keys(data).forEach(key => {
-                if (data[key] !== null && data[key] !== undefined) {
-                    formData.append(key, data[key]);
-                }
-            });
-
-            try {
-                const response = await fetch('../api.php', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                return await response.json();
-            } catch (error) {
-                console.error('API Request Error:', error);
-                throw error;
-            }
-        }
 
         async function loadPatientData() {
-            const data = await apiRequest('patients', 'get', { id: patientId });
+            const data = await apiRequest('patients', 'get', {
+                id: patientId
+            });
             if (data && data.success && data.patient) {
                 const patient = data.patient;
-                patientAvatarImg.src = patient.avatar || '../assets/avatar.png';
+                if (patient.avatar) {
+                    // Remove 'uploads/' prefix for serve-file.php
+                    patientAvatarImg.src = patient.avatar.replace('uploads/', '');
+                } else {
+                    patientAvatarImg.src = '../assets/avatar.png';
+                }
 
                 // Fetch agency name separately if agency_id exists
                 let agencyName = 'N/A';
                 if (patient.agency_id) {
                     try {
-                        const agencyData = await apiRequest('agencies', 'get', { id: patient.agency_id });
+                        const agencyData = await apiRequest('agencies', 'get', {
+                            id: patient.agency_id
+                        });
                         if (agencyData && agencyData.success && agencyData.agency) {
                             agencyName = agencyData.agency.name;
                         }
@@ -439,6 +431,7 @@ require_once __DIR__ . '/../includes/header.php';
                 renderPhotos(data.photos);
             }
         }
+
         function fetchPhotoAlbumTypes() {
             apiRequest('photo_album_types', 'list').then(data => {
                 if (data.success && Array.isArray(data.photo_album_types)) {
@@ -484,6 +477,7 @@ require_once __DIR__ . '/../includes/header.php';
                 surgeriesTableBody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">No surgeries found.</td></tr>';
             }
         }
+
         function renderAppointments(appointments) {
             appointmentsTableBody.innerHTML = '';
             if (appointments && appointments.length > 0) {
@@ -494,8 +488,14 @@ require_once __DIR__ . '/../includes/header.php';
                     <td>${appointment.start_time}</td>
                     <td>${appointment.procedure_name}</td>
                     <td>
+                        <span class="badge ${getConsultationTypeClass(appointment.consultation_type)}">
+                            <i class="fas ${appointment.consultation_type === 'video-to-video' ? 'fa-video' : 'fa-user-friends'} me-1"></i>
+                            ${appointment.consultation_type}
+                        </span>
+                    </td>
+                    <td>
                         <div class="btn-group" role="group">
-                            <a href="../appointment/add_edit_appointment.php?id=${appointment.id}" class="btn btn-sm btn-outline-warning" title="Edit Appointment">
+                            <a href="../appointment/add_appointment.php?id=${appointment.id}" class="btn btn-sm btn-outline-warning" title="Edit Appointment">
                                 <i class="fas fa-edit"></i>
                                 <span class="d-none d-lg-inline ms-1">Edit</span>
                             </a>
@@ -512,9 +512,10 @@ require_once __DIR__ . '/../includes/header.php';
                     appointmentsTableBody.appendChild(row);
                 });
             } else {
-                appointmentsTableBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">No appointments found.</td></tr>';
+                appointmentsTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">No appointments found.</td></tr>';
             }
         }
+
         function renderPhotos(photos) {
             photosListDiv.innerHTML = '';
             if (photos && photos.length > 0) {
@@ -540,8 +541,8 @@ require_once __DIR__ . '/../includes/header.php';
 
                         photoCol.innerHTML = `
                     <div class="card h-100">
-                        <a href="${sanitizeHTML(photo.file_path)}" class="glightbox" data-gallery="${sanitizeHTML(albumName)}">
-                            <img src="${sanitizeHTML(photo.file_path)}" class="card-img-top" alt="Patient Photo" style="height: 200px; object-fit: cover;">
+                        <a href="${sanitizeHTML(photo.file_path.replace('uploads/', ''))}" class="glightbox" data-gallery="${sanitizeHTML(albumName)}">
+                            <img src="${sanitizeHTML(photo.file_path.replace('uploads/', ''))}" class="card-img-top" alt="Patient Photo" style="height: 200px; object-fit: cover;">
                         </a>
                         <div class="card-body text-center p-2">
                             <button class="btn btn-outline-danger btn-sm delete-item-btn" data-id="${photo.id}" data-type="photo" title="Delete Photo">
@@ -559,7 +560,9 @@ require_once __DIR__ . '/../includes/header.php';
                     photosListDiv.appendChild(albumDiv);
                 }
 
-                GLightbox({ selector: '.glightbox' });
+                GLightbox({
+                    selector: '.glightbox'
+                });
             } else {
                 photosListDiv.innerHTML = '<p class="text-muted fs-6 text-center py-4">No photos found.</p>';
             }
@@ -567,7 +570,7 @@ require_once __DIR__ . '/../includes/header.php';
 
 
         // Show dropzone when an album type is selected
-        photoAlbumTypeSelect.addEventListener('change', function () {
+        photoAlbumTypeSelect.addEventListener('change', function() {
             if (this.value) {
                 photoDropzoneDiv.style.display = 'block';
             } else {
@@ -576,7 +579,7 @@ require_once __DIR__ . '/../includes/header.php';
         });
 
         // Event listener for delete buttons (delegation)
-        document.addEventListener('click', function (event) {
+        document.addEventListener('click', function(event) {
             if (event.target.classList.contains('delete-item-btn')) {
                 itemToDeleteId = event.target.dataset.id;
                 itemToDeleteType = event.target.dataset.type;
@@ -592,40 +595,33 @@ require_once __DIR__ . '/../includes/header.php';
         });
         // When the confirm delete button in the modal is clicked
         if (confirmDeleteBtn) {
-            confirmDeleteBtn.addEventListener('click', function () {
+            confirmDeleteBtn.addEventListener('click', async function() {
                 if (itemToDeleteId && itemToDeleteType) {
-                    const formData = new FormData();
-                    formData.append('entity', itemToDeleteType + 's');
-                    formData.append('action', 'delete');
-                    formData.append('id', itemToDeleteId);
-
-                    fetch('../api.php', {
-                        method: 'POST',
-                        body: formData
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                showToast(
-                                    `${itemToDeleteType.charAt(0).toUpperCase() + itemToDeleteType.slice(1)} deleted successfully.`,
-                                    'success');
-                                loadPatientData(); // Refresh data
-                            } else {
-                                showToast(`Error deleting ${itemToDeleteType}: ${data.error}`,
-                                    'danger');
-                            }
-                        })
-                        .catch(error => {
-                            console.error(`Error deleting ${itemToDeleteType}:`, error);
-                            showToast(`An error occurred while deleting the ${itemToDeleteType}.`,
-                                'danger');
-                        })
-                        .finally(() => {
-                            const modal = bootstrap.Modal.getInstance(deleteConfirmModal);
-                            modal.hide();
-                            itemToDeleteId = null;
-                            itemToDeleteType = null;
+                    try {
+                        const entity = itemToDeleteType === 'surgery' ? 'surgeries' : `${itemToDeleteType}s`;
+                        const data = await apiRequest(entity, 'delete', {
+                            id: itemToDeleteId
                         });
+
+                        if (data.success) {
+                            showToast(
+                                `${itemToDeleteType.charAt(0).toUpperCase() + itemToDeleteType.slice(1)} deleted successfully.`,
+                                'success');
+                            loadPatientData(); // Refresh data
+                        } else {
+                            showToast(`Error deleting ${itemToDeleteType}: ${data.message || data.error}`,
+                                'danger');
+                        }
+                    } catch (error) {
+                        console.error(`Error deleting ${itemToDeleteType}:`, error);
+                        showToast(`An error occurred while deleting the ${itemToDeleteType}.`,
+                            'danger');
+                    } finally {
+                        const modal = bootstrap.Modal.getInstance(deleteConfirmModal);
+                        modal.hide();
+                        itemToDeleteId = null;
+                        itemToDeleteType = null;
+                    }
                 }
             });
         }
@@ -640,23 +636,23 @@ require_once __DIR__ . '/../includes/header.php';
             uploadMultiple: true, // Allow multiple file uploads
             parallelUploads: 10, // How many files to upload in parallel
             createImageThumbnails: false, // Disable thumbnail creation to prevent Event object issues
-            params: function () {
+            params: function() {
                 return {
                     patient_id: patientId,
                     photo_album_type_id: photoAlbumTypeSelect.value
                 };
             },
-            init: function () {
+            init: function() {
                 const myDropzone = this;
 
                 // Listen to the "addedfile" event
-                myDropzone.on("addedfile", function (file) {
+                myDropzone.on("addedfile", function(file) {
                     // You can add custom logic here when a file is added
                     // If autoProcessQueue is true, the upload starts here
                 });
 
                 // Prevent thumbnail errors by handling the thumbnail event
-                myDropzone.on("thumbnail", function (file, dataUrl) {
+                myDropzone.on("thumbnail", function(file, dataUrl) {
                     // Since we disabled createImageThumbnails, this shouldn't fire
                     // But if it does, ensure we have valid data
                     if (typeof dataUrl !== 'string' || dataUrl.includes('[object')) {
@@ -666,7 +662,7 @@ require_once __DIR__ . '/../includes/header.php';
                 });
 
                 // Listen to the "successmultiple" event
-                myDropzone.on("successmultiple", function (files, response) {
+                myDropzone.on("successmultiple", function(files, response) {
                     // Handle successful uploads
                     console.log("Upload successful:", response);
 
@@ -689,7 +685,7 @@ require_once __DIR__ . '/../includes/header.php';
                 });
 
                 // Listen to the "errormultiple" event
-                myDropzone.on("errormultiple", function (files, response, xhr) {
+                myDropzone.on("errormultiple", function(files, response, xhr) {
                     // Handle errors
                     console.error("Upload error:", response);
                     let errorMessage = 'An error occurred during upload.';
@@ -712,7 +708,7 @@ require_once __DIR__ . '/../includes/header.php';
             }
         });
 
-        uploadModal.addEventListener('shown.bs.modal', function (event) {
+        uploadModal.addEventListener('shown.bs.modal', function(event) {
             fetchPhotoAlbumTypes();
         });
 
@@ -762,7 +758,7 @@ require_once __DIR__ . '/../includes/header.php';
         // Function to update URL when tab is clicked
         function setupTabNavigation() {
             document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tabElement => {
-                tabElement.addEventListener('shown.bs.tab', function (event) {
+                tabElement.addEventListener('shown.bs.tab', function(event) {
                     const targetId = event.target.getAttribute('data-bs-target').substring(1); // Remove #
                     const newUrl = new URL(window.location);
                     newUrl.searchParams.set('tab', targetId);
@@ -800,18 +796,18 @@ require_once __DIR__ . '/../includes/header.php';
                 maxFiles: 1,
                 autoProcessQueue: true,
                 createImageThumbnails: false, // Disable thumbnail creation to prevent Event object issues
-                params: function () {
+                params: function() {
                     return {
                         entity: 'patients',
                         action: 'upload_avatar',
                         id: patientId
                     };
                 },
-                init: function () {
+                init: function() {
                     const myDropzone = this;
 
                     // Prevent thumbnail errors by handling the thumbnail event
-                    myDropzone.on("thumbnail", function (file, dataUrl) {
+                    myDropzone.on("thumbnail", function(file, dataUrl) {
                         // Since we disabled createImageThumbnails, this shouldn't fire
                         // But if it does, ensure we have valid data
                         if (typeof dataUrl !== 'string' || dataUrl.includes('[object')) {
@@ -821,7 +817,7 @@ require_once __DIR__ . '/../includes/header.php';
                     });
 
                     // Handle successful upload
-                    myDropzone.on("success", function (file, response) {
+                    myDropzone.on("success", function(file, response) {
                         console.log("Avatar upload successful:", response);
 
                         if (response.success) {
@@ -846,7 +842,7 @@ require_once __DIR__ . '/../includes/header.php';
                     });
 
                     // Handle upload errors
-                    myDropzone.on("error", function (file, response, xhr) {
+                    myDropzone.on("error", function(file, response, xhr) {
                         console.error("Avatar upload error:", response);
                         let errorMessage = 'Avatar upload failed.';
 
@@ -860,7 +856,7 @@ require_once __DIR__ . '/../includes/header.php';
                     });
 
                     // Handle file added
-                    myDropzone.on("addedfile", function (file) {
+                    myDropzone.on("addedfile", function(file) {
                         // Remove any existing files (since maxFiles is 1)
                         if (myDropzone.files.length > 1) {
                             myDropzone.removeFile(myDropzone.files[0]);
@@ -872,7 +868,7 @@ require_once __DIR__ . '/../includes/header.php';
 
         // Handle Change Avatar Button Click
         if (changeAvatarBtn) {
-            changeAvatarBtn.addEventListener('click', function (e) {
+            changeAvatarBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
 
@@ -892,7 +888,7 @@ require_once __DIR__ . '/../includes/header.php';
 
         // Handle Delete Avatar Button Click
         if (deleteAvatarBtn) {
-            deleteAvatarBtn.addEventListener('click', function (e) {
+            deleteAvatarBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
 
@@ -939,7 +935,7 @@ require_once __DIR__ . '/../includes/header.php';
         setupTabNavigation();
 
         // Initialize avatar dropzone when modal is shown
-        avatarUploadModal.addEventListener('shown.bs.modal', function () {
+        avatarUploadModal.addEventListener('shown.bs.modal', function() {
             if (!avatarDropzone) {
                 initializeAvatarDropzone();
             }

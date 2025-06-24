@@ -1,4 +1,11 @@
 <?php
+require_once __DIR__ . '/../auth/auth.php';
+
+if (!is_logged_in() || !is_admin()) {
+    // Redirect to login page or show an unauthorized message
+    header('Location: ../auth/login.php');
+    exit();
+}
 require_once '../includes/header.php';
 $page_title = "Agency Management";
 ?>
@@ -145,7 +152,7 @@ $page_title = "Agency Management";
     </div>
 </div>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const agenciesTable = document.getElementById('agencies-table');
         const loadingSpinner = document.getElementById('loading-spinner');
 
@@ -215,7 +222,7 @@ $page_title = "Agency Management";
         }
 
         // Add new agency
-        document.getElementById('save-agency-btn').addEventListener('click', function () {
+        document.getElementById('save-agency-btn').addEventListener('click', function() {
             const form = document.getElementById('add-agency-form');
             const agencyName = document.getElementById('agency-name').value.trim();
             const statusDiv = document.getElementById('add-agency-status');
@@ -241,9 +248,9 @@ $page_title = "Agency Management";
             formData.append('name', agencyName);
 
             fetch('../api.php', {
-                method: 'POST',
-                body: formData
-            })
+                    method: 'POST',
+                    body: formData
+                })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -272,7 +279,7 @@ $page_title = "Agency Management";
         });
 
         // Edit agency - open modal with data
-        agenciesTable.addEventListener('click', function (event) {
+        agenciesTable.addEventListener('click', function(event) {
             const editBtn = event.target.closest('.edit-agency-btn');
             if (editBtn) {
                 const agencyId = editBtn.dataset.agencyId;
@@ -298,7 +305,7 @@ $page_title = "Agency Management";
         });
 
         // Update agency
-        document.getElementById('update-agency-btn').addEventListener('click', function () {
+        document.getElementById('update-agency-btn').addEventListener('click', function() {
             const form = document.getElementById('edit-agency-form');
             const agencyId = document.getElementById('edit-agency-id').value;
             const agencyName = document.getElementById('edit-agency-name').value.trim();
@@ -326,9 +333,9 @@ $page_title = "Agency Management";
             formData.append('name', agencyName);
 
             fetch('../api.php', {
-                method: 'POST',
-                body: formData
-            })
+                    method: 'POST',
+                    body: formData
+                })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -356,7 +363,7 @@ $page_title = "Agency Management";
         });
 
         // Delete agency
-        document.getElementById('confirm-delete-btn').addEventListener('click', function () {
+        document.getElementById('confirm-delete-btn').addEventListener('click', function() {
             const agencyId = document.getElementById('delete-agency-id').value;
             const statusDiv = document.getElementById('delete-agency-status');
 
@@ -366,9 +373,9 @@ $page_title = "Agency Management";
             formData.append('id', agencyId);
 
             fetch('../api.php', {
-                method: 'POST',
-                body: formData
-            })
+                    method: 'POST',
+                    body: formData
+                })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -400,7 +407,7 @@ $page_title = "Agency Management";
         const clearSearchBtn = document.getElementById('clear-search');
 
         if (searchInput) {
-            searchInput.addEventListener('input', function () {
+            searchInput.addEventListener('input', function() {
                 const searchTerm = this.value.toLowerCase();
                 const rows = agenciesTable.querySelectorAll('tbody tr');
 
@@ -416,34 +423,34 @@ $page_title = "Agency Management";
         }
 
         if (clearSearchBtn) {
-            clearSearchBtn.addEventListener('click', function () {
+            clearSearchBtn.addEventListener('click', function() {
                 searchInput.value = '';
                 fetchAndDisplayAgencies();
             });
         }
 
         // Reset forms when modals are shown
-        document.getElementById('addAgencyModal').addEventListener('show.bs.modal', function () {
+        document.getElementById('addAgencyModal').addEventListener('show.bs.modal', function() {
             const form = document.getElementById('add-agency-form');
             form.reset();
             form.classList.remove('was-validated');
         });
 
-        document.getElementById('editAgencyModal').addEventListener('show.bs.modal', function () {
+        document.getElementById('editAgencyModal').addEventListener('show.bs.modal', function() {
             const form = document.getElementById('edit-agency-form');
             form.classList.remove('was-validated');
         });
 
         // Clear status messages when modals are hidden
-        document.getElementById('addAgencyModal').addEventListener('hidden.bs.modal', function () {
+        document.getElementById('addAgencyModal').addEventListener('hidden.bs.modal', function() {
             document.getElementById('add-agency-status').innerHTML = '';
         });
 
-        document.getElementById('editAgencyModal').addEventListener('hidden.bs.modal', function () {
+        document.getElementById('editAgencyModal').addEventListener('hidden.bs.modal', function() {
             document.getElementById('edit-agency-status').innerHTML = '';
         });
 
-        document.getElementById('deleteAgencyModal').addEventListener('hidden.bs.modal', function () {
+        document.getElementById('deleteAgencyModal').addEventListener('hidden.bs.modal', function() {
             document.getElementById('delete-agency-status').innerHTML = '';
         });
 

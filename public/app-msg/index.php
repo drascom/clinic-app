@@ -102,7 +102,6 @@ $current_user_id = $_SESSION['user_id'] ?? null;
 
 <script src="../assets/js/api-helper.js"></script>
 <script>
-    const currentUserId = <?php echo json_encode($current_user_id); ?>;
 </script>
 <script src="page.js"></script>
 <?php

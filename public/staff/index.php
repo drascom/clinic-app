@@ -790,6 +790,11 @@ $page_title = "Staff Management";
             saveStaffBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Saving...';
 
             try {
+                if (action === 'add') {
+                    data.created_by = currentUserId;
+                } else {
+                    data.updated_by = currentUserId;
+                }
                 const response = await apiRequest('/api.php', 'POST', {
                     entity: 'staff',
                     action: action,

@@ -49,7 +49,6 @@ $page_title = "Login";
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($page_title) ? $page_title . ' - ' : ''; ?>Surgery Patient Management</title>
-
     <!-- Custom Fonts -->
     <link rel="stylesheet" href="/assets/css/fonts.css">
 
@@ -58,6 +57,9 @@ $page_title = "Login";
 
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Bootstrap Icons (for tooltips) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/assets/css/style.css">
@@ -215,6 +217,8 @@ $page_title = "Login";
     </footer>
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS for theme management and other global functions -->
+    <script src="/assets/js/script.js"></script>
     <!-- Login Form JavaScript -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {

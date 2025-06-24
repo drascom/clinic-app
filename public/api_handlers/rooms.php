@@ -60,6 +60,7 @@ function handle_rooms($action, $method, $db, $input = [])
             if ($method === 'POST') {
                 $name = trim($_POST['name'] ?? '');
                 $type = trim($_POST['type'] ?? '');
+                $created_by = $_POST['created_by'] ?? null;
 
                 if (empty($name)) {
                     $logService->log('rooms', 'error', 'Room name is required for create.', $_POST);
@@ -67,8 +68,8 @@ function handle_rooms($action, $method, $db, $input = [])
                 }
 
                 try {
-                    $stmt = $db->prepare("INSERT INTO rooms (name, type, created_at, updated_at) VALUES (?, ?, datetime('now'), datetime('now'))");
-                    $stmt->execute([$name, $type]);
+                    $stmt = $db->prepare("INSERT INTO rooms (name, type, created_at, updated_at, created_by) VALUES (?, ?, datetime('now'), datetime('now'), ?)");
+                    $stmt->execute([$name, $type, $created_by]);
                     $room_id = $db->lastInsertId();
 
                     // Fetch the created room
@@ -94,6 +95,7 @@ function handle_rooms($action, $method, $db, $input = [])
                 $id = $_POST['id'] ?? $input['id'] ?? null;
                 $name = trim($_POST['name'] ?? $input['name'] ?? '');
                 $type = trim($_POST['type'] ?? $input['type'] ?? '');
+                $updated_by = $_POST['updated_by'] ?? $input['updated_by'] ?? null;
 
                 if (!$id || empty($name)) {
                     $logService->log('rooms', 'error', 'Room ID and name are required for update.', $_POST);
@@ -101,8 +103,8 @@ function handle_rooms($action, $method, $db, $input = [])
                 }
 
                 try {
-                    $stmt = $db->prepare("UPDATE rooms SET name = ?, type = ?, updated_at = datetime('now') WHERE id = ?");
-                    $stmt->execute([$name, $type, $id]);
+                    $stmt = $db->prepare("UPDATE rooms SET name = ?, type = ?, updated_at = datetime('now'), updated_by = ? WHERE id = ?");
+                    $stmt->execute([$name, $type, $updated_by, $id]);
 
                     if ($stmt->rowCount() === 0) {
                         $logService->log('rooms', 'error', 'Room not found for update.', ['id' => $id]);
@@ -125,6 +127,7 @@ function handle_rooms($action, $method, $db, $input = [])
             if ($method === 'POST' || $method === 'DELETE') {
                 $id = $_POST['id'] ?? $input['id'] ?? null;
                 $status = $_POST['status'] ?? $input['status'] ?? null;
+                $updated_by = $_POST['updated_by'] ?? $input['updated_by'] ?? null;
 
                 if (!$id) {
                     $logService->log('rooms', 'error', 'Room ID is required for toggle.', $_POST);
@@ -133,8 +136,8 @@ function handle_rooms($action, $method, $db, $input = [])
 
                 try {
                     // Soft delete - set is_active to 0
-                    $stmt = $db->prepare("UPDATE rooms SET is_active = $status, updated_at = datetime('now') WHERE id = ?");
-                    $stmt->execute([$id]);
+                    $stmt = $db->prepare("UPDATE rooms SET is_active = ?, updated_at = datetime('now'), updated_by = ? WHERE id = ?");
+                    $stmt->execute([$status, $updated_by, $id]);
 
                     if ($stmt->rowCount() === 0) {
                         return ['success' => false, 'error' => 'Room not found.'];

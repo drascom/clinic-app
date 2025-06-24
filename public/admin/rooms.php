@@ -118,11 +118,11 @@ require_once __DIR__ . '/../includes/header.php';
 <script>
     let isEditing = false;
 
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         loadRooms();
 
         // Room form submission
-        document.getElementById('room-form').addEventListener('submit', function (e) {
+        document.getElementById('room-form').addEventListener('submit', function(e) {
             e.preventDefault();
             saveRoom();
         });
@@ -132,7 +132,7 @@ require_once __DIR__ . '/../includes/header.php';
         const clearSearchBtn = document.getElementById('clear-search');
 
         if (searchInput) {
-            searchInput.addEventListener('input', function () {
+            searchInput.addEventListener('input', function() {
                 const searchTerm = this.value.toLowerCase();
                 const rows = document.querySelectorAll('#rooms-tbody tr');
                 rows.forEach(row => {
@@ -148,7 +148,7 @@ require_once __DIR__ . '/../includes/header.php';
         }
 
         if (clearSearchBtn) {
-            clearSearchBtn.addEventListener('click', function () {
+            clearSearchBtn.addEventListener('click', function() {
                 searchInput.value = '';
                 loadRooms();
             });
@@ -255,8 +255,8 @@ require_once __DIR__ . '/../includes/header.php';
 
     function loadRoomData(roomId) {
         apiRequest('rooms', 'get', {
-            id: roomId
-        })
+                id: roomId
+            })
             .then(data => {
                 if (data.success) {
                     const room = data.room;
@@ -287,12 +287,18 @@ require_once __DIR__ . '/../includes/header.php';
 
         const formData = new FormData(form);
         formData.append('entity', 'rooms');
-        formData.append('action', isEditing ? 'update' : 'create');
+        const action = isEditing ? 'update' : 'create';
+        formData.append('action', action);
+        if (action === 'create') {
+            formData.append('created_by', currentUserId);
+        } else {
+            formData.append('updated_by', currentUserId);
+        }
 
         fetch('/api.php', {
-            method: 'POST',
-            body: formData
-        })
+                method: 'POST',
+                body: formData
+            })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -324,9 +330,9 @@ require_once __DIR__ . '/../includes/header.php';
         formData.append('id', roomId);
 
         fetch('/api.php', {
-            method: 'POST',
-            body: formData
-        })
+                method: 'POST',
+                body: formData
+            })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -352,11 +358,12 @@ require_once __DIR__ . '/../includes/header.php';
         formData.append('action', 'toggle');
         formData.append('id', roomId);
         formData.append('status', status);
+        formData.append('updated_by', currentUserId);
 
         fetch('/api.php', {
-            method: 'POST',
-            body: formData
-        })
+                method: 'POST',
+                body: formData
+            })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {

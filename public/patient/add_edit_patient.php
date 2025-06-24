@@ -492,6 +492,7 @@ require_once '../includes/header.php';
                         // Ensure patientId is available. The outer patientId variable should be updated by now.
                         if (patientId) {
                             formData.append('id', patientId);
+                            formData.append('updated_by', currentUserId);
                             console.log("Appending patientId to FormData:", patientId);
                         } else {
                             console.warn(
@@ -552,6 +553,7 @@ require_once '../includes/header.php';
                             deleteFormData.append('action',
                                 'delete_avatar'); // New action for avatar deletion
                             deleteFormData.append('patient_id', patientId); // Patient ID
+                            deleteFormData.append('updated_by', currentUserId);
                             // You might need to send the avatar ID or path depending on your API
                             deleteFormData.append('avatar_url', file
                                 .dataURL); // Send avatar URL as identifier
@@ -741,6 +743,11 @@ require_once '../includes/header.php';
 
                 // Agency ID is handled by the form field (hidden for agents, select for admin/editor)
                 formData.append('agency_id', document.getElementById('agency_id').value);
+                if (action === 'add') {
+                    formData.append('created_by', currentUserId);
+                } else {
+                    formData.append('updated_by', currentUserId);
+                }
 
                 // Do NOT append avatar here for 'add' action, it's handled by Dropzone after patient creation
                 // For 'update', the avatar is handled by the 'upload_avatar' action triggered by Dropzone

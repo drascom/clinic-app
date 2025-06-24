@@ -4,7 +4,40 @@ $page_title = "Calendar";
 ?>
 <link rel="stylesheet" href="/assets/css/calendar.css">
 <style>
+    .calendar-day.closed-day {
+        background-color: #f8d7da;
+        /* A light red to indicate closure */
+        position: relative;
+    }
 
+    .closed-day .day-number {
+        text-decoration: line-through;
+    }
+
+    .closed-day .event-summary,
+    .closed-day .add-event-icon {
+        display: none;
+    }
+
+    .reopen-day-icon {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        cursor: pointer;
+        color: #dc3545;
+        font-size: 1.2em;
+        display: none;
+        /* Hidden by default */
+    }
+
+    .closed-day .reopen-day-icon {
+        display: block;
+        /* Show only on closed days */
+    }
+
+    .reopen-day-icon:hover {
+        color: #a71d2a;
+    }
 </style>
 <!-- Calendar Container -->
 <div class="calendar-container emp">
@@ -117,6 +150,9 @@ $page_title = "Calendar";
                     <button type="button" class="btn btn-success" id="addSurgeryBtn">
                         <i class="fas fa-plus me-1"></i> Add Surgery
                     </button>
+                    <button type="button" class="btn btn-danger" id="closeDayBtn">
+                        <i class="fas fa-door-closed me-1"></i> Close Day
+                    </button>
                 </div>
             </div>
         </div>
@@ -129,6 +165,7 @@ $page_title = "Calendar";
             this.currentDate = new Date();
             this.currentView = 'month';
             this.events = {};
+            this.closedDays = {};
             this.isLoading = false;
             this.selectedDate = null;
             this.currentSurgeryFilter = 'all';
@@ -163,6 +200,7 @@ $page_title = "Calendar";
             this.detailsModal = new bootstrap.Modal(document.getElementById('detailsModal'));
             this.addAppointmentBtn = document.getElementById('addAppointmentBtn');
             this.addSurgeryBtn = document.getElementById('addSurgeryBtn');
+            this.closeDayBtn = document.getElementById('closeDayBtn');
 
             // Filter
             this.surgeryStatusFilter = document.getElementById('surgeryStatusFilter');
@@ -180,6 +218,7 @@ $page_title = "Calendar";
 
             this.addAppointmentBtn.addEventListener('click', () => this.addAppointment());
             this.addSurgeryBtn.addEventListener('click', () => this.addSurgery());
+            this.closeDayBtn.addEventListener('click', () => this.closeDay());
 
             this.surgeryStatusFilter.addEventListener('change', (e) => {
                 this.currentSurgeryFilter = e.target.value;
@@ -208,6 +247,7 @@ $page_title = "Calendar";
             const month = this.currentDate.getMonth() + 1;
 
             try {
+                await this.loadClosedDays();
                 const data = await apiRequest('calendar_events', 'get', {
                     year: year,
                     month: month
@@ -246,7 +286,11 @@ $page_title = "Calendar";
         checkAndShowEmptyState() {
             const hasEvents = this.events && Object.values(this.events).some(day => day.appointments.length > 0 || day
                 .surgeries.length > 0);
-            const hasAnyData = hasEvents;
+            const year = this.currentDate.getFullYear();
+            const month = String(this.currentDate.getMonth() + 1).padStart(2, '0');
+            const monthPrefix = `${year}-${month}-`;
+            const hasClosedDaysInMonth = Object.keys(this.closedDays).some(d => d.startsWith(monthPrefix));
+            const hasAnyData = hasEvents || hasClosedDaysInMonth;
 
             if (!hasAnyData) {
                 this.showEmptyState(true);
@@ -353,46 +397,66 @@ $page_title = "Calendar";
                 if (isCurrentMonth) {
                     const dateString = this.formatDateForAPI(dayDate);
                     const dayEvents = this.events[dateString];
+                    const isClosed = this.closedDays[dateString];
 
-                    if (dayEvents && (dayEvents.appointments.length > 0 || dayEvents.surgeries.length > 0)) {
-                        const eventSummaryEl = document.createElement('div');
-                        eventSummaryEl.className = 'event-summary d-flex flex-column';
+                    if (isClosed) {
+                        dayElement.classList.add('closed-day');
 
-                        if (dayEvents.appointments.length > 0) {
-                            const appBtn = document.createElement('btn');
-                            appBtn.className = 'event appointment d-flex align-items-center mx-2 btn';
-                            appBtn.innerHTML =
-                                `<i class="far fa-calendar me-2"></i><span class=" d-none d-sm-inline"> Appointment: </span> ${dayEvents.appointments.length} `;
-                            appBtn.onclick = (e) => {
-                                e.stopPropagation();
-                                this.showDetailsModal('Appointments', dayDate, dayEvents.appointments);
-                            };
-                            eventSummaryEl.appendChild(appBtn);
+                        const reasonEl = document.createElement('div');
+                        reasonEl.className = 'closed-day-reason';
+                        reasonEl.textContent = isClosed.reason || 'Closed';
+                        dayElement.appendChild(reasonEl);
+
+                        const reopenIcon = document.createElement('div');
+                        reopenIcon.className = 'reopen-day-icon';
+                        reopenIcon.innerHTML = '<i class="fas fa-lock-open"></i>';
+                        reopenIcon.title = 'Click to reopen this day';
+                        reopenIcon.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            this.openDay(dateString);
+                        });
+                        dayElement.appendChild(reopenIcon);
+                    } else {
+                        if (dayEvents && (dayEvents.appointments.length > 0 || dayEvents.surgeries.length > 0)) {
+                            const eventSummaryEl = document.createElement('div');
+                            eventSummaryEl.className = 'event-summary d-flex flex-column';
+
+                            if (dayEvents.appointments.length > 0) {
+                                const appBtn = document.createElement('btn');
+                                appBtn.className = 'event appointment d-flex align-items-center mx-2 btn';
+                                appBtn.innerHTML =
+                                    `<i class="far fa-calendar me-2"></i><span class=" d-none d-sm-inline"> Appointment: </span> ${dayEvents.appointments.length} `;
+                                appBtn.onclick = (e) => {
+                                    e.stopPropagation();
+                                    this.showDetailsModal('Appointments', dayDate, dayEvents.appointments);
+                                };
+                                eventSummaryEl.appendChild(appBtn);
+                            }
+
+                            if (dayEvents.surgeries.length > 0) {
+                                const surgBtn = document.createElement('btn');
+                                surgBtn.className = 'event surgery d-flex align-items-center mx-2 btn ';
+                                surgBtn.innerHTML =
+                                    `<i class="fas fa-syringe me-2"></i><span class="d-none d-sm-inline"> Surgery: </span>${dayEvents.surgeries.length} `;
+                                surgBtn.onclick = (e) => {
+                                    e.stopPropagation();
+                                    this.showDetailsModal('Surgeries', dayDate, dayEvents.surgeries);
+                                };
+                                eventSummaryEl.appendChild(surgBtn);
+                            }
+
+                            dayElement.appendChild(eventSummaryEl);
                         }
 
-                        if (dayEvents.surgeries.length > 0) {
-                            const surgBtn = document.createElement('btn');
-                            surgBtn.className = 'event surgery d-flex align-items-center mx-2 btn ';
-                            surgBtn.innerHTML =
-                                `<i class="fas fa-syringe me-2"></i><span class="d-none d-sm-inline"> Surgery: </span>${dayEvents.surgeries.length} `;
-                            surgBtn.onclick = (e) => {
-                                e.stopPropagation();
-                                this.showDetailsModal('Surgeries', dayDate, dayEvents.surgeries);
-                            };
-                            eventSummaryEl.appendChild(surgBtn);
-                        }
-
-                        dayElement.appendChild(eventSummaryEl);
+                        const addIcon = document.createElement('div');
+                        addIcon.className = 'add-event-icon';
+                        addIcon.innerHTML = '<i class="fas fa-plus"></i>';
+                        addIcon.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            this.openAddEventModal(dateString);
+                        });
+                        dayElement.appendChild(addIcon);
                     }
-
-                    const addIcon = document.createElement('div');
-                    addIcon.className = 'add-event-icon';
-                    addIcon.innerHTML = '<i class="fas fa-plus"></i>';
-                    addIcon.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        this.openAddEventModal(dateString);
-                    });
-                    dayElement.appendChild(addIcon);
                 }
 
                 this.calendarGrid.appendChild(dayElement);
@@ -410,19 +474,34 @@ $page_title = "Calendar";
             const filteredEvents = Object.entries(this.events).filter(([dateStr, dayEvents]) => {
                 const date = new Date(dateStr + 'T00:00:00');
                 const hasEvents = dayEvents.appointments.length > 0 || dayEvents.surgeries.length > 0;
-                return date >= monthStart && date <= monthEnd && hasEvents;
+                const isClosed = this.closedDays[dateStr];
+                return date >= monthStart && date <= monthEnd && (hasEvents || isClosed);
             });
 
             filteredEvents.sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB));
 
-            if (filteredEvents.length === 0) {
+            if (filteredEvents.length === 0 && Object.keys(this.closedDays).length === 0) {
                 const emptyMessage = document.createElement('div');
                 emptyMessage.className = 'text-center py-5 text-muted';
-                emptyMessage.textContent = 'No events found for this month.';
+                emptyMessage.textContent = 'No events or closed days found for this month.';
                 this.listContent.appendChild(emptyMessage);
             } else {
-                for (const [dateKey, dayEvents] of filteredEvents) {
+                const allDays = {
+                    ...this.events,
+                    ...this.closedDays
+                };
+                const sortedDays = Object.keys(allDays).sort((a, b) => new Date(a) - new Date(b));
+
+                for (const dateKey of sortedDays) {
                     const date = new Date(dateKey + 'T00:00:00');
+                    if (date < monthStart || date > monthEnd) continue;
+
+                    const dayEvents = this.events[dateKey] || {
+                        appointments: [],
+                        surgeries: []
+                    };
+                    const isClosed = this.closedDays[dateKey];
+
                     const dayName = date.toLocaleDateString('en-US', {
                         weekday: 'long'
                     });
@@ -436,6 +515,13 @@ $page_title = "Calendar";
                     dateDiv.className = 'list-date';
                     dateDiv.innerHTML = `<span>${formattedDate}</span><span class="text-primary">${dayName}</span>`;
                     this.listContent.appendChild(dateDiv);
+
+                    if (isClosed) {
+                        const closedDiv = document.createElement('div');
+                        closedDiv.className = 'list-item-summary d-flex align-items-center text-danger';
+                        closedDiv.innerHTML = `<i class="fas fa-door-closed me-2"></i> Day Closed: ${isClosed.reason || ''}`;
+                        this.listContent.appendChild(closedDiv);
+                    }
 
                     const summaryContainer = document.createElement('div');
                     summaryContainer.className = 'list-item-summary d-flex';
@@ -463,7 +549,10 @@ $page_title = "Calendar";
                         };
                         summaryContainer.appendChild(surgBtn);
                     }
-                    this.listContent.appendChild(summaryContainer);
+
+                    if (summaryContainer.children.length > 0) {
+                        this.listContent.appendChild(summaryContainer);
+                    }
                 }
             }
         }
@@ -499,10 +588,10 @@ $page_title = "Calendar";
                             <h6 class="mb-1">${item.patient_name}</h6>
                             ${isAppointment ? `<small class="text-muted">${item.start_time} - ${item.end_time}</small>` : `<span class="badge bg-info">${item.status}</span>`}
                         </div>
-                        ${item.room_name ? `<p class="mb-1"><i class="fas fa-hospital-alt me-1"></i> Room: ${item.room_name}</p>` : ''}
-                        ${isAppointment && item.procedure_name ? `<p class="mb-1"><i class="fas fa-tag me-1"></i> Procedure: ${item.procedure_name}</p>` : ''}
-                        ${!isAppointment && item.predicted_grafts_count ? `<p class="mb-1"><i class="fas fa-microscope me-1"></i> Predicted Grafts: ${item.predicted_grafts_count}</p>` : ''}
-                        ${!isAppointment && item.current_grafts_count ? `<p class="mb-1"><i class="fas fa-microscope me-1"></i> Current Grafts: ${item.current_grafts_count}</p>` : ''}
+                        ${isAppointment && item.procedure_name ? `<span class="mb-1 me-2"><i class="fas fa-tag me-1"></i> Procedure: ${item.procedure_name} </span>` : ''}
+                        ${isAppointment && item.type ? `<span class="mb-1"><i class="fas fa-info-circle me-1"></i> Type: ${item.type}</span>` : ''}
+                        ${!isAppointment && item.predicted_grafts_count ? `<span class="mb-1 me-2"><i class="fas fa-microscope me-1"></i> Predicted Grafts: ${item.predicted_grafts_count}</span>` : ''}
+                        ${!isAppointment && item.current_grafts_count ? `<span class="mb-1 me-2"><i class="fas fa-microscope me-1"></i> Current Grafts: ${item.current_grafts_count}</span>` : ''}
                         ${item.notes ? `<p class="mb-1 text-muted">Notes: ${item.notes}</p>` : ''}
                         ${!isAppointment && item.is_recorded ? `<p class="mb-1 text-success"><i class="fas fa-video me-1"></i> Recorded</p>` : ''}
                     </a>`;
@@ -534,6 +623,84 @@ $page_title = "Calendar";
         addSurgery() {
             if (this.selectedDate) {
                 window.location.href = `../surgery/add_edit_surgery.php?date=${this.selectedDate}`;
+            }
+        }
+
+        async loadClosedDays() {
+            const year = this.currentDate.getFullYear();
+            const month = this.currentDate.getMonth() + 1;
+            try {
+                const data = await apiRequest('closed_days', 'list', {
+                    year: year,
+                    month: month
+                });
+                if (data.success) {
+                    this.closedDays = {};
+                    data.closed_days.forEach(d => {
+                        this.closedDays[d.date] = d;
+                    });
+                } else {
+                    console.error('Error fetching closed days:', data.error);
+                    this.showError('Failed to load closed days');
+                    this.closedDays = {};
+                }
+            } catch (error) {
+                console.error('Error fetching closed days data:', error);
+                this.showError('Failed to load closed days data');
+            }
+        }
+
+        async closeDay() {
+            if (!this.selectedDate) return;
+
+            const reason = prompt("Enter a reason for closing the day (optional):");
+            if (reason === null) {
+                return;
+            }
+
+            this.addEventModal.hide();
+            this.showLoading(true);
+
+            try {
+                const response = await apiRequest('closed_days', 'add', {
+                    date: this.selectedDate,
+                    reason: reason
+                });
+
+                if (response.success) {
+                    await this.loadCalendarEvents();
+                } else {
+                    this.showError(response.message || 'Failed to close day.');
+                }
+            } catch (error) {
+                console.error('Error closing day:', error);
+                this.showError('An error occurred while closing the day.');
+            } finally {
+                this.showLoading(false);
+            }
+        }
+
+        async openDay(dateString) {
+            if (!confirm(`Are you sure you want to reopen ${dateString}?`)) {
+                return;
+            }
+
+            this.showLoading(true);
+            try {
+                const response = await apiRequest('closed_days', 'delete', {
+                    date: dateString
+                });
+
+                if (response.success) {
+                    await this.loadCalendarEvents();
+                } else {
+                    this.showError(response.message || 'Failed to reopen day.');
+                }
+            } catch (error) {
+                console.error('Error reopening day:', error);
+                this.showError('An error occurred while reopening the day.');
+            } finally {
+                this.showLoading(false);
             }
         }
     }

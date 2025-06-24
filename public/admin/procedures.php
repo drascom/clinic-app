@@ -1,4 +1,11 @@
 <?php
+require_once __DIR__ . '/../auth/auth.php';
+
+if (!is_logged_in() || !is_admin()) {
+    // Redirect to login page or show an unauthorized message
+    header('Location: ../auth/login.php');
+    exit();
+}
 require_once __DIR__ . '/../includes/header.php';
 $page_title = 'Procedures Management';
 ?>
@@ -141,7 +148,7 @@ $page_title = 'Procedures Management';
 <script>
     let procedures = [];
 
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         loadProcedures();
 
         // Add procedure form handler
@@ -155,7 +162,7 @@ $page_title = 'Procedures Management';
         const clearSearchBtn = document.getElementById('clear-search');
 
         if (searchInput) {
-            searchInput.addEventListener('input', function () {
+            searchInput.addEventListener('input', function() {
                 const searchTerm = this.value.toLowerCase();
                 const filteredProcedures = procedures.filter(procedure => {
                     return procedure.name.toLowerCase().includes(searchTerm);
@@ -165,7 +172,7 @@ $page_title = 'Procedures Management';
         }
 
         if (clearSearchBtn) {
-            clearSearchBtn.addEventListener('click', function () {
+            clearSearchBtn.addEventListener('click', function() {
                 searchInput.value = '';
                 renderProceduresTable(procedures);
             });
@@ -248,11 +255,12 @@ $page_title = 'Procedures Management';
         formData.append('entity', 'procedures');
         formData.append('action', 'create');
         formData.append('name', document.getElementById('add-procedure-name').value.trim());
+        formData.append('created_by', currentUserId);
 
         fetch('/api.php', {
-            method: 'POST',
-            body: formData
-        })
+                method: 'POST',
+                body: formData
+            })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -280,11 +288,12 @@ $page_title = 'Procedures Management';
         formData.append('id', document.getElementById('edit-procedure-id').value);
         formData.append('name', document.getElementById('edit-procedure-name').value.trim());
         formData.append('is_active', document.getElementById('edit-procedure-status').value);
+        formData.append('updated_by', currentUserId);
 
         fetch('/api.php', {
-            method: 'POST',
-            body: formData
-        })
+                method: 'POST',
+                body: formData
+            })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -332,9 +341,9 @@ $page_title = 'Procedures Management';
             formData.append('id', id);
 
             fetch('/api.php', {
-                method: 'POST',
-                body: formData
-            })
+                    method: 'POST',
+                    body: formData
+                })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {

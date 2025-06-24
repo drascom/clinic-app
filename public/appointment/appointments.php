@@ -13,7 +13,7 @@ $page_title = "Appointment Management";
 
     <!-- Appointments Table -->
     <div class="card ">
-        <div class="card-header mb-2">
+        <div class="card-header">
             <!-- Page Header -->
             <div class="row align-items-center p-2 gx-2">
                 <div class="col">
@@ -56,24 +56,23 @@ $page_title = "Appointment Management";
             </fieldset>
         </div>
         <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover  table-sm" id="appointments-table">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Patient</th>
-                            <th>Room</th>
-                            <th>Procedure</th>
-                            <th>Notes</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="appointments-tbody">
-                        <!-- Appointments will be loaded here -->
-                    </tbody>
-                </table>
-            </div>
+            <table class="table table-hover  table-sm" id="appointments-table">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Patient</th>
+                        <th>Room</th>
+                        <th>Procedure</th>
+                        <th>Type</th>
+                        <th>Notes</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="appointments-tbody">
+                    <!-- Appointments will be loaded here -->
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -143,6 +142,15 @@ $page_title = "Appointment Management";
                         </div>
 
                         <div class="mb-3">
+                            <label for="edit-consultation-type" class="form-label">Consultation Type *</label>
+                            <select class="form-select" id="edit-consultation-type" required>
+                                <option value="face-to-face">Face-to-face</option>
+                                <option value="video-to-video">Video-to-video</option>
+                            </select>
+                            <div class="invalid-feedback">Please select a consultation type.</div>
+                        </div>
+
+                        <div class="mb-3">
                             <label for="edit-notes" class="form-label">Notes</label>
                             <textarea class="form-control" id="edit-notes" rows="3"></textarea>
                         </div>
@@ -185,7 +193,7 @@ $page_title = "Appointment Management";
         });
 
         // Attach blur listeners for standard input fields in the edit modal
-        ['edit-start-time', 'edit-end-time', 'edit-appointment-date', 'edit-room-id'].forEach(id => {
+        ['edit-start-time', 'edit-end-time', 'edit-appointment-date', 'edit-room-id', 'edit-consultation-type'].forEach(id => {
             const el = document.getElementById(id);
             if (el) {
                 el.addEventListener('blur', () => {
@@ -351,6 +359,10 @@ $page_title = "Appointment Management";
             {
                 id: 'edit-procedure-id',
                 msg: 'Please select a procedure.'
+            },
+            {
+                id: 'edit-consultation-type',
+                msg: 'Please select a consultation type.'
             }
         ];
     }
@@ -449,12 +461,12 @@ $page_title = "Appointment Management";
 
     function renderAppointmentsTable() {
         const tbody = document.getElementById('appointments-tbody');
-        document.getElementById('records-count').textContent = ' ' + patients.length + ' ';
+        document.getElementById('records-count').textContent = ' ' + appointments.length + ' ';
 
         if (appointments.length === 0) {
             tbody.innerHTML = `
             <tr>
-                <td colspan="6" class="text-center text-muted py-4">
+                <td colspan="7" class="text-center text-muted">
                     <i class="fas fa-calendar-times fa-2x mb-2"></i><br>
                     No appointments found
                 </td>
@@ -472,6 +484,12 @@ $page_title = "Appointment Management";
             <td>
                 <span class="badge bg-primary">
                     ${appointment.procedure_name || 'No Procedure'}
+                </span>
+            </td>
+            <td>
+                <span class="badge ${getConsultationTypeClass(appointment.consultation_type)}">
+                    <i class="fas ${appointment.consultation_type === 'video-to-video' ? 'fa-video' : 'fa-user-friends'} me-1"></i>
+                    ${appointment.consultation_type}
                 </span>
             </td>
             <td>${appointment.notes || '-'}</td>
@@ -582,6 +600,7 @@ $page_title = "Appointment Management";
         document.getElementById('edit-end-time').value = appointment.end_time;
         document.getElementById('edit-procedure-id').value = appointment.procedure_id || '';
         document.getElementById('edit-notes').value = appointment.notes || '';
+        document.getElementById('edit-consultation-type').value = appointment.consultation_type || 'face-to-face';
 
         // Clear previous validation states
         const form = document.getElementById('edit-appointment-form');
@@ -608,6 +627,7 @@ $page_title = "Appointment Management";
         formData.append('end_time', document.getElementById('edit-end-time').value);
         formData.append('procedure_id', document.getElementById('edit-procedure-id').value);
         formData.append('notes', document.getElementById('edit-notes').value);
+        formData.append('consultation_type', document.getElementById('edit-consultation-type').value);
 
         fetch('/api.php', {
                 method: 'POST',
@@ -660,6 +680,17 @@ $page_title = "Appointment Management";
 
     function showLoading(show) {
         document.getElementById('loading-spinner').style.display = show ? 'block' : 'none';
+    }
+
+    function getConsultationTypeClass(type) {
+        switch (type) {
+            case 'face-to-face':
+                return 'bg-info text-dark';
+            case 'video-to-video':
+                return 'bg-success';
+            default:
+                return 'bg-secondary';
+        }
     }
 </script>
 

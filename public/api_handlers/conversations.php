@@ -322,15 +322,17 @@ function handle_conversations($action, $method, $db, $input)
 
             try {
                 $db->beginTransaction();
+                $updated_by = $input['updated_by'] ?? $authenticated_user_id;
                 $stmt = $db->prepare("
                     UPDATE messages
-                    SET is_read = 1
+                    SET is_read = 1, updated_by = :updated_by
                     WHERE
                         (sender_id = :participant_id AND receiver_id = :user_id)
                         AND is_read = 0
                 ");
                 $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
                 $stmt->bindParam(':participant_id', $participant_id, PDO::PARAM_INT);
+                $stmt->bindParam(':updated_by', $updated_by, PDO::PARAM_INT);
                 $stmt->execute();
                 $db->commit();
 
@@ -353,6 +355,7 @@ function handle_conversations($action, $method, $db, $input)
             $receiver_id = (int)$input['receiver_id'];
             $message_content = trim($input['message']);
             $patient_id = isset($input['patient_id']) && $input['patient_id'] !== '' ? (int)$input['patient_id'] : null;
+            $created_by = $input['created_by'] ?? $authenticated_user_id;
 
             // Default related_table to the user-to-user interaction if not provided
             $related_table = null;
@@ -378,12 +381,13 @@ function handle_conversations($action, $method, $db, $input)
                     return ['success' => false, 'message' => 'Receiver user not found.'];
                 }
 
-                $stmt = $db->prepare("INSERT INTO messages (sender_id, receiver_id, related_table, patient_id, message) VALUES (:sender_id, :receiver_id, :related_table, :patient_id, :message)");
+                $stmt = $db->prepare("INSERT INTO messages (sender_id, receiver_id, related_table, patient_id, message, created_by) VALUES (:sender_id, :receiver_id, :related_table, :patient_id, :message, :created_by)");
                 $stmt->bindParam(':sender_id', $sender_id, PDO::PARAM_INT);
                 $stmt->bindParam(':receiver_id', $receiver_id, PDO::PARAM_INT);
                 $stmt->bindParam(':related_table', json_encode($related_table), PDO::PARAM_STR);
                 $stmt->bindParam(':patient_id', $patient_id, PDO::PARAM_INT);
                 $stmt->bindParam(':message', $message_content, PDO::PARAM_STR);
+                $stmt->bindParam(':created_by', $created_by, PDO::PARAM_INT);
                 $stmt->execute();
 
                 $db->commit();
@@ -402,6 +406,7 @@ function handle_conversations($action, $method, $db, $input)
             $user_id = (int)$input['user_id'];
             $message_id = (int)$input['message_id'];
             $emoji_code = $input['emoji_code'];
+            $created_by = $input['created_by'] ?? $authenticated_user_id;
 
             // Authorization check: user_id must match authenticated_user_id
             if ($user_id !== $authenticated_user_id) {
@@ -411,10 +416,11 @@ function handle_conversations($action, $method, $db, $input)
 
             try {
                 $db->beginTransaction();
-                $stmt = $db->prepare("INSERT INTO message_reactions (user_id, message_id, emoji_code) VALUES (:user_id, :message_id, :emoji_code)");
+                $stmt = $db->prepare("INSERT INTO message_reactions (user_id, message_id, emoji_code, created_by) VALUES (:user_id, :message_id, :emoji_code, :created_by)");
                 $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
                 $stmt->bindParam(':message_id', $message_id, PDO::PARAM_INT);
                 $stmt->bindParam(':emoji_code', $emoji_code, PDO::PARAM_STR);
+                $stmt->bindParam(':created_by', $created_by, PDO::PARAM_INT);
                 $stmt->execute();
                 $db->commit();
 
@@ -435,6 +441,7 @@ function handle_conversations($action, $method, $db, $input)
             $user_id = (int)$input['user_id'];
             $message_id = (int)$input['message_id'];
             $emoji_code = $input['emoji_code'];
+            $updated_by = $input['updated_by'] ?? $authenticated_user_id;
 
             // Authorization check: user_id must match authenticated_user_id
             if ($user_id !== $authenticated_user_id) {
@@ -444,10 +451,11 @@ function handle_conversations($action, $method, $db, $input)
 
             try {
                 $db->beginTransaction();
-                $stmt = $db->prepare("UPDATE message_reactions SET emoji_code = :emoji_code WHERE user_id = :user_id AND message_id = :message_id");
+                $stmt = $db->prepare("UPDATE message_reactions SET emoji_code = :emoji_code, updated_by = :updated_by WHERE user_id = :user_id AND message_id = :message_id");
                 $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
                 $stmt->bindParam(':message_id', $message_id, PDO::PARAM_INT);
                 $stmt->bindParam(':emoji_code', $emoji_code, PDO::PARAM_STR);
+                $stmt->bindParam(':updated_by', $updated_by, PDO::PARAM_INT);
                 $stmt->execute();
                 $db->commit();
 

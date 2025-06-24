@@ -88,11 +88,15 @@ require_once __DIR__ . '/../includes/header.php';
 
                 <div class="row">
                     <!-- top column -->
-                    <div class="col-12">
+                    <!-- <div class="col-12">
+                       
+                    </div> -->
+                    <!-- Left Column -->
+                    <div class="col-12 col-md-5">
                         <!-- Patient Selection -->
                         <?php if (!$is_editing): ?>
-                            <fieldset class="border rounded p-3 mb-3 shadow-sm">
-                                <div class="d-flex justify-content-between align-items-baseline mb-3">
+                            <fieldset class="border rounded p-3 mb-3 shadow-sm ">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
                                     <legend class="w-auto m-0 px-2" style="font-size: 1rem;">
                                         <i class="far fa-user me-2"></i>Patient Selection<span class="text-danger">*</span>
                                     </legend>
@@ -118,43 +122,36 @@ require_once __DIR__ . '/../includes/header.php';
                             <fieldset class="border rounded p-3 mb-3 shadow-sm bg-body-secondary">
                                 <div class="d-flex justify-content-between flex-wrap align-items-start gap-3 ">
                                     <legend class="w-auto m-0 px-2">
-                                        <h3 class="mb-0 text-primary" id="patient_name">
+                                        <h4 class="mb-0 text-primary" id="patient_name">
                                             <i class="fas fa-user me-2"></i>
-                                        </h3>
+                                        </h4>
                                     </legend>
                                     <p class="mb-2 fs-6">
                                         <i class="fas fa-phone-alt text-primary me-1"></i>
-                                        <span class="fw-semibold text-muted">Phone:</span>
+                                        <span class="fw-bold text-muted">Phone:</span>
                                         <span id="patient_phone" class="ms-2"></span>
                                     </p>
                                     <p class="mb-0 fs-6">
                                         <i class="far fa-envelope text-primary me-1"></i>
-                                        <span class="fw-semibold text-muted">Email:</span>
+                                        <span class="fw-bold text-muted">Email:</span>
                                         <span id="patient_email" class="ms-2"></span>
                                     </p>
                                 </div>
                             </fieldset>
                             <input type="hidden" name="patient_id" id="patient_id">
                         <?php endif; ?>
-
-                    </div> <!-- Left Column -->
-                    <div class="col-md-5">
                         <!-- Date and Room Section -->
                         <fieldset class="border rounded p-3 mb-4">
                             <legend class="w-auto px-2 mb-3" style="font-size: 1rem;">
                                 <i class="far fa-calendar-alt me-2"></i>Date & Room Selection
                             </legend>
-                            <?php if (!empty($date_from_url) && !empty($room_id_from_url)): ?>
+                            <?php if (!empty($date_from_url)): ?>
                                 <div class="align-items-center">
                                     <div class="alert alert-info mb-2">
                                         <i class="far fa-calendar me-2"></i> Date:
                                         <span class="text-primary">
                                             <?php echo date('F j, Y', strtotime($date_from_url)); ?></span>
                                         <input type="hidden" name="date" value="<?php echo $date_from_url; ?>">
-                                    </div>
-                                    <div class="alert alert-info mb-2">
-                                        <i class="far fa-door-open me-2"></i> Room: <span class="text-primary"
-                                            id="selected-room-name">Loading...</span>
                                     </div>
                                     <input type="hidden" name="room_id" value="<?php echo $room_id_from_url; ?>">
                                 </div>
@@ -1104,7 +1101,7 @@ require_once __DIR__ . '/../includes/header.php';
                     </div>`;
                 modalFooter.innerHTML = `
                     <a href="/calendar/calendar.php" class="btn btn-outline-secondary"><i class="far fa-calendar-alt me-1"></i>Go to Calendar</a>
-                    <a href="/staff/staff-availability.php" class="btn btn-outline-primary"><i class="fas fa-user-md me-1"></i>Staff Availability</a>
+                    <a href="/staff/staff-availability.php?surgery_id=<?php echo $surgery_id; ?>" class="btn btn-outline-primary"><i class="fas fa-user-md me-1"></i>Staff Availability</a>
                 `;
             }
             return true;

@@ -18,11 +18,12 @@ function handle_users($action, $method, $db, $request_data = [])
                 $role = trim($input['role'] ?? 'user'); // Default role to 'user'
                 $agency_id = $input['agency_id'] ?? null;
                 $is_active = $input['is_active'] ?? 0; // Default to 0 if not provided
+                $created_by = $input['authenticated_user_id'] ?? null;
                 if ($email && $username && $password) {
                     $hashed = password_hash($password, PASSWORD_DEFAULT);
 
-                    $stmt = $db->prepare("INSERT INTO users (email, username, password, role, agency_id, is_active, created_at) VALUES (?, ?, ?, ?, ?, ?, datetime('now'))");
-                    $stmt->execute([$email, $username, $hashed, $role, $agency_id, $is_active]);
+                    $stmt = $db->prepare("INSERT INTO users (email, username, password, role, agency_id, is_active, created_at, created_by) VALUES (?, ?, ?, ?, ?, ?, datetime('now'), ?)");
+                    $stmt->execute([$email, $username, $hashed, $role, $agency_id, $is_active, $created_by]);
                     return ['success' => true, 'id' => $db->lastInsertId()];
                 }
 
@@ -41,6 +42,7 @@ function handle_users($action, $method, $db, $request_data = [])
                 $role = trim($input['role'] ?? 'user'); // Default role to 'user'
                 $agency_id = $input['agency_id'] ?? null;
                 $is_active = $input['is_active'] ?? 0; // Default to 0 if not provided
+                $updated_by = $input['authenticated_user_id'] ?? null;
 
                 error_log("User update handler - ID: " . ($id ?? 'NULL') . ", Email: " . ($email ?? 'NULL') . ", Username: " . ($username ?? 'NULL')); // Added logging
                 if ($id && $email && $username) {
@@ -53,11 +55,11 @@ function handle_users($action, $method, $db, $request_data = [])
 
                     if ($password) {
                         $hashed = password_hash($password, PASSWORD_DEFAULT);
-                        $stmt = $db->prepare("UPDATE users SET email = ?, username = ?, password = ?, role = ?, agency_id = ?, is_active= ?  WHERE id = ?");
-                        $stmt->execute([$email, $username, $hashed, $role, $agency_id, $is_active, $id]);
+                        $stmt = $db->prepare("UPDATE users SET email = ?, username = ?, password = ?, role = ?, agency_id = ?, is_active= ?, updated_by = ?  WHERE id = ?");
+                        $stmt->execute([$email, $username, $hashed, $role, $agency_id, $is_active, $updated_by, $id]);
                     } else {
-                        $stmt = $db->prepare("UPDATE users SET email = ?, name = ?, surname = ?, username = ?, role = ?, agency_id = ?, is_active= ? WHERE id = ?");
-                        $stmt->execute([$email, $name, $surname, $username, $role, $agency_id, $is_active, $id]);
+                        $stmt = $db->prepare("UPDATE users SET email = ?, name = ?, surname = ?, username = ?, role = ?, agency_id = ?, is_active= ?, updated_by = ? WHERE id = ?");
+                        $stmt->execute([$email, $name, $surname, $username, $role, $agency_id, $is_active, $updated_by, $id]);
                     }
                     return ['success' => true];
                 }
@@ -206,8 +208,9 @@ function handle_users($action, $method, $db, $request_data = [])
 
                 // Insert the new user into the database
                 try {
-                    $stmt = $db->prepare("INSERT INTO users (email, username, password, role, agency_id, name, surname, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))");
-                    $result = $stmt->execute([$email, $username, $hashed_password, 'user', $agency_id, $name, $surname]);
+                    $created_by = $input['authenticated_user_id'] ?? null;
+                    $stmt = $db->prepare("INSERT INTO users (email, username, password, role, agency_id, name, surname, created_at, updated_at, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'), ?)");
+                    $result = $stmt->execute([$email, $username, $hashed_password, 'user', $agency_id, $name, $surname, $created_by]);
 
                     if ($result) {
                         return ['success' => true, 'message' => 'Registration successful! You can login when your account is activated.'];
@@ -225,6 +228,7 @@ function handle_users($action, $method, $db, $request_data = [])
                 $userId = $input['user_id'] ?? null;
                 $newPassword = $input['new_password'] ?? null;
                 $confirmPassword = $input['confirm_password'] ?? null;
+                $updated_by = $input['authenticated_user_id'] ?? null;
 
                 if (!$userId || !$newPassword || !$confirmPassword) {
                     return ['success' => false, 'error' => $userId . $newPassword . $confirmPassword . ' All password fields are required.'];
@@ -237,8 +241,8 @@ function handle_users($action, $method, $db, $request_data = [])
 
                 // Hash and update the new password
                 $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
-                $stmt = $db->prepare("UPDATE users SET password = ? WHERE id = ?");
-                $stmt->execute([$hashedPassword, $userId]);
+                $stmt = $db->prepare("UPDATE users SET password = ?, updated_by = ? WHERE id = ?");
+                $stmt->execute([$hashedPassword, $updated_by, $userId]);
 
                 return ['success' => true, 'message' => 'Password changed successfully.'];
             }

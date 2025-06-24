@@ -95,7 +95,6 @@ $current_user_id = $_SESSION['user_id'] ?? null;
 <script>
     console.log('Current theme:', document.body.classList.contains('dark-mode') ? 'Dark Mode' : 'Light Mode');
     document.addEventListener('DOMContentLoaded', function() {
-        const currentUserId = <?php echo json_encode($current_user_id); ?>;
         if (!currentUserId) {
             document.getElementById('peopleList').innerHTML = '<p class="text-center text-danger p-3">Error: User not logged in.</p>';
             return;

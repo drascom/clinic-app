@@ -3,40 +3,90 @@
  * This ensures all API calls use POST method to hide entity/action parameters from URLs
  */
 
+// Global variable to store user session data
+let userSession = null;
+
 /**
- * Make a secure API request using POST method
+ * Fetches the user session from the server.
+ * @returns {Promise<Object>} - A promise that resolves to the user session object.
+ */
+async function getUserSession() {
+  if (userSession) {
+    return userSession;
+  }
+
+  try {
+    const response = await fetch("/api.php", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        entity: "session",
+        action: "get_user_session",
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    if (result.success) {
+      userSession = result.user;
+      return userSession;
+    } else {
+      // Handle cases where the user is not logged in
+      console.warn("User session not found or user not logged in.");
+      return null;
+    }
+  } catch (error) {
+    console.error("Failed to get user session:", error);
+    throw error;
+  }
+}
+
+/**
+ * Make a secure API request using POST method.
+ * It now automatically includes the logged-in user's ID.
  * @param {string} entity - The API entity (e.g., 'patients', 'rooms')
  * @param {string} action - The API action (e.g., 'list', 'get', 'add')
  * @param {Object} data - Additional data to send (optional)
  * @returns {Promise} - Promise that resolves to the API response
  */
 async function apiRequest(entity, action, data = {}) {
-    const formData = new FormData();
-    formData.append('entity', entity);
-    formData.append('action', action);
+  // Ensure user session is fetched before making other API calls
+  const session = await getUserSession();
 
-    // Add any additional data
-    Object.keys(data).forEach(key => {
-        if (data[key] !== null && data[key] !== undefined) {
-            formData.append(key, data[key]);
-        }
+  // Add authenticated user ID to every request
+  if (session && session.id) {
+    data.authenticated_user_id = session.id;
+  }
+
+  const requestBody = {
+    entity,
+    action,
+    ...data,
+  };
+
+  try {
+    const response = await fetch("/api.php", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestBody),
     });
 
-    try {
-        const response = await fetch('/api.php', {
-            method: 'POST',
-            body: formData
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        return await response.json();
-    } catch (error) {
-        console.error('API Request Error:', error);
-        throw error;
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
+
+    return await response.json();
+  } catch (error) {
+    console.error("API Request Error:", error);
+    throw error;
+  }
 }
 
 /**
@@ -46,26 +96,26 @@ async function apiRequest(entity, action, data = {}) {
  * @returns {Promise} - Promise that resolves to the API response
  */
 async function secureFetch(url) {
-    // Parse the URL to extract entity, action, and parameters
-    const urlObj = new URL(url, window.location.origin);
-    const params = new URLSearchParams(urlObj.search);
+  // Parse the URL to extract entity, action, and parameters
+  const urlObj = new URL(url, window.location.origin);
+  const params = new URLSearchParams(urlObj.search);
 
-    const entity = params.get('entity');
-    const action = params.get('action');
+  const entity = params.get("entity");
+  const action = params.get("action");
 
-    if (!entity || !action) {
-        throw new Error('Invalid API URL: missing entity or action');
+  if (!entity || !action) {
+    throw new Error("Invalid API URL: missing entity or action");
+  }
+
+  // Extract all other parameters
+  const data = {};
+  params.forEach((value, key) => {
+    if (key !== "entity" && key !== "action") {
+      data[key] = value;
     }
+  });
 
-    // Extract all other parameters
-    const data = {};
-    params.forEach((value, key) => {
-        if (key !== 'entity' && key !== 'action') {
-            data[key] = value;
-        }
-    });
-
-    return apiRequest(entity, action, data);
+  return apiRequest(entity, action, data);
 }
 
 /**
@@ -74,12 +124,13 @@ async function secureFetch(url) {
  * @returns {Object} - Response-like object with json() method
  */
 function fetchCompat(url) {
-    return {
-        json: () => secureFetch(url)
-    };
+  return {
+    json: () => secureFetch(url),
+  };
 }
 
 // Export functions for use in other scripts
 window.apiRequest = apiRequest;
 window.secureFetch = secureFetch;
 window.fetchCompat = fetchCompat;
+window.getUserSession = getUserSession;

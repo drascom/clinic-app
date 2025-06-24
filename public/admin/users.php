@@ -1,4 +1,11 @@
 <?php
+require_once __DIR__ . '/../auth/auth.php';
+
+if (!is_logged_in() || !is_admin()) {
+    // Redirect to login page or show an unauthorized message
+    header('Location: ../auth/login.php');
+    exit();
+}
 include __DIR__ . '/../includes/header.php';
 $page_title = "User Management";
 ?>
@@ -439,8 +446,10 @@ $page_title = "User Management";
                     if (password) { // Only include password if it's provided during edit
                         userData.password = password;
                     }
+                    userData.updated_by = currentUserId;
                 } else {
                     userData.password = password; // Password is required for new users
+                    userData.created_by = currentUserId;
                 }
 
                 userData.action = action; // Add action to the data payload

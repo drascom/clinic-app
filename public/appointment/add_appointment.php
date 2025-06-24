@@ -7,7 +7,7 @@ $date = $_GET['date'] ?? null;
 $request_type = $_GET['request'] ?? null;
 $appointment_id = $_GET['id'] ?? null;
 $is_edit_mode = ($appointment_id !== null);
-$prefilled = ($room_id && $date);
+$prefilled = ($date);
 $page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
 
 ?>
@@ -24,7 +24,7 @@ $page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
                     <i
                         class="far <?= $is_edit_mode ? 'fa-edit text-primary' : 'fa-calendar-plus text-success' ?> me-2"></i><?= $page_title ?>
                 </h4>
-                <a href="calendar.php" class="btn  btn-outline-primary">
+                <a href="/calendar/calendar.php" class="btn  btn-outline-primary">
                     <i class="far fa-calendar-alt me-1"></i>
                     <span class="d-none d-sm-inline">Calendar</span>
                 </a>
@@ -44,34 +44,20 @@ $page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
                                     class="text-danger">*</span>
                             </legend>
 
-                            <?php if ($prefilled): ?>
-                                <div class="alert alert-info mb-2">
-                                    <i class="far fa-calendar me-2"></i>
-                                    <strong>Date:</strong>
-                                    <?= date('F j, Y', strtotime($date)) ?>
-                                    <input type="hidden" id="appointment-date" name="appointment_date"
-                                        value="<?= htmlspecialchars($date) ?>" reuired>
-                                </div>
-                                <div class="alert alert-success">
-                                    <i class="fas fa-door-open me-2"></i>
-                                    <strong>Room:</strong>
-                                    <span id="selected-room-name">Loading…</span>
-                                    <input type="hidden" id="room-id" name="room_id"
-                                        value="<?= htmlspecialchars($room_id) ?>">
-                                </div>
-                            <?php else: ?>
-                                <div class="mb-3">
-                                    <input type="date" class="form-control" id="appointment-date-input"
-                                        name="appointment_date">
-                                    <div class="invalid-feedback"></div>
-                                </div>
-                                <div class="mb-3">
-                                    <select class="form-select" id="room-id-input" name="room_id">
-                                        <option value="">Select Room <span class="text-danger">*</span></option>
-                                    </select>
-                                    <div class="invalid-feedback"></div>
-                                </div>
-                            <?php endif; ?>
+                            <div class="alert alert-info mb-2">
+                                <i class="far fa-calendar me-2"></i>
+                                <strong>Date:</strong>
+                                <?= date('F j, Y', strtotime($date)) ?>
+                                <input type="hidden" id="appointment-date" name="appointment_date"
+                                    value="<?= htmlspecialchars($date) ?>" reuired>
+                            </div>
+                            <div class="mb-3">
+                                <select class="form-select" id="room-id-input" name="room_id">
+                                    <option value="">Select Room <span class="text-danger">*</span></option>
+                                </select>
+                                <div class="invalid-feedback"></div>
+                            </div>
+
                         </fieldset>
 
 
@@ -91,6 +77,20 @@ $page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
                             </select>
                             <div class="invalid-feedback"></div>
 
+                        </fieldset>
+
+                        <fieldset class="border rounded p-3 mb-3 shadow-sm">
+                            <legend class="w-auto px-2 mb-3" style="font-size:1rem;">
+                                <i class="fas fa-headset me-2"></i>Consultation Type<span class="text-danger">*</span>
+                            </legend>
+                            <div class="btn-group" role="group" aria-label="Consultation type selection">
+                                <input type="radio" class="btn-check" name="consultation_type" id="consultation_type_ftof" value="face-to-face" autocomplete="off" checked>
+                                <label class="btn btn-outline-primary" for="consultation_type_ftof">Face-to-face</label>
+
+                                <input type="radio" class="btn-check" name="consultation_type" id="consultation_type_vtov" value="video-to-video" autocomplete="off">
+                                <label class="btn btn-outline-primary" for="consultation_type_vtov">Video-to-video</label>
+                            </div>
+                            <div class="invalid-feedback"></div>
                         </fieldset>
                     </div>
 
@@ -188,7 +188,7 @@ $page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
                     <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="new-patient-form">
+                    <form id="new-patient-form" novalidate>
                         <?php if (is_admin() || is_editor()): ?>
                             <div class="row">
                                 <div class="col-md-12">
@@ -200,6 +200,7 @@ $page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
                                         <select class="form-select" id="new_patient_agency_id" name="agency_id" required>
                                             <option value="">Select Agency</option>
                                         </select>
+                                        <div class="invalid-feedback"></div>
                                     </div>
                                 </div>
                             </div>
@@ -215,6 +216,7 @@ $page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
                                     </label>
                                     <input type="text" class="form-control" id="new_patient_name" name="name"
                                         placeholder="Enter patient name" required>
+                                    <div class="invalid-feedback"></div>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -224,6 +226,7 @@ $page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
                                         Date of Birth
                                     </label>
                                     <input type="date" class="form-control" id="new_patient_dob" name="dob">
+                                    <div class="invalid-feedback"></div>
                                 </div>
                             </div>
                         </div>
@@ -282,8 +285,6 @@ $page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
 </div>
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
 <script>
-    console.log('DEBUG: add_appointment.php script loaded.');
-
     let rooms = [];
     let patients = [];
     let procedures = [];
@@ -319,6 +320,13 @@ $page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
             }
         });
 
+        document.querySelectorAll('input[name="consultation_type"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                // validateSingleField('consultation_type_ftof'); // or any of the radio ids
+                updateSubmitButtonState();
+            });
+        });
+
         // Attach select2:close listeners for select2-enabled dropdowns
         ['patient-id', 'procedure-id'].forEach(id => {
             const el = document.getElementById(id);
@@ -329,6 +337,11 @@ $page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
                 });
             }
         });
+
+        const roomInput = document.getElementById('room-id-input');
+        if (roomInput) {
+            roomInput.addEventListener('change', updateProcedureBasedOnRoom);
+        }
 
         // Initial validation to set button state on page load
         updateSubmitButtonState();
@@ -379,11 +392,8 @@ $page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
             patients = patientsR.patients || [];
             procedures = proceduresR.procedures || [];
 
-            if (prefilled) {
-                populatePrefilledRoomDisplay();
-            } else {
-                populateRoomSelect();
-            }
+            populateRoomSelect();
+            updateProcedureBasedOnRoom(); // Set initial state
             populatePatientSelect();
             populateProcedureSelect();
         } catch (err) {
@@ -392,31 +402,6 @@ $page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
         }
     }
 
-    async function populatePrefilledRoomDisplay() {
-        const span = document.getElementById('selected-room-name');
-        if (!span) return;
-        const roomId = <?= $room_id ? (int) $room_id : 'null' ?>;
-        const rm = rooms.find(r => r.id == roomId);
-        if (rm) {
-            span.textContent = rm.name;
-        } else if (roomId) {
-            try {
-                const data = await apiRequest('rooms', 'get', {
-                    id: roomId
-                });
-                if (data.success && data.room) {
-                    span.textContent = data.room.name;
-                } else {
-                    span.textContent = 'Unknown Room';
-                }
-            } catch (error) {
-                console.error('Error fetching prefilled room details:', error);
-                span.textContent = 'Unknown Room';
-            }
-        } else {
-            span.textContent = 'N/A';
-        }
-    }
 
     function populateRoomSelect() {
         const select = document.getElementById('room-id-input');
@@ -518,6 +503,13 @@ $page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
                 // Set procedure - requires select2 handling
                 $('#procedure-id').val(app.procedure_id).trigger('change');
 
+                // Set consultation type
+                const consultationType = app.consultation_type || 'face-to-face';
+                const radio = document.getElementById(`consultation_type_${consultationType.replace(/-/g, '')}`);
+                if (radio) {
+                    radio.checked = true;
+                }
+
                 // After populating, update the button state
                 updateSubmitButtonState();
 
@@ -540,14 +532,15 @@ $page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
 
         const payload = {
             patient_id: document.getElementById('patient-id').value,
-            room_id: prefilled ? <?= $room_id ? (int) $room_id : 'null' ?> : document.getElementById('room-id-input')
+            room_id: document.getElementById('room-id-input')
                 .value,
             appointment_date: prefilled ? '<?= $date ?? '' ?>' : document.getElementById('appointment-date-input')
                 .value,
             start_time: document.getElementById('start-time').value,
             end_time: document.getElementById('end-time').value,
             procedure_id: document.getElementById('procedure-id') ? document.getElementById('procedure-id').value : null,
-            notes: document.getElementById('notes').value
+            notes: document.getElementById('notes').value,
+            consultation_type: document.querySelector('input[name="consultation_type"]:checked').value
         };
 
         let apiAction;
@@ -562,6 +555,11 @@ $page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
             successMessage = 'Appointment created successfully!';
         }
 
+        if (isEditMode) {
+            payload.updated_by = currentUserId;
+        } else {
+            payload.created_by = currentUserId;
+        }
         apiRequest('appointments', apiAction, payload)
             .then(res => {
                 if (res.success) {
@@ -638,19 +636,29 @@ $page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
                 msg: 'End time required.'
             },
             {
-                id: 'procedure-id',
-                msg: 'Please select a procedure.'
+                id: 'consultation_type_ftof',
+                msg: 'Please select a consultation type.'
             }
         ];
+
+        // Conditionally add procedure validation
+        // const procedureSelect = document.getElementById('procedure-id');
+        // if (!procedureSelect || !procedureSelect.disabled) {
+        //     rules.push({
+        //         id: 'procedure-id',
+        //         msg: 'Please select a procedure.'
+        //     });
+        // }
+
+        rules.push({
+            id: 'room-id-input',
+            msg: 'Room required.'
+        });
 
         if (!prefilled) {
             rules.push({
                 id: 'appointment-date-input',
                 msg: 'Date required.'
-            });
-            rules.push({
-                id: 'room-id-input',
-                msg: 'Room required.'
             });
         }
         return rules;
@@ -660,7 +668,8 @@ $page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
         const el = document.getElementById(id);
         if (!el) return;
 
-        const fieldRule = getFieldValidationRules().find(f => f.id === id);
+        const isConsultationRadio = id.startsWith('consultation_type');
+        const fieldRule = getFieldValidationRules().find(f => isConsultationRadio ? f.id.startsWith('consultation_type') : f.id === id);
         const msg = fieldRule ? fieldRule.msg : 'This field is required.';
 
         let feedbackEl;
@@ -670,15 +679,26 @@ $page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
             feedbackEl = el.nextElementSibling;
         }
 
-        if (!el.value.trim()) {
-            el.classList.add('is-invalid');
-            if (feedbackEl && feedbackEl.classList.contains('invalid-feedback')) {
-                feedbackEl.textContent = msg;
+        if (isConsultationRadio) {
+            const container = el.closest('.btn-group').parentElement;
+            feedbackEl = container.querySelector('.invalid-feedback');
+            const selected = document.querySelector('input[name="consultation_type"]:checked');
+            if (!selected) {
+                if (feedbackEl) feedbackEl.textContent = msg;
+            } else {
+                if (feedbackEl) feedbackEl.textContent = '';
             }
         } else {
-            el.classList.remove('is-invalid');
-            if (feedbackEl && feedbackEl.classList.contains('invalid-feedback')) {
-                feedbackEl.textContent = '';
+            if (!el.value.trim()) {
+                el.classList.add('is-invalid');
+                if (feedbackEl && feedbackEl.classList.contains('invalid-feedback')) {
+                    feedbackEl.textContent = msg;
+                }
+            } else {
+                el.classList.remove('is-invalid');
+                if (feedbackEl && feedbackEl.classList.contains('invalid-feedback')) {
+                    feedbackEl.textContent = '';
+                }
             }
         }
 
@@ -737,6 +757,27 @@ $page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
     function setTimeSlot(start, end) {
         document.getElementById('start-time').value = start;
         document.getElementById('end-time').value = end;
+    }
+
+    function updateProcedureBasedOnRoom() {
+        const roomId = document.getElementById('room-id-input').value;
+        const procedureSelect = $('#procedure-id'); // Using jQuery for select2
+        const selectedRoom = rooms.find(r => r.id == roomId);
+
+        // Per memory bank, consultation procedure has ID 1
+        const consultationProcedureId = '1';
+
+        if (selectedRoom && selectedRoom.name.toLowerCase() === 'consultation') {
+            procedureSelect.val(consultationProcedureId).trigger('change');
+            procedureSelect.prop('disabled', true);
+        } else {
+            procedureSelect.prop('disabled', false);
+            // If the room is not consultation, clear the procedure.
+            procedureSelect.val('').trigger('change');
+        }
+
+        // We need to validate the single field to update its visual state, which in turn updates the submit button
+        // validateSingleField('procedure-id');
     }
 
     function escapeHtml(text) {
@@ -870,14 +911,128 @@ $page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
     }
 
 
+    // New Patient Modal Validation Functions
+    function getNewPatientFieldValidationRules() {
+        const rules = [];
+        const newPatientAgencyId = document.getElementById('new_patient_agency_id');
+        const newPatientName = document.getElementById('new_patient_name');
+
+        // Only add agency_id to rules if it's visible and required (i.e., not an agent)
+        if (newPatientAgencyId && newPatientAgencyId.hasAttribute('required')) {
+            rules.push({
+                id: 'new_patient_agency_id',
+                msg: 'Please select an agency.'
+            });
+        }
+
+        if (newPatientName && newPatientName.hasAttribute('required')) {
+            rules.push({
+                id: 'new_patient_name',
+                msg: 'Patient name is required.'
+            });
+        }
+        return rules;
+    }
+
+    function validateSingleNewPatientField(id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+
+        const fieldRule = getNewPatientFieldValidationRules().find(f => f.id === id);
+        const msg = fieldRule ? fieldRule.msg : 'This field is required.';
+
+        let feedbackEl;
+        if (el.parentElement.classList.contains('input-group')) {
+            feedbackEl = el.parentElement.nextElementSibling;
+        } else {
+            feedbackEl = el.nextElementSibling;
+        }
+
+        if (!el.value.trim()) {
+            el.classList.add('is-invalid');
+            if (feedbackEl && feedbackEl.classList.contains('invalid-feedback')) {
+                feedbackEl.textContent = msg;
+            }
+        } else {
+            el.classList.remove('is-invalid');
+            if (feedbackEl && feedbackEl.classList.contains('invalid-feedback')) {
+                feedbackEl.textContent = '';
+            }
+        }
+        updateNewPatientSubmitButtonState();
+    }
+
+    function validateNewPatientForm(showUIErrors = false) {
+        if (showUIErrors) {
+            document.querySelectorAll('#new-patient-form .is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            document.querySelectorAll('#new-patient-form .invalid-feedback').forEach(el => el.textContent = '');
+        }
+
+        let valid = true;
+        const requiredFields = getNewPatientFieldValidationRules();
+
+        requiredFields.forEach(f => {
+            const el = document.getElementById(f.id);
+            if (el && !el.value.trim()) {
+                valid = false;
+                if (showUIErrors) {
+                    el.classList.add('is-invalid');
+                    let feedbackEl;
+                    if (el.parentElement.classList.contains('input-group')) {
+                        feedbackEl = el.parentElement.nextElementSibling;
+                    } else {
+                        feedbackEl = el.nextElementSibling;
+                    }
+                    if (feedbackEl && feedbackEl.classList.contains('invalid-feedback')) {
+                        feedbackEl.textContent = f.msg;
+                    }
+                }
+            }
+        });
+        return valid;
+    }
+
+    function updateNewPatientSubmitButtonState() {
+        const saveNewPatientButton = document.getElementById('save-new-patient');
+        if (saveNewPatientButton) {
+            saveNewPatientButton.disabled = !validateNewPatientForm(false);
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         const newPatientModal = document.getElementById('newPatientModal');
         const saveNewPatientButton = document.getElementById('save-new-patient');
         const newPatientForm = document.getElementById('new-patient-form');
         const newPatientStatusDiv = document.getElementById('new-patient-status');
 
+        // Attach blur listeners for new patient modal input fields
+        ['new_patient_name'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('blur', () => {
+                    validateSingleNewPatientField(id);
+                });
+            }
+        });
+
+        // Attach change listener for new patient agency select
+        const newPatientAgencySelect = document.getElementById('new_patient_agency_id');
+        if (newPatientAgencySelect) {
+            newPatientAgencySelect.addEventListener('change', () => {
+                validateSingleNewPatientField('new_patient_agency_id');
+            });
+            newPatientAgencySelect.addEventListener('blur', () => {
+                validateSingleNewPatientField('new_patient_agency_id');
+            });
+        }
+
         if (saveNewPatientButton) {
             saveNewPatientButton.addEventListener('click', function() {
+                // Validate the form before proceeding with API request
+                if (!validateNewPatientForm(true)) {
+                    return; // Stop if validation fails
+                }
+
                 const formData = new FormData(newPatientForm);
                 formData.append('entity', 'patients');
                 formData.append('action', 'add');
@@ -887,8 +1042,10 @@ $page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
                 const originalText = saveNewPatientButton.innerHTML;
                 saveNewPatientButton.disabled = true;
                 saveNewPatientButton.innerHTML = '<i class="far fa-spinner fa-spin me-1"></i>Creating...';
+                const patientData = Object.fromEntries(formData);
+                patientData.created_by = currentUserId;
 
-                apiRequest('patients', 'add', Object.fromEntries(formData))
+                apiRequest('patients', 'add', patientData)
                     .then(data => {
                         if (data.success) {
                             newPatientStatusDiv.innerHTML =
@@ -925,7 +1082,8 @@ $page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
         if (newPatientModal) {
             newPatientModal.addEventListener('show.bs.modal', function(event) {
                 try {
-                    // fetchModalAgencies() is now called on page load, no need to call it here
+                    // Initial validation check when modal is shown
+                    updateNewPatientSubmitButtonState();
                 } catch (error) {
                     console.error('Error in modal show event:', error);
                 }
@@ -938,6 +1096,7 @@ $page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
                     newPatientForm.querySelectorAll('.is-invalid').forEach(el => el.classList.remove(
                         'is-invalid'));
                     newPatientForm.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
+                    updateNewPatientSubmitButtonState(); // Reset button state on modal close
                 } catch (error) {
                     console.error('Error clearing modal form:', error);
                 }
@@ -966,7 +1125,8 @@ $page_title = $is_edit_mode ? 'Edit Appointment' : 'Add Appointment';
                 saveNewProcedureButton.innerHTML = '<i class="far fa-spinner fa-spin me-1"></i>Creating...';
 
                 apiRequest('procedures', 'create', {
-                        name: procedureName
+                        name: procedureName,
+                        created_by: currentUserId
                     })
                     .then(data => {
                         if (data.success) {

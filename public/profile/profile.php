@@ -11,7 +11,7 @@ if (!is_logged_in()) {
 
 $page_title = "All Surgeries";
 require_once '../includes/header.php';
-$user_id = $_GET['user_id'];
+$user_id = get_user_id();
 ?>
 
 <div class="container py-1">
@@ -107,7 +107,7 @@ $user_id = $_GET['user_id'];
 
 
 <script>
-    document.getElementById('updateProfileForm').addEventListener('submit', function (event) {
+    document.getElementById('updateProfileForm').addEventListener('submit', function(event) {
         event.preventDefault();
 
         const userId = document.getElementById('updateProfileForm').querySelector('input[name="id"]').value;
@@ -125,12 +125,12 @@ $user_id = $_GET['user_id'];
         };
 
         fetch('api.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(userData)
-        })
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(userData)
+            })
             .then(response => response.json())
             .then(data => {
                 const messageDiv = document.getElementById('message');
@@ -165,7 +165,7 @@ $user_id = $_GET['user_id'];
             });
     });
 
-    document.getElementById('changePasswordForm').addEventListener('submit', function (event) {
+    document.getElementById('changePasswordForm').addEventListener('submit', function(event) {
         event.preventDefault();
         event.stopPropagation();
 
@@ -206,12 +206,12 @@ $user_id = $_GET['user_id'];
         };
 
         fetch('api.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(passwordData)
-        })
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(passwordData)
+            })
             .then(response => response.json())
             .then(data => {
                 const messageDiv = document.getElementById('message');
@@ -241,7 +241,7 @@ $user_id = $_GET['user_id'];
                 messageDiv.textContent = 'An error occurred while changing the password.';
             });
     });
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const user_id = <?php echo json_encode($user_id); ?>;
         const username = document.getElementById('username');
         const role = document.getElementById('role');
@@ -254,7 +254,9 @@ $user_id = $_GET['user_id'];
         }
 
         function UserData(id) {
-            apiRequest('users', 'get', { id: id })
+            apiRequest('users', 'get', {
+                    id: id
+                })
                 .then(data => {
                     if (data.success) {
                         const user = data.user;
@@ -319,7 +321,7 @@ $user_id = $_GET['user_id'];
         confirmPasswordField.addEventListener('input', validatePasswordMatch);
 
         // Clear validation state when user starts typing
-        newPasswordField.addEventListener('input', function () {
+        newPasswordField.addEventListener('input', function() {
             if (changePasswordForm.classList.contains('was-validated')) {
                 changePasswordForm.classList.remove('was-validated');
                 // Hide validation feedback messages
@@ -328,7 +330,7 @@ $user_id = $_GET['user_id'];
             }
         });
 
-        confirmPasswordField.addEventListener('input', function () {
+        confirmPasswordField.addEventListener('input', function() {
             if (changePasswordForm.classList.contains('was-validated')) {
                 changePasswordForm.classList.remove('was-validated');
                 // Hide validation feedback messages

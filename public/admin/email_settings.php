@@ -1,4 +1,10 @@
 <?php
+require_once __DIR__ . '/../auth/auth.php';
+
+if (!is_logged_in()) {
+    header('Location: ../login.php');
+    exit();
+}
 require_once __DIR__ . '/../includes/header.php';
 ?>
 
@@ -16,7 +22,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="card-body pb-4">
                     <form id="email-settings-form" class="mb-4">
                         <input type="hidden" class="form-control" name="user_id"
-                            value="<?php echo isset($_GET['id']) ? (int)$_GET['id'] : $_SESSION['user_id']; ?>">
+                            value="<?php echo isset($_GET['id']) ? (int)$_GET['id'] : get_user_id(); ?>">
                         <div class="mb-3">
                             <label for="email_address" class="form-label">Email Address</label>
                             <input type="email" class="form-control" id="email_address" name="email_address" required>
@@ -58,7 +64,7 @@ require_once __DIR__ . '/../includes/header.php';
             // Function to fetch email settings
             function fetchEmailSettings() {
                 apiRequest('users', 'get_email_settings', {
-                        user_id: <?php echo isset($_GET['id']) ? (int)$_GET['id'] : $_SESSION['user_id']; ?>
+                        user_id: <?php echo isset($_GET['id']) ? (int)$_GET['id'] : get_user_id(); ?>
                     })
                     .then(response => {
                         if (response.success && response.settings) {

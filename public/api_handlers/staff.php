@@ -254,8 +254,8 @@ function add_staff($db, $input)
     }
 
     // Get current user ID for updated_by field
-    $updated_by = get_user_id();
-    if (!$updated_by) {
+    $created_by = $input['authenticated_user_id'] ?? get_user_id();
+    if (!$created_by) {
         return ['success' => false, 'error' => 'User not authenticated.'];
     }
 
@@ -283,7 +283,7 @@ function add_staff($db, $input)
 
         // Insert into staff table
         $stmt = $db->prepare("
-            INSERT INTO staff (name, phone, email, location, position_applied, staff_type, is_active, updated_by)
+            INSERT INTO staff (name, phone, email, location, position_applied, staff_type, is_active, created_by)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         ");
 
@@ -295,7 +295,7 @@ function add_staff($db, $input)
             trim($input['position_applied'] ?? ''),
             trim($input['staff_type']),
             intval($input['is_active'] ?? 1),
-            $updated_by
+            $created_by
         ]);
 
         if (!$result) {
@@ -310,7 +310,7 @@ function add_staff($db, $input)
             $details_stmt = $db->prepare("
                 INSERT INTO staff_details (
                     staff_id, speciality, experience_level, current_company,
-                    linkedin_profile, source, salary_expectation, willing_to_relocate, daily_fee, updated_by
+                    linkedin_profile, source, salary_expectation, willing_to_relocate, daily_fee, created_by
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ");
 
@@ -324,7 +324,7 @@ function add_staff($db, $input)
                 trim($input['salary_expectation'] ?? ''),
                 intval($input['willing_to_relocate'] ?? 0),
                 intval($input['daily_fee'] ?? 0),
-                $updated_by
+                $created_by
             ]);
 
             if (!$details_result) {
@@ -367,7 +367,7 @@ function update_staff($db, $input)
     }
 
     // Get current user ID for updated_by field
-    $updated_by = get_user_id();
+    $updated_by = $input['authenticated_user_id'] ?? get_user_id();
     if (!$updated_by) {
         return ['success' => false, 'error' => 'User not authenticated.'];
     }
@@ -552,17 +552,19 @@ function add_staff_note($db, $input)
         if (!$check_stmt->fetch()) {
             return ['success' => false, 'error' => 'Staff member not found.'];
         }
+        $created_by = $input['authenticated_user_id'] ?? get_user_id();
 
         $stmt = $db->prepare("
-            INSERT INTO staff_notes (staff_id, note_text, note_type, is_important)
-            VALUES (?, ?, ?, ?)
+            INSERT INTO staff_notes (staff_id, note_text, note_type, is_important, created_by)
+            VALUES (?, ?, ?, ?, ?)
         ");
 
         $result = $stmt->execute([
             $staff_id,
             $note_text,
             trim($input['note_type'] ?? 'General'),
-            intval($input['is_important'] ?? 0)
+            intval($input['is_important'] ?? 0),
+            $created_by
         ]);
 
         if ($result) {
