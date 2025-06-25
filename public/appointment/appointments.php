@@ -170,7 +170,7 @@ $page_title = "Appointment Management";
     let rooms = [];
     let patients = [];
 
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         loadInitialData();
 
         // Search functionality
@@ -179,14 +179,14 @@ $page_title = "Appointment Management";
 
         const clearSearchBtn = document.getElementById('clear-search');
         if (searchInput && clearSearchBtn) {
-            clearSearchBtn.addEventListener('click', function() {
+            clearSearchBtn.addEventListener('click', function () {
                 searchInput.value = '';
                 renderAppointmentsTable();
             });
         }
 
         // Edit form submission
-        document.getElementById('edit-appointment-form').addEventListener('submit', function(e) {
+        document.getElementById('edit-appointment-form').addEventListener('submit', function (e) {
             e.preventDefault();
             if (!validateEditForm(true)) return; // Add validation check
             updateAppointment();
@@ -208,7 +208,7 @@ $page_title = "Appointment Management";
         ['edit-patient-id', 'edit-procedure-id'].forEach(id => {
             const el = document.getElementById(id);
             if (el && $(el).hasClass('select2-enable')) { // Check if it's a select2 element
-                $(el).on('select2:close', function() {
+                $(el).on('select2:close', function () {
                     validateSingleEditField(id);
                     updateEditSubmitButtonState
                         (); // Update button state after single field validation
@@ -337,33 +337,33 @@ $page_title = "Appointment Management";
 
     function getEditFieldValidationRules() {
         return [{
-                id: 'edit-patient-id',
-                msg: 'Please select a patient.'
-            },
-            {
-                id: 'edit-room-id',
-                msg: 'Please select a room.'
-            },
-            {
-                id: 'edit-appointment-date',
-                msg: 'Date required.'
-            },
-            {
-                id: 'edit-start-time',
-                msg: 'Start time required.'
-            },
-            {
-                id: 'edit-end-time',
-                msg: 'End time required.'
-            },
-            {
-                id: 'edit-procedure-id',
-                msg: 'Please select a procedure.'
-            },
-            {
-                id: 'edit-consultation-type',
-                msg: 'Please select a consultation type.'
-            }
+            id: 'edit-patient-id',
+            msg: 'Please select a patient.'
+        },
+        {
+            id: 'edit-room-id',
+            msg: 'Please select a room.'
+        },
+        {
+            id: 'edit-appointment-date',
+            msg: 'Date required.'
+        },
+        {
+            id: 'edit-start-time',
+            msg: 'Start time required.'
+        },
+        {
+            id: 'edit-end-time',
+            msg: 'End time required.'
+        },
+        {
+            id: 'edit-procedure-id',
+            msg: 'Please select a procedure.'
+        },
+        {
+            id: 'edit-consultation-type',
+            msg: 'Please select a consultation type.'
+        }
         ];
     }
 
@@ -495,7 +495,7 @@ $page_title = "Appointment Management";
             <td>${appointment.notes || '-'}</td>
             <td>
                 <div class="btn-group btn-group-sm" role="group">
-                   <a href="/appointment/add_appointment.php?id=${appointment.id}"
+                   <a href="/appointment/edit_appointment.php?id=${appointment.id}"
                         class="btn  btn-text text-info"
                         title="Edit Surgery">
                         <i class="fas fa-edit"></i>
@@ -630,9 +630,9 @@ $page_title = "Appointment Management";
         formData.append('consultation_type', document.getElementById('edit-consultation-type').value);
 
         fetch('/api.php', {
-                method: 'POST',
-                body: formData
-            })
+            method: 'POST',
+            body: formData
+        })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -660,9 +660,9 @@ $page_title = "Appointment Management";
         formData.append('id', appointmentId);
 
         fetch('/api.php', {
-                method: 'POST',
-                body: formData
-            })
+            method: 'POST',
+            body: formData
+        })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {

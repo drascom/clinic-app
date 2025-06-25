@@ -23,7 +23,8 @@ require_once '../includes/header.php';
             <i class="fas fa-user-clock me-2"></i>Staff Availability
         </h4>
         <?php if ($surgery_id): ?>
-            <a href="/surgery/add_edit_surgery.php?id=<?php echo $surgery_id; ?>" class="d-sm-inline-block btn btn-sm btn-outline-primary mb-2 mb-md-0">
+            <a href="/surgery/add_edit_surgery.php?id=<?php echo $surgery_id; ?>"
+                class="d-sm-inline-block btn btn-sm btn-outline-primary mb-2 mb-md-0">
                 <i class="fas fa-arrow-left me-1"></i>
                 Back to Surgery
             </a>
@@ -60,6 +61,9 @@ require_once '../includes/header.php';
                     <option value="staff">Staff</option>
                     <option value="candidate">Candidate</option>
                 </select>
+                <?php if (is_admin()): ?>
+                    <button id="setAllStaffFullDay" class="btn btn-sm btn-danger ms-2">Set All</button>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -107,6 +111,20 @@ require_once '../includes/header.php';
                     document.body.classList.toggle('dark-mode');
                 }
             });
+
+            this.availabilityTable.addEventListener('click', e => {
+                if (e.target.classList.contains('set-month-btn')) {
+                    const staffId = e.target.dataset.staffId;
+                    this.setMonthAsFullDay(staffId);
+                }
+            });
+        }
+
+        bindAdminEvents() {
+            const setAllBtn = document.getElementById('setAllStaffFullDay');
+            if (setAllBtn) {
+                setAllBtn.addEventListener('click', () => this.setMonthAsFullDayForAllStaff());
+            }
         }
 
         getMonthStart(date) {
@@ -160,6 +178,7 @@ require_once '../includes/header.php';
                 });
 
                 this.filterAndRender();
+                this.bindAdminEvents(); // Re-bind admin events after render
             } catch (error) {
                 console.error('Error loading data:', error);
                 showToast('Failed to load staff availability data', 'danger');
@@ -212,6 +231,9 @@ require_once '../includes/header.php';
                 const nameTd = document.createElement('td');
                 nameTd.className = 'staff-name-cell';
                 nameTd.innerHTML = `
+                    <i class="fas fa-check-circle set-month-btn text-secondary"
+                       data-staff-id="${staff.id}"
+                       title="Set full month as available"></i>
                     <strong>${this.escapeHtml(staff.name)}</strong>
                     ${staff.speciality ? `<br><span class="staff-specialty">${this.escapeHtml(staff.speciality)}</span>` : ''}
                 `;
@@ -281,6 +303,63 @@ require_once '../includes/header.php';
             }
         }
 
+        async setMonthAsFullDay(staffId) {
+            const monthStr = this.formatDate(this.currentMonthStart).substring(0, 7); // YYYY-MM
+            if (!confirm(`Are you sure you want to mark all weekdays in ${monthStr} as 'Full Day' for this staff member?`)) {
+                return;
+            }
+
+            this.showLoading(true);
+            try {
+                const response = await apiRequest('staff_availability', 'setMonthAsFullDay', {
+                    staff_id: staffId,
+                    month: monthStr
+                });
+
+                if (response.success) {
+                    showToast('Successfully updated the full month availability.', 'success');
+                    this.loadData(); // Reload to show the changes
+                } else {
+                    throw new Error(response.error || 'Failed to set month availability');
+                }
+            } catch (error) {
+                console.error('Error setting month as full day:', error);
+                showToast(error.message, 'danger');
+            } finally {
+                this.showLoading(false);
+            }
+        }
+
+        async setMonthAsFullDayForAllStaff() {
+            const monthStr = this.formatDate(this.currentMonthStart).substring(0, 7);
+            const staffType = this.staffTypeFilter.value;
+            const staffCount = this.filteredStaffMembers.length;
+
+            if (!confirm(`Are you sure you want to set all ${staffCount} visible staff members to 'Full Day' for all weekdays in ${monthStr}?`)) {
+                return;
+            }
+
+            this.showLoading(true);
+            try {
+                const response = await apiRequest('staff_availability', 'setMonthAsFullDayForAllStaff', {
+                    month: monthStr,
+                    staff_type: staffType
+                });
+
+                if (response.success) {
+                    showToast(response.message || 'Successfully updated all staff availability.', 'success');
+                    this.loadData(); // Reload to show the changes
+                } else {
+                    throw new Error(response.error || 'Failed to set month availability for all staff');
+                }
+            } catch (error) {
+                console.error('Error setting month as full day for all staff:', error);
+                showToast(error.message, 'danger');
+            } finally {
+                this.showLoading(false);
+            }
+        }
+
         showLoading(show) {
             // this.loadingSpinner.style.display = show ? 'inline-block' : 'none';
         }
@@ -293,7 +372,7 @@ require_once '../includes/header.php';
         }
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         new StaffAvailability();
     });
 </script>

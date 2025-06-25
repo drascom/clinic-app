@@ -35,6 +35,11 @@ $file_path_from_url = $_GET['file'] ?? '';
 $file_path_from_url = str_replace('..', '', $file_path_from_url);
 $file_path_from_url = trim($file_path_from_url, '/'); // Remove leading/trailing slashes
 
+// If the sanitized path starts with 'uploads/', remove it to avoid duplication
+if (strpos($file_path_from_url, 'uploads/') === 0) {
+    $file_path_from_url = substr($file_path_from_url, strlen('uploads/'));
+}
+
 // Construct the full absolute path to the requested file
 $full_file_path = realpath($upload_dir . $file_path_from_url);
 

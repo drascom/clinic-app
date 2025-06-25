@@ -397,7 +397,7 @@ function update_staff($db, $input)
         // Update staff table
         $stmt = $db->prepare("
             UPDATE staff SET
-                name = ?, phone = ?, email = ?, location = ?, position_applied = ?, staff_type = ?, is_active = ?, updated_by = ?
+                name = ?, phone = ?, email = ?, location = ?, position_applied = ?, staff_type = ?, is_active = ?, updated_by = ?, updated_at = CURRENT_TIMESTAMP
             WHERE id = ?
         ");
 
@@ -426,7 +426,7 @@ function update_staff($db, $input)
                 $details_stmt = $db->prepare("
                     UPDATE staff_details SET
                         speciality = ?, experience_level = ?, current_company = ?,
-                        linkedin_profile = ?, source = ?, salary_expectation = ?, willing_to_relocate = ?, daily_fee = ?, updated_by = ?
+                        linkedin_profile = ?, source = ?, salary_expectation = ?, willing_to_relocate = ?, daily_fee = ?, updated_by = ?, updated_at = CURRENT_TIMESTAMP
                     WHERE staff_id = ?
                 ");
                 $update_params = [
@@ -447,8 +447,8 @@ function update_staff($db, $input)
                 $details_stmt = $db->prepare("
                     INSERT INTO staff_details (
                         staff_id, speciality, experience_level, current_company,
-                        linkedin_profile, source, salary_expectation, willing_to_relocate, daily_fee, updated_by
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        linkedin_profile, source, salary_expectation, willing_to_relocate, daily_fee, updated_by, created_at, updated_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
                 ");
                 $insert_params = [
                     $id,

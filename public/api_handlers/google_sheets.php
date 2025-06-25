@@ -1,32 +1,29 @@
 <?php
-require_once '../includes/db.php';
-require_once '../auth/auth.php';
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../auth/auth.php';
+require_once __DIR__ . '/../services/LogService.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
+
+$logService = new LogService();
 
 // Handle different actions based on POST data
-$action = $_POST['action'] ?? 'fetch_sheets';
+$action = null;
+$input_data = [];
 
-// Debug logging function (can be simplified for API endpoint if needed)
-function debugLog($message, $data = null, $level = 'INFO')
-{
-    $timestamp = date('Y-m-d H:i:s');
-    $logEntry = "\n## Debug Log - {$timestamp}\n\n";
-    $logEntry .= "**Level:** {$level}\n";
-    $logEntry .= "**Message:** {$message}\n";
-
-    if ($data !== null) {
-        $logEntry .= "**Data:**\n```json\n" . json_encode($data, JSON_PRETTY_PRINT) . "\n```\n";
-    }
-
-    $logEntry .= "---\n";
-
-    // Append to log file
-    file_put_contents(__DIR__ . '/../../logs/google_debug.log', $logEntry, FILE_APPEND | LOCK_EX);
+if (isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false) {
+    $json_input = file_get_contents('php://input');
+    $input_data = json_decode($json_input, true) ?: [];
+    $action = $input_data['action'] ?? null;
+} else {
+    $action = $_POST['action'] ?? 'fetch_sheets';
+    $input_data = $_POST;
 }
 
 // Error handling function
 function handleError($errorCode, $message, $data = null)
 {
-    debugLog("ERROR: {$errorCode} - {$message}", $data, 'ERROR');
+    global $logService;
+    $logService->log('google_sheets_api', 'error', "{$errorCode} - {$message}", $data);
     return [
         'success' => false,
         'error_code' => $errorCode,
@@ -40,14 +37,14 @@ header('Content-Type: application/json');
 
 // Authentication Check
 if (!is_logged_in()) {
-    debugLog("Authentication failed for API endpoint", null, 'ERROR');
+    $logService->log('google_sheets_api', 'error', 'Authentication failed for API endpoint');
     echo json_encode(handleError('AUTH_001', 'Authentication required'));
     exit();
 }
 
 // Handle different actions
 if ($action === 'process_entry') {
-    handleProcessEntry();
+    handleProcessEntry($input_data);
     exit();
 } elseif ($action === 'test') {
     handleTest();
@@ -56,11 +53,10 @@ if ($action === 'process_entry') {
 
 // Default action is fetch_sheets (existing functionality)
 
-require __DIR__ . '/../../vendor/autoload.php'; // Adjust path if Composer is installed elsewhere
-
 // Function to get a setting value from the database with debugging
 function get_setting($key)
 {
+    global $logService;
     try {
         $pdo = get_db(); // Get the PDO instance using the helper function
         $stmt = $pdo->prepare("SELECT value FROM settings WHERE key = :key");
@@ -71,7 +67,7 @@ function get_setting($key)
         $value = $row ? $row['value'] : null;
         return $value;
     } catch (Exception $e) {
-        debugLog("Error retrieving setting in API", ['key' => $key, 'error' => $e->getMessage()], 'ERROR');
+        $logService->log('google_sheets_api', 'error', "Error retrieving setting in API", ['key' => $key, 'error' => $e->getMessage()]);
         return null;
     }
 }
@@ -84,13 +80,13 @@ $cellRange = get_setting('cell_range') ?: 'A1:Z'; // Default range
 
 // Validate required settings
 if (!$spreadsheetId) {
-    debugLog("Missing spreadsheet ID in API", null, 'ERROR');
+    $logService->log('google_sheets_api', 'error', "Missing spreadsheet ID in API");
     echo json_encode(handleError('CONFIG_001', 'Spreadsheet ID not configured.'));
     exit();
 }
 
 if (!file_exists($credentialsPath)) {
-    debugLog("Google API credentials file not found in API", ['path' => $credentialsPath], 'ERROR');
+    $logService->log('google_sheets_api', 'error', "Google API credentials file not found in API", ['path' => $credentialsPath]);
     echo json_encode(handleError('CONFIG_002', 'Google API credentials file not found.'));
     exit();
 }
@@ -162,12 +158,12 @@ if (!$usingCache) {
                 $values = $response->getValues() ?? [];
                 $sheetValues[$sheetTitle] = $values;
             } catch (\Google\Service\Exception $e) {
-                debugLog("Error fetching data for sheet in API", [
+                $logService->log('google_sheets_api', 'error', "Error fetching data for sheet in API", [
                     'sheet_title' => $sheetTitle,
                     'range' => $range,
                     'error_code' => $e->getCode(),
                     'error_message' => $e->getMessage()
-                ], 'ERROR');
+                ]);
 
                 // Skip this sheet and continue with others
                 $sheetValues[$sheetTitle] = [];
@@ -233,7 +229,6 @@ function handleTest()
     // Test autoloader
     $autoloadPath = __DIR__ . '/../../vendor/autoload.php';
     if (file_exists($autoloadPath)) {
-        require_once $autoloadPath;
         $tests['autoloader'] = 'OK';
     } else {
         $tests['autoloader'] = 'ERROR: Autoloader not found';
@@ -264,80 +259,103 @@ function handleTest()
     ]);
 }
 
-function handleProcessEntry()
+function handleProcessEntry($data)
 {
-    $dateStr = $_POST['date_str'] ?? '';
-    $originalEntry = $_POST['original_entry'] ?? '';
+    $entries = $data['entries'] ?? [];
 
-    try {
-        $db = get_db();
-        $date = parseDate($dateStr);
-        if (!$date) {
-            throw new Exception('Invalid date format');
-        }
+    if (empty($entries) || !is_array($entries)) {
+        echo json_encode(['success' => false, 'error' => 'No entries provided or invalid format.']);
+        return;
+    }
 
-        $parsedEntries = parseComplexEntry($originalEntry);
-        $results = [];
+    $db = get_db();
+    $results = [];
+    $errors = [];
 
-        foreach ($parsedEntries as $entry) {
-            $patientName = $entry['name'];
-            $entryType = $entry['type'];
+    foreach ($entries as $item) {
+        $dateStr = $item['date_str'] ?? '';
+        $originalEntry = $item['original_entry'] ?? '';
 
-            // Check if patient exists
-            $patientId = findPatientByName($patientName, $db);
-            $patientCreated = false;
+        try {
+            $date = parseDate($dateStr);
+            if (!$date) {
+                throw new Exception("Invalid date format for entry: {$originalEntry}");
+            }
 
-            if (!$patientId) {
-                // Create new patient
-                $patientId = createPatient($patientName, $db);
+            $parsedEntries = parseComplexEntry($originalEntry);
+
+            foreach ($parsedEntries as $entry) {
+                $patientName = $entry['name'];
+                $entryType = $entry['type'];
+
+                // Check if patient exists
+                $patientId = findPatientByName($patientName, $db);
+                $patientCreated = false;
+
                 if (!$patientId) {
-                    throw new Exception('Failed to create patient: ' . $patientName);
-                }
-                $patientCreated = true;
-            }
-
-            $recordCreated = false;
-            $recordType = '';
-
-            if ($entryType === 'surgery') {
-                if (!surgeryExists($patientId, $date, $db)) {
-                    $surgeryId = createSurgery($patientId, $date, $db);
-                    if (!$surgeryId) {
-                        throw new Exception('Failed to create surgery for ' . $patientName);
+                    // Create new patient
+                    $patientId = createPatient($patientName, $db, $_SESSION['user_id']);
+                    if (!$patientId) {
+                        throw new Exception('Failed to create patient: ' . $patientName);
                     }
-                    $recordCreated = true;
-                    $recordType = 'surgery';
+                    $patientCreated = true;
                 }
-            } else { // Consultation
-                if (!appointmentExists($patientId, $date, $db)) {
-                    $appointmentId = createAppointment($patientId, $date, $entryType, $db, $originalEntry);
-                    if (!$appointmentId) {
-                        throw new Exception('Failed to create appointment for ' . $patientName);
-                    }
-                    $recordCreated = true;
-                    $recordType = 'appointment';
-                }
-            }
 
-            $results[] = [
-                'patient_name' => $patientName,
-                'patient_created' => $patientCreated,
-                'record_created' => $recordCreated,
-                'record_type' => $recordType,
-                'entry_type' => $entryType
+                $recordCreated = false;
+                $recordType = '';
+
+                if ($entryType === 'surgery') {
+                    if (!surgeryExists($patientId, $date, $db)) {
+                        $surgeryId = createSurgery($patientId, $date, $db);
+                        if (!$surgeryId) {
+                            throw new Exception('Failed to create surgery for ' . $patientName);
+                        }
+                        $recordCreated = true;
+                        $recordType = 'surgery';
+
+                        // Create a pre-surgery consultation appointment
+                        if (!preSurgeryAppointmentExists($patientId, $date, $db)) {
+                            $appointmentNotes = 'Pre-surgery consultation';
+                            $stmt = $db->prepare("
+                                INSERT INTO appointments (room_id, patient_id, appointment_date, start_time, end_time, procedure_id, appointment_type, consultation_type, notes, created_by)
+                                VALUES (3, ?, ?, '08:30', '09:00', 1, 'consultation', 'face-to-face', ?, 1)
+                            ");
+                            $stmt->execute([$patientId, $date, $appointmentNotes]);
+                        }
+                    }
+                } else { // Consultation
+                    if (!appointmentExists($patientId, $date, $db)) {
+                        $appointmentId = createAppointment($patientId, $date, $entryType, $db, $originalEntry);
+                        if (!$appointmentId) {
+                            throw new Exception('Failed to create appointment for ' . $patientName);
+                        }
+                        $recordCreated = true;
+                        $recordType = 'appointment';
+                    }
+                }
+
+                $results[] = [
+                    'original_entry' => $originalEntry,
+                    'patient_name' => $patientName,
+                    'patient_created' => $patientCreated,
+                    'record_created' => $recordCreated,
+                    'record_type' => $recordType,
+                    'status' => 'success'
+                ];
+            }
+        } catch (Exception $e) {
+            $errors[] = [
+                'original_entry' => $originalEntry,
+                'error' => $e->getMessage()
             ];
         }
-
-        echo json_encode([
-            'success' => true,
-            'results' => $results
-        ]);
-    } catch (Exception $e) {
-        echo json_encode([
-            'success' => false,
-            'error' => $e->getMessage()
-        ]);
     }
+
+    echo json_encode([
+        'success' => empty($errors),
+        'results' => $results,
+        'errors' => $errors
+    ]);
 }
 
 function parseComplexEntry($entry)
@@ -351,7 +369,8 @@ function parseComplexEntry($entry)
 
     foreach ($parts as $part) {
         $part = trim($part);
-        if (empty($part)) continue;
+        if (empty($part))
+            continue;
 
         $name = cleanPatientName($part);
         $type = extractEntryType($part);
@@ -368,10 +387,14 @@ function parseComplexEntry($entry)
 
 function extractEntryType($entry)
 {
-    if (preg_match('/\b(F2F)\b/i', $entry)) return 'F2F';
-    if (preg_match('/\b(V2V)\b/i', $entry)) return 'V2V';
-    if (preg_match('/\b(VIDEO)\b/i', $entry)) return 'V2V';
-    if (preg_match('/\b(C-)\b/i', $entry)) return 'F2F'; // Assuming C- is a form of face-to-face
+    if (preg_match('/\b(F2F)\b/i', $entry))
+        return 'F2F';
+    if (preg_match('/\b(V2V)\b/i', $entry))
+        return 'V2V';
+    if (preg_match('/\b(VIDEO)\b/i', $entry))
+        return 'V2V';
+    if (preg_match('/\b(C-)\b/i', $entry))
+        return 'F2F'; // Assuming C- is a form of face-to-face
     return 'surgery'; // Default
 }
 
@@ -411,70 +434,97 @@ function parseDate($dateStr)
 
 function findPatientByName($name, $db)
 {
+    global $logService;
     try {
         $stmt = $db->prepare("SELECT id FROM patients WHERE name = ? LIMIT 1");
         $stmt->execute([$name]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result ? $result['id'] : null;
     } catch (PDOException $e) {
-        debugLog("Error finding patient", ['name' => $name, 'error' => $e->getMessage()], 'ERROR');
+        $logService->log('google_sheets_api', 'error', "Error finding patient", ['name' => $name, 'error' => $e->getMessage()]);
         return null;
     }
 }
 
-function createPatient($name, $db)
+function createPatient($name, $db, $created_by)
 {
+    global $logService;
     try {
-        $stmt = $db->prepare("INSERT INTO patients (name, agency_id, created_at, updated_at) VALUES (?, 2, datetime('now'), datetime('now'))");
-        $stmt->execute([$name]);
+        // Set a default agency_id, you may want to make this dynamic
+        $agency_id = 2; // Default agency
+        $stmt = $db->prepare("
+            INSERT INTO patients (name, agency_id, created_at, updated_at, created_by)
+            VALUES (?, ?, datetime('now'), datetime('now'), ?)
+        ");
+        $stmt->execute([$name, $agency_id, $created_by]);
         return $db->lastInsertId();
     } catch (PDOException $e) {
-        debugLog("Error creating patient", ['name' => $name, 'error' => $e->getMessage()], 'ERROR');
+        $logService->log('google_sheets_api', 'error', "Error creating patient", [
+            'name' => $name,
+            'error' => $e->getMessage()
+        ]);
         return null;
     }
 }
 
 function surgeryExists($patientId, $date, $db)
 {
+    global $logService;
     try {
         $stmt = $db->prepare("SELECT id FROM surgeries WHERE patient_id = ? AND date = ? LIMIT 1");
         $stmt->execute([$patientId, $date]);
         return $stmt->fetch(PDO::FETCH_ASSOC) !== false;
     } catch (PDOException $e) {
-        debugLog("Error checking surgery existence", ['patient_id' => $patientId, 'date' => $date, 'error' => $e->getMessage()], 'ERROR');
+        $logService->log('google_sheets_api', 'error', "Error checking surgery existence", ['patient_id' => $patientId, 'date' => $date, 'error' => $e->getMessage()]);
         return false;
     }
 }
 
 function createSurgery($patientId, $date, $db)
 {
+    global $logService;
     try {
         $stmt = $db->prepare("
-            INSERT INTO surgeries (patient_id, date, room_id, status, predicted_grafts_count, notes, is_recorded, created_at, updated_at)
-            VALUES (?, ?, 1, 'scheduled', 0, 'Auto-imported from Google Sheets', 1, datetime('now'), datetime('now'))
+            INSERT INTO surgeries (patient_id, date, room_id, status, predicted_grafts_count, notes, is_recorded, created_at, updated_at, created_by)
+            VALUES (?, ?, 3, 'scheduled', 0, 'Auto-imported from Google Sheets', 1, datetime('now'), datetime('now'), 1)
         ");
         $stmt->execute([$patientId, $date]);
         return $db->lastInsertId();
     } catch (PDOException $e) {
-        debugLog("Error creating surgery", ['patient_id' => $patientId, 'date' => $date, 'error' => $e->getMessage()], 'ERROR');
+        $logService->log('google_sheets_api', 'error', "Error creating surgery", ['patient_id' => $patientId, 'date' => $date, 'error' => $e->getMessage()]);
         return null;
     }
 }
 
 function appointmentExists($patientId, $date, $db)
 {
+    global $logService;
     try {
         $stmt = $db->prepare("SELECT id FROM appointments WHERE patient_id = ? AND appointment_date = ? LIMIT 1");
         $stmt->execute([$patientId, $date]);
         return $stmt->fetch(PDO::FETCH_ASSOC) !== false;
     } catch (PDOException $e) {
-        debugLog("Error checking appointment existence", ['patient_id' => $patientId, 'date' => $date, 'error' => $e->getMessage()], 'ERROR');
+        $logService->log('google_sheets_api', 'error', "Error checking appointment existence", ['patient_id' => $patientId, 'date' => $date, 'error' => $e->getMessage()]);
         return false;
+    }
+}
+
+function preSurgeryAppointmentExists($patientId, $date, $db)
+{
+    global $logService;
+    try {
+        $stmt = $db->prepare("SELECT id FROM appointments WHERE patient_id = ? AND appointment_date = ? AND start_time = '08:30' LIMIT 1");
+        $stmt->execute([$patientId, $date]);
+        return $stmt->fetch(PDO::FETCH_ASSOC) !== false;
+    } catch (PDOException $e) {
+        $logService->log('google_sheets_api', 'error', "Error checking pre-surgery appointment existence", ['patient_id' => $patientId, 'date' => $date, 'error' => $e->getMessage()]);
+        return false; // Assume it doesn't exist on error to be safe
     }
 }
 
 function createAppointment($patientId, $date, $type, $db, $originalEntry = '')
 {
+    global $logService;
     try {
         $notes = 'Auto-imported from Google Sheets - ' . $type;
 
@@ -512,16 +562,16 @@ function createAppointment($patientId, $date, $type, $db, $originalEntry = '')
         $endDateTime->add(new DateInterval('PT30M'));
         $endTime = $endDateTime->format('H:i');
 
-        $roomId = 4; // Default room
+        $roomId = 1; // Default room
 
         $stmt = $db->prepare("
-            INSERT INTO appointments (room_id, patient_id, procedure_id, appointment_date, start_time, end_time, notes, consultation_type, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+            INSERT INTO appointments (room_id, patient_id, procedure_id, appointment_date, start_time, end_time, notes, consultation_type, created_at, updated_at, created_by)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'), 1)
         ");
         $stmt->execute([$roomId, $patientId, 1, $date, $startTime, $endTime, $notes, $consultationType]);
         return $db->lastInsertId();
     } catch (PDOException $e) {
-        debugLog("Error creating appointment", ['patient_id' => $patientId, 'date' => $date, 'type' => $type, 'error' => $e->getMessage()], 'ERROR');
+        $logService->log('google_sheets_api', 'error', "Error creating appointment", ['patient_id' => $patientId, 'date' => $date, 'type' => $type, 'error' => $e->getMessage()]);
         return null;
     }
 }

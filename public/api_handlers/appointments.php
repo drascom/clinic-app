@@ -214,7 +214,35 @@ function handle_appointments($action, $method, $db, $input = [])
                 $logService->log('appointments', 'error', 'Invalid method for list action.', ['method' => $method]);
             }
             break;
+    break;
+
+case 'get_available_slots':
+    if ($method === 'POST') {
+        $date = $input['date'] ?? null;
+        $room_id = $input['room_id'] ?? null;
+
+        if (!$date || !$room_id) {
+            return ['success' => false, 'error' => 'Date and Room ID are required'];
+        }
+
+        try {
+            $stmt = $db->prepare("
+                SELECT start_time, end_time FROM appointments
+                WHERE appointment_date = ? AND room_id = ?
+            ");
+            $stmt->execute([$date, $room_id]);
+            $booked_slots = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return ['success' => true, 'booked_slots' => $booked_slots];
+        } catch (PDOException $e) {
+            $logService->log('appointments', 'error', 'Database error during get_available_slots: ' . $e->getMessage(), ['error' => $e->getMessage(), 'input' => $input]);
+            return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
+        }
+    } else {
+        $logService->log('appointments', 'error', 'Invalid method for get_available_slots action.', ['method' => $method]);
     }
-    $logService->log('appointments', 'error', 'Invalid action for appointments entity.', ['action' => $action, 'method' => $method]);
-    return ['success' => false, 'error' => 'Invalid action for appointments entity'];
+    break;
+}
+$logService->log('appointments', 'error', 'Invalid action for appointments entity.', ['action' => $action, 'method' => $method]);
+return ['success' => false, 'error' => 'Invalid action for appointments entity'];
 }

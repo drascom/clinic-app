@@ -89,7 +89,7 @@ $page_title = "Calendar";
                     <i class="fas fa-plus me-1"></i>
                     Add Surgery
                 </a>
-                <a href="../appointment/add_appointment.php" class="btn btn-outline-primary">
+                <a href="../appointment/edit_appointment.php" class="btn btn-outline-primary">
                     <i class="fas fa-calendar-plus me-1"></i>
                     Add Appointment
                 </a>
@@ -423,7 +423,7 @@ $page_title = "Calendar";
 
                             if (dayEvents.appointments.length > 0) {
                                 const appBtn = document.createElement('btn');
-                                appBtn.className = 'event appointment d-flex align-items-center mx-2 btn';
+                                appBtn.className = 'event appointment d-flex align-items-center btn';
                                 appBtn.innerHTML =
                                     `<i class="far fa-calendar me-2"></i><span class=" d-none d-sm-inline"> Appointment: </span> ${dayEvents.appointments.length} `;
                                 appBtn.onclick = (e) => {
@@ -435,7 +435,7 @@ $page_title = "Calendar";
 
                             if (dayEvents.surgeries.length > 0) {
                                 const surgBtn = document.createElement('btn');
-                                surgBtn.className = 'event surgery d-flex align-items-center mx-2 btn ';
+                                surgBtn.className = 'event surgery d-flex align-items-center btn ';
                                 surgBtn.innerHTML =
                                     `<i class="fas fa-syringe me-2"></i><span class="d-none d-sm-inline"> Surgery: </span>${dayEvents.surgeries.length} `;
                                 surgBtn.onclick = (e) => {
@@ -560,8 +560,9 @@ $page_title = "Calendar";
         showDetailsModal(title, date, items) {
             const modalTitle = document.getElementById('detailsModalLabel');
             const modalBody = document.getElementById('detailsModalBody');
-            const formattedDate = new Date(date + 'T00:00:00').toLocaleDateString('en-GB', {
-                weekday: 'long',
+            const dateObject = (date instanceof Date) ? date : new Date(date + 'T00:00:00');
+            const formattedDate = dateObject.toLocaleDateString('en-GB', {
+                weekday: 'short',
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
@@ -579,7 +580,7 @@ $page_title = "Calendar";
             items.forEach(item => {
                 const isAppointment = title.toLowerCase().includes('appointment');
                 const link = isAppointment ?
-                    `../appointment/add_appointment.php?id=${item.id}` :
+                    `../appointment/edit_appointment.php?id=${item.id}` :
                     `../surgery/add_edit_surgery.php?id=${item.id}`;
 
                 listHtml += `
@@ -593,7 +594,7 @@ $page_title = "Calendar";
                         ${!isAppointment && item.predicted_grafts_count ? `<span class="mb-1 me-2"><i class="fas fa-microscope me-1"></i> Predicted Grafts: ${item.predicted_grafts_count}</span>` : ''}
                         ${!isAppointment && item.current_grafts_count ? `<span class="mb-1 me-2"><i class="fas fa-microscope me-1"></i> Current Grafts: ${item.current_grafts_count}</span>` : ''}
                         ${item.notes ? `<p class="mb-1 text-muted">Notes: ${item.notes}</p>` : ''}
-                        ${!isAppointment && item.is_recorded ? `<p class="mb-1 text-success"><i class="fas fa-video me-1"></i> Recorded</p>` : ''}
+                        ${!isAppointment && item.is_recorded ? `<p class="mb-1 text-success"><i class="fas fa-copy me-1"></i> Copied from excel</p>` : ''}
                     </a>`;
             });
             listHtml += '</ul>';
@@ -714,7 +715,7 @@ $page_title = "Calendar";
     }
 
     // Initialize calendar when DOM is loaded
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         new CustomCalendar();
     });
 </script>

@@ -14,7 +14,7 @@ CREATE TABLE users (
 
   phone TEXT NULL,
   is_active INTEGER DEFAULT 0,
-  created_by INTEGER NULL,
+  created_by INTEGER DEFAULT 1,
   updated_by INTEGER NULL,
   FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
   FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
@@ -24,7 +24,7 @@ CREATE TABLE surgeries (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   date TEXT NOT NULL,
   notes TEXT,
-  status TEXT DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'confirmed', 'completed', 'canceled')),
+  status TEXT DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'confirmed', 'completed', 'canceled') OR status IS NULL),
   predicted_grafts_count INTEGER,
   current_grafts_count INTEGER,
   room_id INTEGER,
@@ -33,14 +33,14 @@ CREATE TABLE surgeries (
   updated_by INTEGER NULL,
   created_at TEXT DEFAULT CURRENT_TIMESTAMP,
   updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-  created_by INTEGER NULL,
+  created_by INTEGER DEFAULT 1,
   FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
   FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
   FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
 );
-INSERT INTO surgeries (id, date, notes, status, predicted_grafts_count, current_grafts_count, room_id, patient_id, is_recorded, updated_by, created_at, updated_at) VALUES (1, '2025-06-15', 'test', 'scheduled', NULL, NULL, 1, 1, 1, 1, '2025-06-15 09:38:22', '2025-06-15 09:38:22');
-INSERT INTO surgeries (id, date, notes, status, predicted_grafts_count, current_grafts_count, room_id, patient_id, is_recorded, updated_by, created_at, updated_at) VALUES (2, '2025-07-01', 'Follow-up for Jane Doe', 'scheduled', 2000, 0, 2, 2, 0, 1, '2025-06-21 10:10:00', '2025-06-21 10:10:00');
-INSERT INTO surgeries (id, date, notes, status, predicted_grafts_count, current_grafts_count, room_id, patient_id, is_recorded, updated_by, created_at, updated_at) VALUES (3, '2025-07-10', 'Initial consultation for John Smith', 'scheduled', 2500, 0, 3, 3, 0, 1, '2025-06-21 10:15:00', '2025-06-21 10:15:00');
+INSERT INTO surgeries (id, date, notes, status, predicted_grafts_count, current_grafts_count, room_id, patient_id, is_recorded, updated_by, created_at, updated_at, created_by) VALUES (1, '2025-06-15', 'test', 'scheduled', NULL, NULL, 1, 1, 1, 1, '2025-06-15 09:38:22', '2025-06-15 09:38:22', 1);
+INSERT INTO surgeries (id, date, notes, status, predicted_grafts_count, current_grafts_count, room_id, patient_id, is_recorded, updated_by, created_at, updated_at, created_by) VALUES (2, '2025-07-01', 'Follow-up for Jane Doe', 'scheduled', 2000, 0, 2, 2, 0, 1, '2025-06-21 10:10:00', '2025-06-21 10:10:00', 1);
+INSERT INTO surgeries (id, date, notes, status, predicted_grafts_count, current_grafts_count, room_id, patient_id, is_recorded, updated_by, created_at, updated_at, created_by) VALUES (3, '2025-07-10', 'Initial consultation for John Smith', 'scheduled', 2500, 0, 3, 3, 0, 1, '2025-06-21 10:15:00', '2025-06-21 10:15:00', 1);
 
 CREATE TABLE appointments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -50,12 +50,13 @@ CREATE TABLE appointments (
     start_time TEXT NOT NULL,
     end_time TEXT NOT NULL,
     procedure_id INTEGER,
-    consultation_type TEXT DEFAULT 'face-to-face' CHECK (consultation_type IN ('face-to-face', 'video-to-video')),
+    appointment_type TEXT DEFAULT 'consultation' CHECK (appointment_type IN ('consultation', 'appointment') OR appointment_type IS NULL),
+    consultation_type TEXT DEFAULT 'face-to-face' CHECK (consultation_type IN ('face-to-face', 'video-to-video') OR consultation_type IS NULL),
     notes TEXT,
     updated_by INTEGER NULL,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    created_by INTEGER NULL,
+    created_by INTEGER DEFAULT 1,
     FOREIGN KEY (room_id) REFERENCES rooms(id) ON DELETE CASCADE,
     FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
     FOREIGN KEY (procedure_id) REFERENCES procedures(id) ON DELETE SET NULL,
@@ -70,13 +71,13 @@ CREATE TABLE patients (
   dob TEXT,
   phone TEXT,
   city TEXT,
-  gender TEXT DEFAULT 'N/A' CHECK (gender IN ('N/A', 'Male', 'Female', 'Transgender')),
+  gender TEXT DEFAULT 'N/A' CHECK (gender IN ('N/A', 'Male', 'Female', 'Transgender') OR gender IS NULL),
   avatar TEXT,
   occupation TEXT,
   agency_id INTEGER NOT NULL,
   photo_album_id INTEGER,
   updated_by INTEGER NULL,
-  created_by INTEGER NOT NULL,
+  created_by INTEGER DEFAULT 1,
   created_at TEXT DEFAULT CURRENT_TIMESTAMP,
   updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
@@ -93,7 +94,7 @@ CREATE TABLE photo_album_types (
   updated_by INTEGER NULL,
   created_at TEXT DEFAULT CURRENT_TIMESTAMP,
   updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-  created_by INTEGER NULL,
+  created_by INTEGER DEFAULT 1,
   FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
   FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
 );
@@ -106,7 +107,7 @@ CREATE TABLE patient_photos (
   updated_by INTEGER NULL,
   created_at TEXT DEFAULT CURRENT_TIMESTAMP,
   updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-  created_by INTEGER NULL,
+  created_by INTEGER DEFAULT 1,
   FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
   FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
 );
@@ -117,7 +118,7 @@ CREATE TABLE agencies (
   updated_by INTEGER NULL,
   created_at TEXT DEFAULT CURRENT_TIMESTAMP,
   updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-  created_by INTEGER NULL,
+  created_by INTEGER DEFAULT 1,
   FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
   FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
 );
@@ -133,7 +134,7 @@ CREATE TABLE invitations (
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
     used_at TEXT,
-    created_by INTEGER NULL,
+    created_by INTEGER DEFAULT 1,
     FOREIGN KEY (agency_id) REFERENCES agencies(id),
     FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
     FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
@@ -170,7 +171,7 @@ CREATE TABLE rooms (
     updated_by INTEGER NULL,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    created_by INTEGER NULL,
+    created_by INTEGER DEFAULT 1,
     FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
     FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
   );
@@ -183,7 +184,7 @@ CREATE TABLE room_reservations (
     updated_by INTEGER NULL,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    created_by INTEGER NULL,
+    created_by INTEGER DEFAULT 1,
     FOREIGN KEY (room_id) REFERENCES rooms(id) ON DELETE CASCADE,
     FOREIGN KEY (surgery_id) REFERENCES surgeries(id) ON DELETE CASCADE,
     FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
@@ -206,12 +207,12 @@ CREATE TABLE IF NOT EXISTS staff (
     email TEXT NOT NULL,
     location TEXT NOT NULL,
     position_applied TEXT NULL,
-    staff_type TEXT DEFAULT 'candidate' CHECK (staff_type IN ('candidate', 'staff')),
+    staff_type TEXT DEFAULT 'candidate' CHECK (staff_type IN ('candidate', 'staff') OR staff_type IS NULL),
     is_active INTEGER DEFAULT 1,
-    updated_by INTEGER NULL,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    created_by INTEGER NULL,
+    created_by INTEGER DEFAULT 1,
+    updated_by INTEGER NULL,
     FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
     FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
   );
@@ -220,17 +221,17 @@ CREATE TABLE IF NOT EXISTS staff_details (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     staff_id INTEGER NOT NULL,
     speciality TEXT,
-    experience_level TEXT CHECK (experience_level IN ('entry level', 'junior', 'mid-level', 'senior', 'expert')),
+    experience_level TEXT CHECK (experience_level IN ('entry level', 'junior', 'mid-level', 'senior', 'expert') OR experience_level IS NULL),
     current_company TEXT,
     linkedin_profile TEXT,
-    source TEXT CHECK (source IN ('Website', 'LinkedIn', 'Indeed', 'Referral', 'Agency', 'Other')),
+    source TEXT CHECK (source IN ('Website', 'LinkedIn', 'Indeed', 'Referral', 'Agency', 'Other') OR source IS NULL),
     salary_expectation INTEGER DEFAULT 0,
     daily_fee INTEGER NOT NULL DEFAULT 0,
     willing_to_relocate INTEGER NOT NULL DEFAULT 0,
     updated_by INTEGER NULL,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    created_by INTEGER NULL,
+    created_by INTEGER DEFAULT 1,
     FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE CASCADE,
     FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
     FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
@@ -244,7 +245,7 @@ CREATE TABLE IF NOT EXISTS staff_availability (
     updated_by INTEGER NULL,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    created_by INTEGER NULL,
+    created_by INTEGER DEFAULT 1,
     FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE CASCADE,
     FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
     UNIQUE (staff_id, available_on),
@@ -261,7 +262,7 @@ CREATE TABLE surgery_staff (
     updated_by INTEGER NULL,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    created_by INTEGER NULL,
+    created_by INTEGER DEFAULT 1,
     FOREIGN KEY (surgery_id) REFERENCES surgeries(id) ON DELETE CASCADE,
     FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE CASCADE,
     FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
@@ -276,7 +277,7 @@ CREATE TABLE IF NOT EXISTS procedures (
     updated_by INTEGER NULL,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    created_by INTEGER NULL,
+    created_by INTEGER DEFAULT 1,
     FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
     FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
   );
@@ -284,52 +285,52 @@ CREATE TABLE IF NOT EXISTS procedures (
 CREATE TABLE settings (
   key TEXT PRIMARY KEY UNIQUE,
   value TEXT,
-  created_by INTEGER NULL,
+  created_by INTEGER DEFAULT 1,
   updated_by INTEGER NULL,
   FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
   FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
 );
 
-INSERT INTO photo_album_types (name, updated_by, created_at, updated_at) VALUES ('Pre-Surgery', 1, datetime('now'), datetime('now'));
-INSERT INTO photo_album_types (name, updated_by, created_at, updated_at) VALUES ('Post-Surgery', 1, datetime('now'), datetime('now'));
-INSERT INTO photo_album_types (name, updated_by, created_at, updated_at) VALUES ('Follow-up', 1, datetime('now'), datetime('now'));
-INSERT INTO photo_album_types (name, updated_by, created_at, updated_at) VALUES ('1. Month', 1, datetime('now'), datetime('now'));
-INSERT INTO photo_album_types (name, updated_by, created_at, updated_at) VALUES ('2. Month', 1, datetime('now'), datetime('now'));
-INSERT INTO photo_album_types (name, updated_by, created_at, updated_at) VALUES ('3. Month', 1, datetime('now'), datetime('now'));
-INSERT INTO photo_album_types (name, updated_by, created_at, updated_at) VALUES ('4. Month', 1, datetime('now'), datetime('now'));
-INSERT INTO photo_album_types (name, updated_by, created_at, updated_at) VALUES ('5. Month', 1, datetime('now'), datetime('now'));
-INSERT INTO photo_album_types (name, updated_by, created_at, updated_at) VALUES ('6. Month', 1, datetime('now'), datetime('now'));
-INSERT INTO photo_album_types (name, updated_by, created_at, updated_at) VALUES ('7. Month', 1, datetime('now'), datetime('now'));
-INSERT INTO photo_album_types (name, updated_by, created_at, updated_at) VALUES ('8. Month', 1, datetime('now'), datetime('now'));
-INSERT INTO photo_album_types (name, updated_by, created_at, updated_at) VALUES ('9. Month', 1, datetime('now'), datetime('now'));
-INSERT INTO photo_album_types (name, updated_by, created_at, updated_at) VALUES ('10. Month', 1, datetime('now'), datetime('now'));
-INSERT INTO photo_album_types (name, updated_by, created_at, updated_at) VALUES ('11. Month', 1, datetime('now'), datetime('now'));
-INSERT INTO photo_album_types (name, updated_by, created_at, updated_at) VALUES ('12. Month', 1, datetime('now'), datetime('now'));
+INSERT INTO photo_album_types (name, updated_by, created_at, updated_at, created_by) VALUES ('Pre-Surgery', 1, datetime('now'), datetime('now'), 1);
+INSERT INTO photo_album_types (name, updated_by, created_at, updated_at, created_by) VALUES ('Post-Surgery', 1, datetime('now'), datetime('now'), 1);
+INSERT INTO photo_album_types (name, updated_by, created_at, updated_at, created_by) VALUES ('Follow-up', 1, datetime('now'), datetime('now'), 1);
+INSERT INTO photo_album_types (name, updated_by, created_at, updated_at, created_by) VALUES ('1. Month', 1, datetime('now'), datetime('now'), 1);
+INSERT INTO photo_album_types (name, updated_by, created_at, updated_at, created_by) VALUES ('2. Month', 1, datetime('now'), datetime('now'), 1);
+INSERT INTO photo_album_types (name, updated_by, created_at, updated_at, created_by) VALUES ('3. Month', 1, datetime('now'), datetime('now'), 1);
+INSERT INTO photo_album_types (name, updated_by, created_at, updated_at, created_by) VALUES ('4. Month', 1, datetime('now'), datetime('now'), 1);
+INSERT INTO photo_album_types (name, updated_by, created_at, updated_at, created_by) VALUES ('5. Month', 1, datetime('now'), datetime('now'), 1);
+INSERT INTO photo_album_types (name, updated_by, created_at, updated_at, created_by) VALUES ('6. Month', 1, datetime('now'), datetime('now'), 1);
+INSERT INTO photo_album_types (name, updated_by, created_at, updated_at, created_by) VALUES ('7. Month', 1, datetime('now'), datetime('now'), 1);
+INSERT INTO photo_album_types (name, updated_by, created_at, updated_at, created_by) VALUES ('8. Month', 1, datetime('now'), datetime('now'), 1);
+INSERT INTO photo_album_types (name, updated_by, created_at, updated_at, created_by) VALUES ('9. Month', 1, datetime('now'), datetime('now'), 1);
+INSERT INTO photo_album_types (name, updated_by, created_at, updated_at, created_by) VALUES ('10. Month', 1, datetime('now'), datetime('now'), 1);
+INSERT INTO photo_album_types (name, updated_by, created_at, updated_at, created_by) VALUES ('11. Month', 1, datetime('now'), datetime('now'), 1);
+INSERT INTO photo_album_types (name, updated_by, created_at, updated_at, created_by) VALUES ('12. Month', 1, datetime('now'), datetime('now'), 1);
 
 
 
 
-INSERT INTO users (id,email, username, password,role, created_at, updated_at, agency_id, is_active) VALUES (1,'admin@example.com', 'Admin', '$2y$10$aEtcftk7GMX3bP3DqIRxQ.DmbuVMC.b18q96ziMwSQWyQO/TWuG5a','admin', datetime('now'), datetime('now'),1,1);
-INSERT INTO users (id,email, username, password,role, created_at, updated_at, agency_id, is_active) VALUES (2,'agent@example.com', 'Agent', '$2y$10$aEtcftk7GMX3bP3DqIRxQ.DmbuVMC.b18q96ziMwSQWyQO/TWuG5a','agent', datetime('now'), datetime('now'),2,1);
-INSERT INTO users (id,email, username, password,role, created_at, updated_at, agency_id, is_active) VALUES (3,'ebru.tok@livharleystreet.co.uk', 'EBRU', '$2y$10$aEtcftk7GMX3bP3DqIRxQ.DmbuVMC.b18q96ziMwSQWyQO/TWuG5a','editor', datetime('now'), datetime('now'),1,1);
-INSERT INTO users (id,email, username, password,role, created_at, updated_at, agency_id, is_active) VALUES (4,'sumeyye@livharleystreet.co.uk', 'SMY', '$2y$10$aEtcftk7GMX3bP3DqIRxQ.DmbuVMC.b18q96ziMwSQWyQO/TWuG5a','editor', datetime('now'), datetime('now'),1,1);
-INSERT INTO users (id,email, username, password,role, created_at, updated_at, agency_id, is_active) VALUES (5,'editor@example.com', 'ASLI ', '$2y$10$aEtcftk7GMX3bP3DqIRxQ.DmbuVMC.b18q96ziMwSQWyQO/TWuG5a','editor', datetime('now'), datetime('now'),1,1);
-INSERT INTO users (id,email, username, password,role, created_at, updated_at, agency_id, is_active) VALUES (6,'tech@example.com', 'Technician', '$2y$10$aEtcftk7GMX3bP3DqIRxQ.DmbuVMC.b18q96ziMwSQWyQO/TWuG5a','technician', datetime('now'), datetime('now'),3,1);
+INSERT INTO users (id,name,surname,email, username, password,role, created_at, updated_at, agency_id, is_active, created_by) VALUES (1,'Ayhan','Colak','drayhan@msn.com', 'Admin', '$2y$10$aEtcftk7GMX3bP3DqIRxQ.DmbuVMC.b18q96ziMwSQWyQO/TWuG5a','admin', datetime('now'), datetime('now'),1,1, 1);
+INSERT INTO users (id,name,surname,email, username, password,role, created_at, updated_at, agency_id, is_active, created_by) VALUES (2,'Want','Hair','agent@example.com', 'Want Hair', '$2y$10$aEtcftk7GMX3bP3DqIRxQ.DmbuVMC.b18q96ziMwSQWyQO/TWuG5a','agent', datetime('now'), datetime('now'),2,1, 1);
+INSERT INTO users (id,name,surname,email, username, password,role, created_at, updated_at, agency_id, is_active, created_by) VALUES (3,'Ebru','Tok','ebru.tok@livharleystreet.co.uk', 'EBRU', '$2y$10$aEtcftk7GMX3bP3DqIRxQ.DmbuVMC.b18q96ziMwSQWyQO/TWuG5a','admin', datetime('now'), datetime('now'),1,1, 1);
+INSERT INTO users (id,name,surname,email, username, password,role, created_at, updated_at, agency_id, is_active, created_by) VALUES (4,'Smy','Yuksel','smy@livharleystreet.co.uk', 'SMY', '$2y$10$aEtcftk7GMX3bP3DqIRxQ.DmbuVMC.b18q96ziMwSQWyQO/TWuG5a','admin', datetime('now'), datetime('now'),1,1, 1);
+INSERT INTO users (id,name,surname,email, username, password,role, created_at, updated_at, agency_id, is_active, created_by) VALUES (5,'Asli','Batten','asli.ozturk@mlpcare.com', 'ASLI ', '$2y$10$aEtcftk7GMX3bP3DqIRxQ.DmbuVMC.b18q96ziMwSQWyQO/TWuG5a','editor', datetime('now'), datetime('now'),1,1, 1);
+INSERT INTO users (id,name,surname,email, username, password,role, created_at, updated_at, agency_id, is_active, created_by) VALUES (6,'tech','tech','tech@example.com', 'Technician', '$2y$10$aEtcftk7GMX3bP3DqIRxQ.DmbuVMC.b18q96ziMwSQWyQO/TWuG5a','technician', datetime('now'), datetime('now'),3,1, 1);
 
 
 
 
-INSERT INTO settings (key, value) VALUES ('spreadsheet_id', '1mP20et8Pe_RMQvEC-ra2mXi9aoAtTwK_jsMwcUn9tt0');
-INSERT INTO settings (key, value) VALUES ('cache_duration', '300');
-INSERT INTO settings (key, value) VALUES ('cell_range', 'A1:I30');
+INSERT INTO settings (key, value, created_by) VALUES ('spreadsheet_id', '1mP20et8Pe_RMQvEC-ra2mXi9aoAtTwK_jsMwcUn9tt0', 1);
+INSERT INTO settings (key, value, created_by) VALUES ('cache_duration', '300', 1);
+INSERT INTO settings (key, value, created_by) VALUES ('cell_range', 'A1:I30', 1);
 
 
 
 
 -- Insert sample agencies for testing
-INSERT INTO agencies (name, updated_by, created_at, updated_at) VALUES ('Hospital', 1, datetime('now'), datetime('now'));
-INSERT INTO agencies (name, updated_by, created_at, updated_at) VALUES ('Want Hair', 1, datetime('now'), datetime('now'));
-INSERT INTO agencies (name, updated_by, created_at, updated_at) VALUES ('Other Agency', 1, datetime('now'), datetime('now'));
+INSERT INTO agencies (name, updated_by, created_at, updated_at, created_by) VALUES ('Hospital', 1, datetime('now'), datetime('now'), 1);
+INSERT INTO agencies (name, updated_by, created_at, updated_at, created_by) VALUES ('Want Hair', 1, datetime('now'), datetime('now'), 1);
+INSERT INTO agencies (name, updated_by, created_at, updated_at, created_by) VALUES ('Other Agency', 1, datetime('now'), datetime('now'), 1);
 
 
 
@@ -356,69 +357,69 @@ CREATE INDEX IF NOT EXISTS idx_interview_invitations_sent_at ON interview_invita
 
 
 -- Insert sample rooms for testing
-INSERT INTO rooms (name, type, is_active, updated_by) VALUES
-('Surgery 1',  'surgery', 1, 1),
-('Surgery 2',  'surgery', 0, 1),
-('Surgery 3',  'surgery', 0, 1),
-('Consultation',  'consultation', 1, 1),
-('Cosmetology',  'treatment', 1, 1);
+INSERT INTO rooms (id,name, type, is_active, updated_by, created_by) VALUES
+(1,'Consultation',  'consultation', 1, 1, 1),
+(2,'Cosmetology',  'treatment', 1, 1, 1),
+(3,'Surgery 1',  'surgery', 1, 1, 1),
+(4,'Surgery 2',  'surgery', 0, 1, 1),
+(5,'Surgery 3',  'surgery', 0, 1, 1);
 
 -- Insert demo staff 
 
 -- Insert default procedures
-INSERT INTO procedures (name, is_active, updated_by) VALUES
-('Consultation', 1, 1),
-('Botox', 1, 1),
-('Dermal Fillers', 1, 1),
-('PRP (Platelet-Rich Plasma)', 1, 1),
-('Microneedling', 1, 1),
-('HydraFacial', 1, 1),
-('Chemical Peel', 1, 1),
-('Laser Hair Removal', 1, 1),
-('Skin Rejuvenation', 1, 1),
-('Carbon Laser Peel', 1, 1),
-('Mesotherapy', 1, 1),
-('Facial Cleansing', 1, 1),
-('Radiofrequency Skin Tightening', 1, 1),
-('Cryolipolysis (Fat Freezing)', 1, 1),
-('Ultherapy', 1, 1),
-('LED Light Therapy', 1, 1),
-('OxyGeneo Facial', 1, 1),
-('Hollywood Peel', 1, 1),
-('Aqualyx Fat Dissolving', 1, 1),
-('Carboxytherapy', 1, 1),
-('Lip Augmentation', 1, 1),
-('Jawline Contouring', 1, 1);
+INSERT INTO procedures (name, is_active, updated_by, created_by) VALUES
+('Consultation', 1, 1, 1),
+('Botox', 1, 1, 1),
+('Dermal Fillers', 1, 1, 1),
+('PRP (Platelet-Rich Plasma)', 1, 1, 1),
+('Microneedling', 1, 1, 1),
+('HydraFacial', 1, 1, 1),
+('Chemical Peel', 1, 1, 1),
+('Laser Hair Removal', 1, 1, 1),
+('Skin Rejuvenation', 1, 1, 1),
+('Carbon Laser Peel', 1, 1, 1),
+('Mesotherapy', 1, 1, 1),
+('Facial Cleansing', 1, 1, 1),
+('Radiofrequency Skin Tightening', 1, 1, 1),
+('Cryolipolysis (Fat Freezing)', 1, 1, 1),
+('Ultherapy', 1, 1, 1),
+('LED Light Therapy', 1, 1, 1),
+('OxyGeneo Facial', 1, 1, 1),
+('Hollywood Peel', 1, 1, 1),
+('Aqualyx Fat Dissolving', 1, 1, 1),
+('Carboxytherapy', 1, 1, 1),
+('Lip Augmentation', 1, 1, 1),
+('Jawline Contouring', 1, 1, 1);
 
 
 
 -- Insert sample staff from job_candidates-export.json
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type,updated_by) VALUES ('esra bilen', 'esrabilen07@gmail.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type,updated_by) VALUES ('ferhat - emine demirtas', 'tahirferhatdemirtas@gmail.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('goktug gokalp', 'goktuggokalp34@gmail.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('irem cengiz', 'iremcngc@gmail.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('muhammed arici', 'muhammetposof28@gmail.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('ali emre dogan', 'aedogan.saglik@gmail.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('naz ilhan', 'nazilhan1040@gmail.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('nesibe idil karpuz', 'n.idilkrp@icloud.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('onur meric bugan', 'onurmeric03@icloud.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('sametcan balci', 'samet42550.97@gmail.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('zelal celikten', 'zelalcelikten@gmail.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('jhon', 'test@rser.fds', '324242', 'csdsad', 'turkiye', 'candidate', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Shefiu', '07508400686', 07508400686, 'senior', 'UK', 'staff', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Phandira', 12345678, 07424722738, 'senior', 'UK', 'staff', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Eniye','07424722738', 07405497373, 'senior', 'UK', 'staff', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Nava', '07435525455', 07435525455, 'senior', 'UK', 'staff', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Chandu', '07435525358', 07435525358, 'senior', 'UK', 'staff', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Maryam', '07775541099', 07775541099, 'senior', 'UK', 'staff', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Milena', '07857273383',07857273383, 'senior', 'UK', 'staff', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Mahsa – Zahra', '07914262872',07914262872, 'senior', 'UK', 'staff', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Beverly', '07775434126',07775434126, 'senior', 'UK', 'staff', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Claduio', '00393341817614',00393341817614, 'senior', 'UK', 'staff', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Sahnaz', '07404324662',07404324662, 'senior', 'UK', 'staff', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Sravani', '07508858512',07508858512, 'senior', 'UK', 'staff', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Sagun Khadka', '07380576839', 07380576839, 'senior', 'UK', 'staff', 1);
-INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by) VALUES ('Monisha', '07436422647',07436422647, 'senior', 'UK', 'staff', 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type,updated_by, created_by) VALUES ('esra bilen', 'esrabilen07@gmail.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1, 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type,updated_by, created_by) VALUES ('ferhat - emine demirtas', 'tahirferhatdemirtas@gmail.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1, 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by, created_by) VALUES ('goktug gokalp', 'goktuggokalp34@gmail.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1, 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by, created_by) VALUES ('irem cengiz', 'iremcngc@gmail.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1, 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by, created_by) VALUES ('muhammed arici', 'muhammetposof28@gmail.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1, 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by, created_by) VALUES ('ali emre dogan', 'aedogan.saglik@gmail.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1, 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by, created_by) VALUES ('naz ilhan', 'nazilhan1040@gmail.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1, 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by, created_by) VALUES ('nesibe idil karpuz', 'n.idilkrp@icloud.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1, 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by, created_by) VALUES ('onur meric bugan', 'onurmeric03@icloud.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1, 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by, created_by) VALUES ('sametcan balci', 'samet42550.97@gmail.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1, 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by, created_by) VALUES ('zelal celikten', 'zelalcelikten@gmail.com', 12345678, 'Hair Transplant Technician', 'turkiye', 'candidate', 1, 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by, created_by) VALUES ('jhon', 'test@rser.fds', '324242', 'csdsad', 'turkiye', 'candidate', 1, 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by, created_by) VALUES ('Shefiu', '07508400686', 07508400686, 'senior', 'UK', 'staff', 1, 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by, created_by) VALUES ('Phandira', 12345678, 07424722738, 'senior', 'UK', 'staff', 1, 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by, created_by) VALUES ('Eniye','07424722738', 07405497373, 'senior', 'UK', 'staff', 1, 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by, created_by) VALUES ('Nava', '07435525455', 07435525455, 'senior', 'UK', 'staff', 1, 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by, created_by) VALUES ('Chandu', '07435525358', 07435525358, 'senior', 'UK', 'staff', 1, 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by, created_by) VALUES ('Maryam', '07775541099', 07775541099, 'senior', 'UK', 'staff', 1, 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by, created_by) VALUES ('Milena', '07857273383',07857273383, 'senior', 'UK', 'staff', 1, 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by, created_by) VALUES ('Mahsa – Zahra', '07914262872',07914262872, 'senior', 'UK', 'staff', 1, 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by, created_by) VALUES ('Beverly', '07775434126',07775434126, 'senior', 'UK', 'staff', 1, 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by, created_by) VALUES ('Claduio', '00393341817614',00393341817614, 'senior', 'UK', 'staff', 1, 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by, created_by) VALUES ('Sahnaz', '07404324662',07404324662, 'senior', 'UK', 'staff', 1, 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by, created_by) VALUES ('Sravani', '07508858512',07508858512, 'senior', 'UK', 'staff', 1, 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by, created_by) VALUES ('Sagun Khadka', '07380576839', 07380576839, 'senior', 'UK', 'staff', 1, 1);
+INSERT INTO staff (name, email, phone, position_applied, location, staff_type, updated_by, created_by) VALUES ('Monisha', '07436422647',07436422647, 'senior', 'UK', 'staff', 1, 1);
 
 CREATE TABLE IF NOT EXISTS emails (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -439,7 +440,7 @@ CREATE TABLE IF NOT EXISTS emails (
     is_active BOOLEAN DEFAULT 1,
     is_draft BOOLEAN DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    created_by INTEGER NULL,
+    created_by INTEGER DEFAULT 1,
     updated_by INTEGER NULL,
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
@@ -457,15 +458,16 @@ CREATE TABLE user_email_settings (
     imap_host VARCHAR(255) NOT NULL,
     imap_user VARCHAR(255) NOT NULL,
     imap_pass VARCHAR(255) NOT NULL,
-    created_by INTEGER NULL,
+    created_by INTEGER DEFAULT 1,
     updated_by INTEGER NULL,
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
     FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
   );
 -- INSERT INTO user_email_settings (user_id, email_address, smtp_host, smtp_port, smtp_user, smtp_pass, smtp_secure, imap_host, imap_user, imap_pass) VALUES (1, 'contact@livharleystreet.co.uk', 'gukm1005.siteground.biz', 465, 'ebru.tok@livharleystreet.co.uk', '051224..Uk', 'ssl', 'gukm1005.siteground.biz', 'ebru.tok@livharleystreet.co.uk', '051224..Uk');
-INSERT INTO user_email_settings (user_id, email_address, smtp_host, smtp_port, smtp_user, smtp_pass, smtp_secure, imap_host, imap_user, imap_pass) VALUES (1, 'ayhan@livharleystreet.co.uk', 'gukm1005.siteground.biz', 465, 'ayhan@livharleystreet.co.uk', 'Doktor2024@', 'ssl', 'gukm1005.siteground.biz', 'ayhan@livharleystreet.co.uk', 'Doktor2024@');
-INSERT INTO user_email_settings (user_id, email_address, smtp_host, smtp_port, smtp_user, smtp_pass, smtp_secure, imap_host, imap_user, imap_pass) VALUES (3, 'ebru.tok@livharleystreet.co.uk', 'gukm1005.siteground.biz', 465, 'ebru.tok@livharleystreet.co.uk', '051224..Uk', 'ssl', 'gukm1005.siteground.biz', 'ebru.tok@livharleystreet.co.uk', '051224..Uk');
+INSERT INTO user_email_settings (user_id, email_address, smtp_host, smtp_port, smtp_user, smtp_pass, smtp_secure, imap_host, imap_user, imap_pass, created_by) VALUES (1, 'ayhan@livharleystreet.co.uk', 'gukm1005.siteground.biz', 465, 'ayhan@livharleystreet.co.uk', 'Doktor2024@', 'ssl', 'gukm1005.siteground.biz', 'ayhan@livharleystreet.co.uk', 'Doktor2024@', 1);
+INSERT INTO user_email_settings (user_id, email_address, smtp_host, smtp_port, smtp_user, smtp_pass, smtp_secure, imap_host, imap_user, imap_pass, created_by) VALUES (3, 'ebru.tok@livharleystreet.co.uk', 'gukm1005.siteground.biz', 465, 'ebru.tok@livharleystreet.co.uk', '051224..Uk', 'ssl', 'gukm1005.siteground.biz', 'ebru.tok@livharleystreet.co.uk', '051224..Uk', 1);
+INSERT INTO user_email_settings (user_id, email_address, smtp_host, smtp_port, smtp_user, smtp_pass, smtp_secure, imap_host, imap_user, imap_pass, created_by) VALUES (5, 'contact@livharleystreet.co.uk', 'gukm1005.siteground.biz', 465, 'contact@livharleystreet.co.uk', '051224..Uk', 'ssl', 'gukm1005.siteground.biz', 'contact@livharleystreet.co.uk', '051224..Uk', 1);
 
 CREATE TABLE IF NOT EXISTS email_attachments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -476,7 +478,7 @@ CREATE TABLE IF NOT EXISTS email_attachments (
     file_path TEXT,
     email_uid INTEGER,
     part_index TEXT,
-    created_by INTEGER NULL,
+    created_by INTEGER DEFAULT 1,
     updated_by INTEGER NULL,
     FOREIGN KEY (email_id) REFERENCES emails(id) ON DELETE CASCADE,
     FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
@@ -492,7 +494,7 @@ CREATE TABLE IF NOT EXISTS `messages` (
   `message` TEXT NOT NULL,
   `timestamp` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `is_read` INTEGER NOT NULL DEFAULT 0,
-  `created_by` INTEGER,
+  `created_by` INTEGER DEFAULT 1,
   `updated_by` INTEGER,
   FOREIGN KEY (`sender_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
   FOREIGN KEY (`receiver_id`) REFERENCES `users`(`id`) ON DELETE SET NULL,
@@ -506,7 +508,7 @@ CREATE TABLE IF NOT EXISTS message_reactions (
 `user_id` INTEGER NOT NULL, 
 `emoji_code` VARCHAR(255) NOT NULL, 
 `timestamp` DATETIME DEFAULT CURRENT_TIMESTAMP,
-`created_by` INTEGER,
+`created_by` INTEGER DEFAULT 1,
 `updated_by` INTEGER,
 UNIQUE (message_id, user_id),
 FOREIGN KEY (message_id) REFERENCES messages(id) ON DELETE CASCADE,
@@ -517,15 +519,15 @@ FOREIGN KEY (`updated_by`) REFERENCES `users`(`id`) ON DELETE SET NULL
 
 
 -- Messages for Patient 1 (Emin Colak) with Agent (receiver_id 2)
-INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `patient_id`, `message`, `is_read`) VALUES
-(1, 2, '[{"table_name":"patients","field_name":"name","id":1}]', 1, 'Hi Agent, I have a question about my upcoming appointment.', 0),
-(2, 1, '[{"table_name":"patients","field_name":"name","id":1}]', 1, 'Certainly, how can I help you, Emin?', 0),
-(1, 2, '[{"table_name":"patients","field_name":"name","id":1}]', 1, 'I need to confirm the time for my surgery on the 15th.', 0),
-(2, 1, '[{"table_name":"patients","field_name":"name","id":2}]', 2, 'Your surgery on June 15th is confirmed for 9:00 AM. Room 1.', 0),
-(1, 2, '[{"table_name":"patients","field_name":"name","id":2}]', 2, 'Thank you for the confirmation!', 1),
-(2, 1, '[{"table_name":"patients","field_name":"name","id":2}]', 2, 'You are welcome. Is there anything else?', 1),
-(1, 2, '[{"table_name":"patients","field_name":"name","id":2}]', 2, 'No, that is all for now. Have a good day.', 1),
-(2, 1, '[{"table_name":"patients","field_name":"name","id":2}]', 2, 'You too, Emin. See you soon.', 1);
+INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `patient_id`, `message`, `is_read`, `created_by`) VALUES
+(1, 2, '[{"table_name":"patients","field_name":"name","id":1}]', 1, 'Hi Agent, I have a question about my upcoming appointment.', 0, 1),
+(2, 1, '[{"table_name":"patients","field_name":"name","id":1}]', 1, 'Certainly, how can I help you, Emin?', 0, 1),
+(1, 2, '[{"table_name":"patients","field_name":"name","id":1}]', 1, 'I need to confirm the time for my surgery on the 15th.', 0, 1),
+(2, 1, '[{"table_name":"patients","field_name":"name","id":2}]', 2, 'Your surgery on June 15th is confirmed for 9:00 AM. Room 1.', 0, 1),
+(1, 2, '[{"table_name":"patients","field_name":"name","id":2}]', 2, 'Thank you for the confirmation!', 1, 1),
+(2, 1, '[{"table_name":"patients","field_name":"name","id":2}]', 2, 'You are welcome. Is there anything else?', 1, 1),
+(1, 2, '[{"table_name":"patients","field_name":"name","id":2}]', 2, 'No, that is all for now. Have a good day.', 1, 1),
+(2, 1, '[{"table_name":"patients","field_name":"name","id":2}]', 2, 'You too, Emin. See you soon.', 1, 1);
 
 -- -- Messages for Patient 2 (Jane Doe) with Agent (receiver_id 2)
 -- INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `patient_id`, `message`, `is_read`) VALUES
@@ -591,63 +593,62 @@ INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `patient_id
 -- (3, 2, '[{"table_name":"staff","field_name":"name","id":6}]', NULL, 'Yes, Technician (ID 6) completed all modules yesterday.', 0);
 
 -- General broadcast message (receiver_id 0)
-INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `patient_id`, `message`, `is_read`) VALUES
-(1, 0, NULL, NULL, 'All staff: Please remember to log your daily activities by 5 PM.', 0),
-(1, 0, NULL, NULL, 'Important announcement: Clinic will be closed on July 4th for holiday.', 0),
-(1, 0, NULL, NULL, 'New protocol for patient intake has been uploaded to the shared drive.', 0),
-(1, 0, NULL, NULL, 'Reminder: Annual fire safety drill next Tuesday at 10 AM.', 0),
-(1, 0, NULL, NULL, 'Please ensure all patient records are updated by end of week.', 1),
-(1, 0, NULL, NULL, 'New stock of medical supplies has arrived. Please check inventory.', 1),
-(1, 0, NULL, NULL, 'Team meeting scheduled for Monday at 9 AM in the main conference room.', 1),
-(1, 0, NULL, NULL, 'Wishing everyone a productive week!', 1);
+INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `patient_id`, `message`, `is_read`, `created_by`) VALUES
+(1, 0, NULL, NULL, 'All staff: Please remember to log your daily activities by 5 PM.', 0, 1),
+(1, 0, NULL, NULL, 'Important announcement: Clinic will be closed on July 4th for holiday.', 0, 1),
+(1, 0, NULL, NULL, 'New protocol for patient intake has been uploaded to the shared drive.', 0, 1),
+(1, 0, NULL, NULL, 'Reminder: Annual fire safety drill next Tuesday at 10 AM.', 0, 1),
+(1, 0, NULL, NULL, 'Please ensure all patient records are updated by end of week.', 1, 1),
+(1, 0, NULL, NULL, 'New stock of medical supplies has arrived. Please check inventory.', 1, 1),
+(1, 0, NULL, NULL, 'Team meeting scheduled for Monday at 9 AM in the main conference room.', 1, 1),
+(1, 0, NULL, NULL, 'Wishing everyone a productive week!', 1, 1);
 
 -- Messages related to Appointments (hypothetical appointment ID 1, patient ID 1)
-INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `patient_id`, `message`, `is_read`) VALUES
-(1, 2, '[{"table_name":"appointments","field_name":"appointment_date","id":1}]', 1, 'Appointment for Emin Colak (ID 1) on 2025-07-05 needs confirmation.', 0),
-(2, 1, '[{"table_name":"appointments","field_name":"appointment_date","id":1}]', 1, 'Confirmed. Emin Colak''s appointment is all set.', 0);
+INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `patient_id`, `message`, `is_read`, `created_by`) VALUES
+(1, 2, '[{"table_name":"appointments","field_name":"appointment_date","id":1}]', 1, 'Appointment for Emin Colak (ID 1) on 2025-07-05 needs confirmation.', 0, 1),
+(2, 1, '[{"table_name":"appointments","field_name":"appointment_date","id":1}]', 1, 'Confirmed. Emin Colak''s appointment is all set.', 0, 1);
 
 -- Messages related to Rooms (room ID 4, patient ID 3)
-INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `patient_id`, `message`, `is_read`) VALUES
-(1, 3, '[{"table_name":"rooms","field_name":"name","id":4}]', 3, 'Consultation Room (ID 4) is reserved for John Smith (ID 3) on July 10th.', 0),
-(3, 1, '[{"table_name":"rooms","field_name":"name","id":4}]', 3, 'Noted. Consultation Room (ID 4) reservation confirmed for John Smith.', 0);
+INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `patient_id`, `message`, `is_read`, `created_by`) VALUES
+(1, 3, '[{"table_name":"rooms","field_name":"name","id":4}]', 3, 'Consultation Room (ID 4) is reserved for John Smith (ID 3) on July 10th.', 0, 1),
+(3, 1, '[{"table_name":"rooms","field_name":"name","id":4}]', 3, 'Noted. Consultation Room (ID 4) reservation confirmed for John Smith.', 0, 1);
 
 -- Messages related to Procedures (procedure ID 1, patient ID 2)
-INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `patient_id`, `message`, `is_read`) VALUES
-(1, 5, '[{"table_name":"procedures","field_name":"name","id":1}]', 2, 'Jane Doe (ID 2) is scheduled for a Consultation (ID 1).', 0),
-(5, 1, '[{"table_name":"procedures","field_name":"name","id":1}]', 2, 'Understood. I will prepare for Jane Doe''s Consultation.', 0);
+INSERT INTO `messages` (`sender_id`, `receiver_id`, `related_table`, `patient_id`, `message`, `is_read`, `created_by`) VALUES
+(1, 5, '[{"table_name":"procedures","field_name":"name","id":1}]', 2, 'Jane Doe (ID 2) is scheduled for a Consultation (ID 1).', 0, 1),
+(5, 1, '[{"table_name":"procedures","field_name":"name","id":1}]', 2, 'Understood. I will prepare for Jane Doe''s Consultation.', 0, 1);
 
 -- Message Reactions
 -- Message Reactions (message_id values adjusted to match auto-incremented IDs)
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (1, 2, '\u{1F44D}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (2, 3, '\u{2764}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (3, 4, '\u{1F602}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (4, 5, '\u{1F64F}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (5, 6, '\u{2705}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (6, 2, '\u{1F44D}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (7, 3, '\u{2764}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (8, 4, '\u{1F602}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (9, 5, '\u{1F64F}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (10, 6, '\u{2705}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (11, 2, '\u{1F44D}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (12, 3, '\u{2764}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (13, 4, '\u{1F602}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (14, 5, '\u{1F64F}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (15, 6, '\u{2705}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (16, 2, '\u{1F44D}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (17, 3, '\u{2764}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (18, 4, '\u{1F602}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (19, 5, '\u{1F64F}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (20, 6, '\u{2705}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (21, 2, '\u{1F44D}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (22, 3, '\u{2764}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (23, 4, '\u{1F602}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (24, 5, '\u{1F64F}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (25, 6, '\u{2705}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (26, 2, '\u{1F44D}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (27, 3, '\u{2764}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (28, 4, '\u{1F602}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (29, 5, '\u{1F64F}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (30, 6, '\u{2705}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (31, 2, '\u{1F44D}');
-INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`) VALUES (32, 3, '\u{2764}');
-
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (1, 2, '\u{1F44D}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (2, 3, '\u{2764}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (3, 4, '\u{1F602}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (4, 5, '\u{1F64F}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (5, 6, '\u{2705}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (6, 2, '\u{1F44D}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (7, 3, '\u{2764}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (8, 4, '\u{1F602}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (9, 5, '\u{1F64F}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (10, 6, '\u{2705}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (11, 2, '\u{1F44D}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (12, 3, '\u{2764}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (13, 4, '\u{1F602}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (14, 5, '\u{1F64F}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (15, 6, '\u{2705}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (16, 2, '\u{1F44D}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (17, 3, '\u{2764}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (18, 4, '\u{1F602}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (19, 5, '\u{1F64F}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (20, 6, '\u{2705}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (21, 2, '\u{1F44D}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (22, 3, '\u{2764}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (23, 4, '\u{1F602}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (24, 5, '\u{1F64F}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (25, 6, '\u{2705}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (26, 2, '\u{1F44D}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (27, 3, '\u{2764}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (28, 4, '\u{1F602}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (29, 5, '\u{1F64F}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (30, 6, '\u{2705}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (31, 2, '\u{1F44D}', 1);
+INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (32, 3, '\u{2764}', 1);

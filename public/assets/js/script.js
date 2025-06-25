@@ -14,6 +14,13 @@ function getStatusColor(status) {
   }
 }
 
+ // Initialize tooltips globally
+ document.addEventListener('DOMContentLoaded', function() {
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+  var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+  })
+});
 // Initialize all Bootstrap toasts
 document.addEventListener("DOMContentLoaded", function () {
   var toastElList = [].slice.call(document.querySelectorAll(".toast"));
@@ -21,6 +28,19 @@ document.addEventListener("DOMContentLoaded", function () {
     return new bootstrap.Toast(toastEl);
   });
 });
+const themeToggle = document.getElementById('themeToggle');
+if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+        const html = document.documentElement;
+        html.dataset.bsTheme =
+            html.dataset.bsTheme === 'dark' ? 'light' : 'dark';
+        localStorage.setItem('theme', html.dataset.bsTheme);
+    });
+}
+
+// on load
+document.documentElement.dataset.bsTheme =
+    localStorage.getItem('theme') ?? 'light';
 // Function to show a Bootstrap toast message
 function showToast(message, type = "info", delay = 1000) {
   const toastContainer = document.querySelector(".toast-container");

@@ -386,6 +386,11 @@ table.table {
   padding: 0.35em 0.65em;
 }
 
+.badge-lg {
+  font-size: 1rem; /* Larger font size */
+  padding: 0.5em 0.9em; /* Larger padding */
+}
+
 /* Mobile-first responsive utilities */
 @media (max-width: 768px) {
   .mobile-stack {
@@ -956,7 +961,7 @@ table.table {
 /* Mobile/Tablet: Hide footer and show mobile nav */
 @media (max-width: 1199.98px) {
   body {
-    padding-bottom: 70px;
+    /* padding-bottom: 70px; */
   }
 
   /* Hide footer on mobile/tablet screens */
@@ -1166,4 +1171,28 @@ body {
 .conversation-bubble-header[aria-expanded="true"] {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
+}
+
+/* ===================================
+   FADE-IN/OUT TRANSITION
+   =================================== */
+
+.fade-out {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-out, visibility 0s linear 0.3s;
+    max-height: 0;
+    overflow: hidden;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    border-width: 0;
+}
+
+.fade-in {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease-in, max-height 0.3s ease-in-out;
+    max-height: 500px; /* Adjust as needed */
 }

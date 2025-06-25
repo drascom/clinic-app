@@ -22,7 +22,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="card-body pb-4">
                     <form id="email-settings-form" class="mb-4">
                         <input type="hidden" class="form-control" name="user_id"
-                            value="<?php echo isset($_GET['id']) ? (int)$_GET['id'] : get_user_id(); ?>">
+                            value="<?php echo isset($_GET['id']) ? (int) $_GET['id'] : get_user_id(); ?>">
                         <div class="mb-3">
                             <label for="email_address" class="form-label">Email Address</label>
                             <input type="email" class="form-control" id="email_address" name="email_address" required>
@@ -36,12 +36,12 @@ require_once __DIR__ . '/../includes/header.php';
                             <input type="number" class="form-control" id="smtp_port" name="smtp_port" required>
                         </div>
                         <div class="mb-3">
-                            <label for="smtp_username" class="form-label">SMTP Username</label>
-                            <input type="text" class="form-control" id="smtp_username" name="smtp_username" required>
+                            <label for="smtp_user" class="form-label">SMTP Username</label>
+                            <input type="text" class="form-control" id="smtp_user" name="smtp_user" required>
                         </div>
                         <div class="mb-3">
-                            <label for="smtp_password" class="form-label">SMTP Password</label>
-                            <input type="password" class="form-control" id="smtp_password" name="smtp_password" required>
+                            <label for="smtp_pass" class="form-label">SMTP Password</label>
+                            <input type="password" class="form-control" id="smtp_pass" name="smtp_pass" required>
                         </div>
                         <div class="mb-3">
                             <label for="smtp_secure" class="form-label">SMTP Secure</label>
@@ -49,6 +49,19 @@ require_once __DIR__ . '/../includes/header.php';
                                 <option value="tls">TLS</option>
                                 <option value="ssl">SSL</option>
                             </select>
+                        </div>
+                        <hr>
+                        <div class="mb-3">
+                            <label for="imap_host" class="form-label">IMAP Host</label>
+                            <input type="text" class="form-control" id="imap_host" name="imap_host" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="imap_user" class="form-label">IMAP Username</label>
+                            <input type="text" class="form-control" id="imap_user" name="imap_user" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="imap_pass" class="form-label">IMAP Password</label>
+                            <input type="password" class="form-control" id="imap_pass" name="imap_pass" required>
                         </div>
                         <div class="d-flex justify-content-end mb-4">
                             <button type="submit" class="btn btn-primary ">Save Settings</button>
@@ -60,24 +73,26 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Function to fetch email settings
             function fetchEmailSettings() {
                 apiRequest('users', 'get_email_settings', {
-                        user_id: <?php echo isset($_GET['id']) ? (int)$_GET['id'] : get_user_id(); ?>
-                    })
+                    user_id: <?php echo isset($_GET['id']) ? (int) $_GET['id'] : get_user_id(); ?>
+                })
                     .then(response => {
                         if (response.success && response.settings) {
                             const settings = response.settings;
                             document.getElementById('email_address').value = settings.email_address;
                             document.getElementById('smtp_host').value = settings.smtp_host;
                             document.getElementById('smtp_port').value = settings.smtp_port;
-                            document.getElementById('smtp_username').value = settings.smtp_username;
-                            document.getElementById('smtp_password').value = settings.smtp_password;
+                            document.getElementById('smtp_user').value = settings.smtp_user;
+                            document.getElementById('smtp_pass').value = settings.smtp_pass;
                             document.getElementById('smtp_secure').value = settings.smtp_secure;
-                        } else {
+                            document.getElementById('imap_host').value = settings.imap_host;
+                            document.getElementById('imap_user').value = settings.imap_user;
+                            document.getElementById('imap_pass').value = settings.imap_pass;
+                        } else if (response.message) {
                             console.error('Error fetching email settings:', response.message);
-                            alert('Error fetching email settings: ' + response.message);
                         }
                     })
                     .catch(error => {
@@ -89,14 +104,12 @@ require_once __DIR__ . '/../includes/header.php';
             // Fetch settings on page load
             fetchEmailSettings();
 
-            document.getElementById('email-settings-form').addEventListener('submit', function(event) {
+            document.getElementById('email-settings-form').addEventListener('submit', function (event) {
                 event.preventDefault();
                 const formData = new FormData(this);
                 const data = Object.fromEntries(formData.entries());
-                const userId = <?php echo isset($_GET['user_id']) ? (int)$_GET['user_id'] : 'null'; ?>;
-                if (userId !== null) {
-                    data.user_id = userId;
-                }
+                const userId = document.querySelector('input[name="user_id"]').value;
+                data.user_id = userId;
 
                 apiRequest('email_settings', 'save', data)
                     .then(response => {

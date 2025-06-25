@@ -226,6 +226,129 @@ function handle_staff_availability($action, $method, $db, $input = [])
             }
             break;
 
+        case 'setMonthAsFullDay':
+            if ($method === 'POST') {
+                if (!is_admin() && !is_editor()) {
+                    return ['success' => false, 'error' => 'Insufficient permissions.'];
+                }
+
+                $staff_id = $input['staff_id'] ?? null;
+                $month = $input['month'] ?? null; // Expects YYYY-MM format
+
+                if (!$staff_id || !$month) {
+                    return ['success' => false, 'error' => 'Staff ID and month are required.'];
+                }
+
+                if (!preg_match('/^\d{4}-\d{2}$/', $month)) {
+                    return ['success' => false, 'error' => 'Invalid month format. Use YYYY-MM.'];
+                }
+
+                try {
+                    $db->beginTransaction();
+
+                    $startDate = new DateTime($month . '-01');
+                    $endDate = new DateTime($startDate->format('Y-m-t'));
+                    $currentDate = $startDate;
+                    $userId = get_user_id();
+
+                    while ($currentDate <= $endDate) {
+                        $dayOfWeek = $currentDate->format('N'); // 1 (for Monday) through 7 (for Sunday)
+                        if ($dayOfWeek < 6) { // If it's a weekday (Mon-Fri)
+                            $dateStr = $currentDate->format('Y-m-d');
+
+                            // Use INSERT ... ON CONFLICT for SQLite compatibility (upsert)
+                            $sql = "
+                                INSERT INTO staff_availability (staff_id, available_on, status, created_by, updated_by)
+                                VALUES (?, ?, 'full_day', ?, ?)
+                                ON CONFLICT(staff_id, available_on) DO UPDATE SET
+                                    status = excluded.status,
+                                    updated_by = excluded.updated_by;
+                            ";
+                            $stmt = $db->prepare($sql);
+                            $stmt->execute([$staff_id, $dateStr, $userId, $userId]);
+                        }
+                        $currentDate->modify('+1 day');
+                    }
+
+                    $db->commit();
+                    return ['success' => true, 'message' => 'Full month availability set successfully.'];
+                } catch (Exception $e) {
+                    $db->rollBack();
+                    return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
+                }
+            }
+            break;
+
+        case 'setMonthAsFullDayForAllStaff':
+            if ($method === 'POST') {
+                if (!is_admin() && !is_editor()) {
+                    return ['success' => false, 'error' => 'Insufficient permissions.'];
+                }
+
+                $month = $input['month'] ?? null; // Expects YYYY-MM format
+                $staff_type_filter = $input['staff_type'] ?? 'all';
+
+                if (!$month) {
+                    return ['success' => false, 'error' => 'Month is required.'];
+                }
+                if (!preg_match('/^\d{4}-\d{2}$/', $month)) {
+                    return ['success' => false, 'error' => 'Invalid month format. Use YYYY-MM.'];
+                }
+
+                try {
+                    $db->beginTransaction();
+
+                    // 1. Get all relevant staff IDs
+                    $staff_sql = "SELECT id FROM staff WHERE is_active = 1";
+                    $params = [];
+                    if ($staff_type_filter !== 'all') {
+                        $staff_sql .= " AND staff_type = ?";
+                        $params[] = $staff_type_filter;
+                    }
+                    $staff_stmt = $db->prepare($staff_sql);
+                    $staff_stmt->execute($params);
+                    $staff_ids = $staff_stmt->fetchAll(PDO::FETCH_COLUMN);
+
+                    if (empty($staff_ids)) {
+                        $db->commit();
+                        return ['success' => true, 'message' => 'No active staff found for the selected filter.'];
+                    }
+
+                    // 2. Loop through dates and staff to update availability
+                    $startDate = new DateTime($month . '-01');
+                    $endDate = new DateTime($startDate->format('Y-m-t'));
+                    $currentDate = $startDate;
+                    $userId = get_user_id();
+
+                    $upsert_sql = "
+                        INSERT INTO staff_availability (staff_id, available_on, status, created_by, updated_by)
+                        VALUES (?, ?, 'full_day', ?, ?)
+                        ON CONFLICT(staff_id, available_on) DO UPDATE SET
+                            status = excluded.status,
+                            updated_by = excluded.updated_by;
+                    ";
+                    $upsert_stmt = $db->prepare($upsert_sql);
+
+                    while ($currentDate <= $endDate) {
+                        $dayOfWeek = $currentDate->format('N');
+                        if ($dayOfWeek < 6) { // Weekdays only
+                            $dateStr = $currentDate->format('Y-m-d');
+                            foreach ($staff_ids as $staff_id) {
+                                $upsert_stmt->execute([$staff_id, $dateStr, $userId, $userId]);
+                            }
+                        }
+                        $currentDate->modify('+1 day');
+                    }
+
+                    $db->commit();
+                    return ['success' => true, 'message' => 'Full month availability set for all filtered staff.'];
+                } catch (Exception $e) {
+                    $db->rollBack();
+                    return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
+                }
+            }
+            break;
+
         case 'byDate':
             if ($method === 'POST') {
                 $date = $input['date'] ?? null;

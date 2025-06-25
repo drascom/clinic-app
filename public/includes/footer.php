@@ -8,7 +8,7 @@
 </main>
 
 <!-- Footer - Hidden on mobile, visible on desktop -->
-<footer class="bg-dark text-light py-2  d-none d-xl-block">
+<footer class="bg-dark text-light py-2  d-none d-sm-block">
     <div class="container">
         <div class="row">
             <div class="col-md-6">
@@ -95,34 +95,12 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <!-- Select2 JS -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<!-- VanillaJS Datepicker JS -->
+<script src="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/js/datepicker.min.js"></script>
+<!-- CoreUI JS (Removed) -->
 <!-- Custom JS -->
 <script src="/assets/js/script.js"></script>
 <!-- API Helper for secure POST requests -->
-
-<script>
-    // Initialize tooltips globally
-    document.addEventListener('DOMContentLoaded', function() {
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
-        })
-    });
-</script>
-<script>
-    const themeToggle = document.getElementById('themeToggle');
-    if (themeToggle) {
-        themeToggle.addEventListener('click', () => {
-            const html = document.documentElement;
-            html.dataset.bsTheme =
-                html.dataset.bsTheme === 'dark' ? 'light' : 'dark';
-            localStorage.setItem('theme', html.dataset.bsTheme);
-        });
-    }
-
-    // on load
-    document.documentElement.dataset.bsTheme =
-        localStorage.getItem('theme') ?? 'light';
-</script>
 
 </body>
 

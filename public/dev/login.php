@@ -144,7 +144,40 @@ $page_title = "Login";
                                 </button>
                             </form>
 
-
+                            <!-- Quick Login Buttons -->
+                            <div class="mt-4">
+                                <h6 class="text-muted mb-3">Quick Login (Demo Users)</h6>
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <button type="button"
+                                            class="btn btn-outline-danger btn-sm w-100 quick-login-btn"
+                                            data-email="admin@example.com" data-password="">
+                                            <i class="fas fa-user-shield me-1"></i>Admin
+                                        </button>
+                                    </div>
+                                    <div class="col-6">
+                                        <button type="button"
+                                            class="btn btn-outline-primary btn-sm w-100 quick-login-btn"
+                                            data-email="editor@example.com" data-password="">
+                                            <i class="fas fa-user-edit me-1"></i>Editor
+                                        </button>
+                                    </div>
+                                    <div class="col-6">
+                                        <button type="button"
+                                            class="btn btn-outline-success btn-sm w-100 quick-login-btn"
+                                            data-email="agent@example.com" data-password="">
+                                            <i class="fas fa-user-tie me-1"></i>Agent
+                                        </button>
+                                    </div>
+                                    <div class="col-6">
+                                        <button type="button"
+                                            class="btn btn-outline-warning btn-sm w-100 quick-login-btn"
+                                            data-email="tech@example.com" data-password="">
+                                            <i class="fas fa-user-cog me-1"></i>Tech
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                             <p class="mt-3">
                                 <a href="/auth/forgot_password.php">Forgot Password?</a>
                             </p>
@@ -188,7 +221,7 @@ $page_title = "Login";
     <script src="/assets/js/script.js"></script>
     <!-- Login Form JavaScript -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const loginForm = document.getElementById('loginForm');
             const emailInput = document.getElementById('email');
             const passwordInput = document.getElementById('password');
@@ -203,7 +236,7 @@ $page_title = "Login";
 
             // Quick login functionality
             quickLoginButtons.forEach(button => {
-                button.addEventListener('click', function () {
+                button.addEventListener('click', function() {
                     const email = this.getAttribute('data-email');
                     const password = this.getAttribute('data-password');
 
@@ -239,12 +272,12 @@ $page_title = "Login";
 
                 inputs.forEach(input => {
                     // Real-time validation on blur
-                    input.addEventListener('blur', function () {
+                    input.addEventListener('blur', function() {
                         validateField(this);
                     });
 
                     // Clear validation on input
-                    input.addEventListener('input', function () {
+                    input.addEventListener('input', function() {
                         if (this.classList.contains('is-invalid')) {
                             this.classList.remove('is-invalid');
                             const feedback = this.parentNode.querySelector('.invalid-feedback');

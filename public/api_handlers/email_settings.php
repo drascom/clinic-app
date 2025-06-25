@@ -19,7 +19,7 @@ function handle_email_settings($action, $method, $db, $input)
                 return ['success' => false, 'message' => 'Invalid request method.'];
             }
 
-            $required_fields = ['email_address', 'smtp_host', 'smtp_port', 'smtp_username', 'smtp_password', 'smtp_secure'];
+            $required_fields = ['email_address', 'smtp_host', 'smtp_port', 'smtp_user', 'smtp_pass', 'smtp_secure', 'imap_host', 'imap_user', 'imap_pass'];
             foreach ($required_fields as $field) {
                 if (empty($input[$field])) {
                     $logService->log('email_settings', 'error', "Missing required field: $field", $input);
@@ -34,9 +34,9 @@ function handle_email_settings($action, $method, $db, $input)
                 $existing_setting = $stmt->fetch();
 
                 if ($existing_setting) {
-                    $sql = "UPDATE user_email_settings SET email_address = :email_address, smtp_host = :smtp_host, smtp_port = :smtp_port, smtp_username = :smtp_username, smtp_password = :smtp_password, smtp_secure = :smtp_secure WHERE user_id = :user_id";
+                    $sql = "UPDATE user_email_settings SET email_address = :email_address, smtp_host = :smtp_host, smtp_port = :smtp_port, smtp_user = :smtp_user, smtp_pass = :smtp_pass, smtp_secure = :smtp_secure, imap_host = :imap_host, imap_user = :imap_user, imap_pass = :imap_pass WHERE user_id = :user_id";
                 } else {
-                    $sql = "INSERT INTO user_email_settings (user_id, email_address, smtp_host, smtp_port, smtp_username, smtp_password, smtp_secure) VALUES (:user_id, :email_address, :smtp_host, :smtp_port, :smtp_username, :smtp_password, :smtp_secure)";
+                    $sql = "INSERT INTO user_email_settings (user_id, email_address, smtp_host, smtp_port, smtp_user, smtp_pass, smtp_secure, imap_host, imap_user, imap_pass) VALUES (:user_id, :email_address, :smtp_host, :smtp_port, :smtp_user, :smtp_pass, :smtp_secure, :imap_host, :imap_user, :imap_pass)";
                 }
 
                 $stmt = $db->prepare($sql);
@@ -44,9 +44,12 @@ function handle_email_settings($action, $method, $db, $input)
                 $stmt->bindValue(':email_address', $input['email_address']);
                 $stmt->bindValue(':smtp_host', $input['smtp_host']);
                 $stmt->bindValue(':smtp_port', $input['smtp_port']);
-                $stmt->bindValue(':smtp_username', $input['smtp_username']);
-                $stmt->bindValue(':smtp_password', $input['smtp_password']);
+                $stmt->bindValue(':smtp_user', $input['smtp_user']);
+                $stmt->bindValue(':smtp_pass', $input['smtp_pass']);
                 $stmt->bindValue(':smtp_secure', $input['smtp_secure']);
+                $stmt->bindValue(':imap_host', $input['imap_host']);
+                $stmt->bindValue(':imap_user', $input['imap_user']);
+                $stmt->bindValue(':imap_pass', $input['imap_pass']);
 
                 if ($stmt->execute()) {
                     $logService->log('email_settings', 'success', 'Email settings saved successfully.', ['user_id' => $user_id]);

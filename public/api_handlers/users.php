@@ -103,7 +103,7 @@ function handle_users($action, $method, $db, $request_data = [])
         case 'list':
             if ($method === 'POST') {
                 $search = $input['search'] ?? '';
-                $page = isset($input['page']) ? (int)$input['page'] : 1;
+                $page = isset($input['page']) ? (int) $input['page'] : 1;
                 $limit = 10;
                 $offset = ($page - 1) * $limit;
 
@@ -267,9 +267,12 @@ function handle_users($action, $method, $db, $request_data = [])
                         'email_address' => '',
                         'smtp_host' => '',
                         'smtp_port' => '',
-                        'smtp_username' => '',
-                        'smtp_password' => '',
-                        'smtp_secure' => 'tls'
+                        'smtp_user' => '',
+                        'smtp_pass' => '',
+                        'smtp_secure' => 'tls',
+                        'imap_host' => '',
+                        'imap_user' => '',
+                        'imap_pass' => ''
                     ];
                 }
                 return ['success' => true, 'settings' => $settings];

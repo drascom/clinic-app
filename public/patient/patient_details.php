@@ -330,7 +330,7 @@ require_once __DIR__ . '/../includes/header.php';
         Dropzone.autoDiscover = false;
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const patientId = <?php echo json_encode($patient_id); ?>;
         const patientAvatarImg = document.getElementById('patient-avatar');
         const patientInfoLeft = document.getElementById('patient-info-left');
@@ -383,7 +383,7 @@ require_once __DIR__ . '/../includes/header.php';
                 const patient = data.patient;
                 if (patient.avatar) {
                     // Remove 'uploads/' prefix for serve-file.php
-                    patientAvatarImg.src = patient.avatar.replace('uploads/', '');
+                    patientAvatarImg.src = `${patient.avatar}`;
                 } else {
                     patientAvatarImg.src = '../assets/avatar.png';
                 }
@@ -495,7 +495,7 @@ require_once __DIR__ . '/../includes/header.php';
                     </td>
                     <td>
                         <div class="btn-group" role="group">
-                            <a href="../appointment/add_appointment.php?id=${appointment.id}" class="btn btn-sm btn-outline-warning" title="Edit Appointment">
+                            <a href="/appointment/edit_appointment.php?id=${appointment.id}" class="btn btn-sm btn-outline-warning" title="Edit Appointment">
                                 <i class="fas fa-edit"></i>
                                 <span class="d-none d-lg-inline ms-1">Edit</span>
                             </a>
@@ -570,7 +570,7 @@ require_once __DIR__ . '/../includes/header.php';
 
 
         // Show dropzone when an album type is selected
-        photoAlbumTypeSelect.addEventListener('change', function() {
+        photoAlbumTypeSelect.addEventListener('change', function () {
             if (this.value) {
                 photoDropzoneDiv.style.display = 'block';
             } else {
@@ -579,7 +579,7 @@ require_once __DIR__ . '/../includes/header.php';
         });
 
         // Event listener for delete buttons (delegation)
-        document.addEventListener('click', function(event) {
+        document.addEventListener('click', function (event) {
             if (event.target.classList.contains('delete-item-btn')) {
                 itemToDeleteId = event.target.dataset.id;
                 itemToDeleteType = event.target.dataset.type;
@@ -595,7 +595,7 @@ require_once __DIR__ . '/../includes/header.php';
         });
         // When the confirm delete button in the modal is clicked
         if (confirmDeleteBtn) {
-            confirmDeleteBtn.addEventListener('click', async function() {
+            confirmDeleteBtn.addEventListener('click', async function () {
                 if (itemToDeleteId && itemToDeleteType) {
                     try {
                         const entity = itemToDeleteType === 'surgery' ? 'surgeries' : `${itemToDeleteType}s`;
@@ -636,23 +636,23 @@ require_once __DIR__ . '/../includes/header.php';
             uploadMultiple: true, // Allow multiple file uploads
             parallelUploads: 10, // How many files to upload in parallel
             createImageThumbnails: false, // Disable thumbnail creation to prevent Event object issues
-            params: function() {
+            params: function () {
                 return {
                     patient_id: patientId,
                     photo_album_type_id: photoAlbumTypeSelect.value
                 };
             },
-            init: function() {
+            init: function () {
                 const myDropzone = this;
 
                 // Listen to the "addedfile" event
-                myDropzone.on("addedfile", function(file) {
+                myDropzone.on("addedfile", function (file) {
                     // You can add custom logic here when a file is added
                     // If autoProcessQueue is true, the upload starts here
                 });
 
                 // Prevent thumbnail errors by handling the thumbnail event
-                myDropzone.on("thumbnail", function(file, dataUrl) {
+                myDropzone.on("thumbnail", function (file, dataUrl) {
                     // Since we disabled createImageThumbnails, this shouldn't fire
                     // But if it does, ensure we have valid data
                     if (typeof dataUrl !== 'string' || dataUrl.includes('[object')) {
@@ -662,7 +662,7 @@ require_once __DIR__ . '/../includes/header.php';
                 });
 
                 // Listen to the "successmultiple" event
-                myDropzone.on("successmultiple", function(files, response) {
+                myDropzone.on("successmultiple", function (files, response) {
                     // Handle successful uploads
                     console.log("Upload successful:", response);
 
@@ -685,7 +685,7 @@ require_once __DIR__ . '/../includes/header.php';
                 });
 
                 // Listen to the "errormultiple" event
-                myDropzone.on("errormultiple", function(files, response, xhr) {
+                myDropzone.on("errormultiple", function (files, response, xhr) {
                     // Handle errors
                     console.error("Upload error:", response);
                     let errorMessage = 'An error occurred during upload.';
@@ -708,7 +708,7 @@ require_once __DIR__ . '/../includes/header.php';
             }
         });
 
-        uploadModal.addEventListener('shown.bs.modal', function(event) {
+        uploadModal.addEventListener('shown.bs.modal', function (event) {
             fetchPhotoAlbumTypes();
         });
 
@@ -758,7 +758,7 @@ require_once __DIR__ . '/../includes/header.php';
         // Function to update URL when tab is clicked
         function setupTabNavigation() {
             document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tabElement => {
-                tabElement.addEventListener('shown.bs.tab', function(event) {
+                tabElement.addEventListener('shown.bs.tab', function (event) {
                     const targetId = event.target.getAttribute('data-bs-target').substring(1); // Remove #
                     const newUrl = new URL(window.location);
                     newUrl.searchParams.set('tab', targetId);
@@ -796,18 +796,18 @@ require_once __DIR__ . '/../includes/header.php';
                 maxFiles: 1,
                 autoProcessQueue: true,
                 createImageThumbnails: false, // Disable thumbnail creation to prevent Event object issues
-                params: function() {
+                params: function () {
                     return {
                         entity: 'patients',
                         action: 'upload_avatar',
                         id: patientId
                     };
                 },
-                init: function() {
+                init: function () {
                     const myDropzone = this;
 
                     // Prevent thumbnail errors by handling the thumbnail event
-                    myDropzone.on("thumbnail", function(file, dataUrl) {
+                    myDropzone.on("thumbnail", function (file, dataUrl) {
                         // Since we disabled createImageThumbnails, this shouldn't fire
                         // But if it does, ensure we have valid data
                         if (typeof dataUrl !== 'string' || dataUrl.includes('[object')) {
@@ -817,7 +817,7 @@ require_once __DIR__ . '/../includes/header.php';
                     });
 
                     // Handle successful upload
-                    myDropzone.on("success", function(file, response) {
+                    myDropzone.on("success", function (file, response) {
                         console.log("Avatar upload successful:", response);
 
                         if (response.success) {
@@ -842,7 +842,7 @@ require_once __DIR__ . '/../includes/header.php';
                     });
 
                     // Handle upload errors
-                    myDropzone.on("error", function(file, response, xhr) {
+                    myDropzone.on("error", function (file, response, xhr) {
                         console.error("Avatar upload error:", response);
                         let errorMessage = 'Avatar upload failed.';
 
@@ -856,7 +856,7 @@ require_once __DIR__ . '/../includes/header.php';
                     });
 
                     // Handle file added
-                    myDropzone.on("addedfile", function(file) {
+                    myDropzone.on("addedfile", function (file) {
                         // Remove any existing files (since maxFiles is 1)
                         if (myDropzone.files.length > 1) {
                             myDropzone.removeFile(myDropzone.files[0]);
@@ -868,7 +868,7 @@ require_once __DIR__ . '/../includes/header.php';
 
         // Handle Change Avatar Button Click
         if (changeAvatarBtn) {
-            changeAvatarBtn.addEventListener('click', function(e) {
+            changeAvatarBtn.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
 
@@ -888,7 +888,7 @@ require_once __DIR__ . '/../includes/header.php';
 
         // Handle Delete Avatar Button Click
         if (deleteAvatarBtn) {
-            deleteAvatarBtn.addEventListener('click', function(e) {
+            deleteAvatarBtn.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
 
@@ -935,7 +935,7 @@ require_once __DIR__ . '/../includes/header.php';
         setupTabNavigation();
 
         // Initialize avatar dropzone when modal is shown
-        avatarUploadModal.addEventListener('shown.bs.modal', function() {
+        avatarUploadModal.addEventListener('shown.bs.modal', function () {
             if (!avatarDropzone) {
                 initializeAvatarDropzone();
             }

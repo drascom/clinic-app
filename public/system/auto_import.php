@@ -60,7 +60,7 @@ require_once '../includes/header.php';
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const testButton = document.getElementById('test-connection');
         const startButton = document.getElementById('start-import');
         const progressDiv = document.getElementById('import-progress');
@@ -70,7 +70,7 @@ require_once '../includes/header.php';
         const resultsContent = document.getElementById('results-content');
 
         // Test connection button
-        testButton.addEventListener('click', async function() {
+        testButton.addEventListener('click', async function () {
             testButton.disabled = true;
             testButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Testing...';
 
@@ -124,7 +124,7 @@ require_once '../includes/header.php';
             }
         });
 
-        startButton.addEventListener('click', async function() {
+        startButton.addEventListener('click', async function () {
             startButton.disabled = true;
             progressDiv.style.display = 'block';
             resultsDiv.style.display = 'none';
@@ -177,7 +177,7 @@ require_once '../includes/header.php';
                             // Check surgery column (column 2 - Room 3A)
                             const surgeryPatientName = row[2] || '';
                             if (dateStr && surgeryPatientName && !surgeryPatientName.includes(
-                                    'Closed')) {
+                                'Closed')) {
                                 allEntries.push({
                                     dateStr: dateStr,
                                     patientName: surgeryPatientName,
@@ -189,7 +189,7 @@ require_once '../includes/header.php';
                             // Check consultation column (column 7 - Consultation F2F/V2V)
                             const consultationEntry = row[7] || '';
                             if (dateStr && consultationEntry && !consultationEntry.includes(
-                                    'Closed')) {
+                                'Closed')) {
                                 allEntries.push({
                                     dateStr: dateStr,
                                     patientName: consultationEntry, // Send the raw entry for backend parsing
@@ -205,41 +205,59 @@ require_once '../includes/header.php';
                 updateStatus(`Found ${allEntries.length} valid entries to process...`, 30);
 
                 // Step 2: Process each entry
-                const results = {
-                    processed: 0,
-                    patientsCreated: 0,
-                    patientsExisting: 0,
-                    surgeriesCreated: 0,
-                    surgeriesSkipped: 0,
-                    appointmentsCreated: 0,
-                    appointmentsSkipped: 0,
-                    errors: []
+                updateStatus(`Found ${allEntries.length} valid entries. Sending to server for processing...`, 50);
+
+                // Step 2: Send all entries in a single batch request
+                const payload = {
+                    action: 'process_entry',
+                    entries: allEntries.map(entry => ({
+                        date_str: entry.dateStr,
+                        original_entry: entry.originalEntry || entry.patientName
+                    }))
                 };
 
-                for (let i = 0; i < allEntries.length; i++) {
-                    const entry = allEntries[i];
-                    const progress = 30 + (i / allEntries.length) * 60;
+                const batchResponse = await fetch('/api_handlers/google_sheets.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
 
-                    updateStatus(`Processing ${entry.patientName} (${i + 1}/${allEntries.length})...`,
-                        progress);
 
-                    try {
-                        await processEntry(entry, results);
-                        results.processed++;
-                    } catch (error) {
-                        results.errors.push({
-                            entry: entry,
-                            error: error.message
-                        });
-                    }
+                if (!batchResponse.ok) {
+                    throw new Error(`HTTP error! status: ${batchResponse.status}`);
                 }
 
-                updateStatus('Import completed!', 100);
-                showResults(results);
+                const batchResultText = await batchResponse.text();
+                let batchResult;
+                try {
+                    batchResult = JSON.parse(batchResultText);
+                } catch (e) {
+                    console.error('Invalid JSON response from batch processing:', batchResultText);
+                    throw new Error('Server returned invalid JSON for batch processing');
+                }
+
+                updateStatus('Processing complete!', 100);
+
+                if (batchResult.success) {
+                    const results = {
+                        processed: batchResult.results.length,
+                        patientsCreated: batchResult.results.filter(r => r.patient_created).length,
+                        patientsExisting: batchResult.results.filter(r => !r.patient_created).length,
+                        surgeriesCreated: batchResult.results.filter(r => r.record_type === 'surgery' && r.record_created).length,
+                        surgeriesSkipped: batchResult.results.filter(r => r.record_type === 'surgery' && !r.record_created).length,
+                        appointmentsCreated: batchResult.results.filter(r => r.record_type === 'appointment' && r.record_created).length,
+                        appointmentsSkipped: batchResult.results.filter(r => r.record_type === 'appointment' && !r.record_created).length,
+                        errors: batchResult.errors || []
+                    };
+                    showResults(results);
+                } else {
+                    throw new Error('Batch processing failed: ' + (batchResult.error || 'Unknown error'));
+                }
 
             } catch (error) {
-                statusDiv.innerHTML =
-                    `<i class="fas fa-exclamation-triangle me-2"></i>Error: ${error.message}`;
+                statusDiv.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i>Error: ${error.message}`;
                 statusDiv.className = 'alert alert-danger';
             } finally {
                 startButton.disabled = false;
@@ -250,56 +268,6 @@ require_once '../includes/header.php';
             statusDiv.innerHTML = `<i class="fas fa-spinner fa-spin me-2"></i>${message}`;
             progressBar.style.width = progress + '%';
             progressBar.textContent = Math.round(progress) + '%';
-        }
-
-        async function processEntry(entry, results) {
-            const formData = new FormData();
-            formData.append('action', 'process_entry');
-            formData.append('date_str', entry.dateStr);
-            // The original_entry now contains the full string for parsing on the backend
-            formData.append('original_entry', entry.originalEntry || entry.patientName);
-
-
-            const response = await fetch('/api_handlers/google_sheets.php', {
-                method: 'POST',
-                body: formData
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const responseText = await response.text();
-            let apiResult;
-            try {
-                apiResult = JSON.parse(responseText);
-            } catch (e) {
-                console.error('Invalid JSON response:', responseText);
-                throw new Error('Server returned invalid JSON response');
-            }
-
-            if (apiResult.success) {
-                apiResult.results.forEach(result => {
-                    if (result.patient_created) results.patientsCreated++;
-                    else results.patientsExisting++;
-
-                    if (result.record_created) {
-                        if (result.record_type === 'surgery') {
-                            results.surgeriesCreated++;
-                        } else if (result.record_type === 'appointment') {
-                            results.appointmentsCreated = (results.appointmentsCreated || 0) + 1;
-                        }
-                    } else {
-                        if (result.entry_type === 'surgery') {
-                            results.surgeriesSkipped++;
-                        } else {
-                            results.appointmentsSkipped = (results.appointmentsSkipped || 0) + 1;
-                        }
-                    }
-                });
-            } else {
-                throw new Error(apiResult.error || 'Unknown error');
-            }
         }
 
         function showResults(results) {

@@ -122,8 +122,10 @@ require_once __DIR__ . '/../includes/header.php';
                             <fieldset class="border rounded p-3 mb-3 shadow-sm bg-body-secondary">
                                 <div class="d-flex justify-content-between flex-wrap align-items-start gap-3 ">
                                     <legend class="w-auto m-0 px-2">
-                                        <h4 class="mb-0 text-primary" id="patient_name">
-                                            <i class="fas fa-user me-2"></i>
+                                        <h4 class="mb-0 text-primary">
+                                            <a href="#" id="patient_name_link" class="text-decoration-none text-primary">
+                                                <i class="fas fa-user me-2"></i><span id="patient_name"></span>
+                                            </a>
                                         </h4>
                                     </legend>
                                     <p class="mb-2 fs-6">
@@ -358,7 +360,7 @@ require_once __DIR__ . '/../includes/header.php';
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
         // --- Core Validation Setup ---
         const form = document.getElementById("surgery-form");
         const submitButton = form.querySelector('button[type="submit"]');
@@ -381,7 +383,7 @@ require_once __DIR__ . '/../includes/header.php';
         }; // Track if user has interacted with form
 
         // Global function to update status display (accessible from surgery data loading)
-        window.updateStatusDisplayFromData = function(status) {
+        window.updateStatusDisplayFromData = function (status) {
             const statusDisplay = document.getElementById('status-display');
             const statusColors = {
                 'scheduled': 'bg-warning text-dark',
@@ -451,9 +453,9 @@ require_once __DIR__ . '/../includes/header.php';
             const formData = new FormData(form);
 
             fetch('/api.php', {
-                    method: 'POST',
-                    body: formData
-                })
+                method: 'POST',
+                body: formData
+            })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -586,13 +588,13 @@ require_once __DIR__ . '/../includes/header.php';
         function getFieldValidationRules() {
             // Centralize validation rules for easy management
             const rules = [{
-                    id: "date",
-                    msg: "Please select a surgery date."
-                },
-                {
-                    id: "room_id",
-                    msg: "Please select a room."
-                },
+                id: "date",
+                msg: "Please select a surgery date."
+            },
+            {
+                id: "room_id",
+                msg: "Please select a room."
+            },
             ];
 
             // Patient ID is only required when creating a new surgery
@@ -624,7 +626,7 @@ require_once __DIR__ . '/../includes/header.php';
                         if (data.success) {
                             allAgencies = data.agencies;
                             populateModalAgencyDropdown();
-                        } else {}
+                        } else { }
                     }).catch(error => {
                         console.error('Error fetching agencies:', error);
                     });
@@ -759,8 +761,8 @@ require_once __DIR__ . '/../includes/header.php';
             }
 
             apiRequest('availability', 'byDate', {
-                    date: selectedDate
-                })
+                date: selectedDate
+            })
                 .then(data => {
                     if (data.success) {
                         const statistics = data.statistics;
@@ -883,8 +885,8 @@ require_once __DIR__ . '/../includes/header.php';
         if (isEditing) {
             const surgeryId = surgeryIdInput.value;
             apiRequest('surgeries', 'get', {
-                    id: surgeryId
-                })
+                id: surgeryId
+            })
                 .then(data => {
                     if (data.success) {
                         const surgery = data.surgery;
@@ -910,8 +912,8 @@ require_once __DIR__ . '/../includes/header.php';
                         // Fetch and display patient details if in editing mode
                         if (isEditing && surgery.patient_id) {
                             apiRequest('patients', 'get', {
-                                    id: surgery.patient_id
-                                })
+                                id: surgery.patient_id
+                            })
                                 .then(patientData => {
                                     if (patientData.success && patientData.patient) {
                                         const patient = patientData.patient;
@@ -920,8 +922,11 @@ require_once __DIR__ . '/../includes/header.php';
                                         const patientEmailEl = document.getElementById('patient_email');
 
                                         if (patientNameEl) {
-                                            patientNameEl.innerHTML =
-                                                `<i class="fas fa-user me-2"></i>${patient.name}`;
+                                            patientNameEl.textContent = patient.name;
+                                            const patientNameLink = document.getElementById('patient_name_link');
+                                            if (patientNameLink) {
+                                                patientNameLink.href = `/patient/patient_details.php?id=${patient.id}`;
+                                            }
                                         }
                                         if (patientPhoneEl) {
                                             patientPhoneEl.textContent = patient.phone || 'N/A';
@@ -1004,7 +1009,7 @@ require_once __DIR__ . '/../includes/header.php';
 
         // Add event listener for date changes to check room availability
         if (dateInput) {
-            dateInput.addEventListener('change', function() {
+            dateInput.addEventListener('change', function () {
                 checkRoomAvailability();
                 loadAvailableTechnicians(); // Fetch data and update text indicator
 
@@ -1040,8 +1045,8 @@ require_once __DIR__ . '/../includes/header.php';
 
             techAvailabilityText.innerHTML = '<small class="text-muted">Checking availability...</small>';
             apiRequest('staff_availability', 'byDate', {
-                    date: selectedDate
-                })
+                date: selectedDate
+            })
                 .then(data => {
                     if (data.success) {
                         availableTechnicians = data.technicians || [];
@@ -1210,7 +1215,7 @@ require_once __DIR__ . '/../includes/header.php';
 
             // Add event listeners for remove buttons
             assignedTechniciansDiv.querySelectorAll('button[data-tech-id]').forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function () {
                     const techId = this.getAttribute('data-tech-id');
                     removeTechnician(techId);
                 });
@@ -1229,14 +1234,14 @@ require_once __DIR__ . '/../includes/header.php';
         }
 
         // Event listeners
-        addTechniciansBtn.addEventListener('click', function() {
+        addTechniciansBtn.addEventListener('click', function () {
             if (renderTechnicianModal()) {
                 technicianModal.show();
             }
         });
 
         // Use event delegation for the dynamically created save button
-        document.getElementById('technicianModal').addEventListener('click', function(event) {
+        document.getElementById('technicianModal').addEventListener('click', function (event) {
             if (event.target && event.target.id === 'save-technicians') {
                 validationState.hasInteracted = true;
 
@@ -1257,7 +1262,7 @@ require_once __DIR__ . '/../includes/header.php';
         // Add event listener for date changes to check technician availability
         if (dateInput) {
             // Add blur event for date validation
-            dateInput.addEventListener('blur', function() {
+            dateInput.addEventListener('blur', function () {
                 if (validationState.hasInteracted) {
                     validateSingleField(this.id);
                 }
@@ -1268,11 +1273,11 @@ require_once __DIR__ . '/../includes/header.php';
 
         // Patient selection validation
         if (patientSelect) {
-            patientSelect.addEventListener('change', function() {
+            patientSelect.addEventListener('change', function () {
                 validationState.hasInteracted = true;
                 validateField(this);
             });
-            patientSelect.addEventListener('blur', function() {
+            patientSelect.addEventListener('blur', function () {
                 if (validationState.hasInteracted) {
                     validateField(this);
                 }
@@ -1281,7 +1286,7 @@ require_once __DIR__ . '/../includes/header.php';
 
         // Room selection validation
         if (roomSelect) {
-            roomSelect.addEventListener('change', function() {
+            roomSelect.addEventListener('change', function () {
                 validationState.hasInteracted = true;
                 validateField(this);
                 // Also check room availability when room changes
@@ -1289,7 +1294,7 @@ require_once __DIR__ . '/../includes/header.php';
                     checkRoomAvailability();
                 }
             });
-            roomSelect.addEventListener('blur', function() {
+            roomSelect.addEventListener('blur', function () {
                 if (validationState.hasInteracted) {
                     validateField(this);
                 }
@@ -1297,7 +1302,7 @@ require_once __DIR__ . '/../includes/header.php';
         }
 
         // Handle surgery form submission
-        form.addEventListener('submit', function(event) {
+        form.addEventListener('submit', function (event) {
             event.preventDefault(); // Prevent default form submission
 
             // Clear previous messages
@@ -1318,9 +1323,9 @@ require_once __DIR__ . '/../includes/header.php';
             // Note: technician IDs are already included as hidden inputs by updateAssignedTechnicians()
 
             fetch('/api.php', {
-                    method: 'POST',
-                    body: formData
-                })
+                method: 'POST',
+                body: formData
+            })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -1351,7 +1356,7 @@ require_once __DIR__ . '/../includes/header.php';
         });
 
         if (saveNewPatientButton) {
-            saveNewPatientButton.addEventListener('click', function() {
+            saveNewPatientButton.addEventListener('click', function () {
                 if (!validateNewPatientForm()) {
                     newPatientStatusDiv.innerHTML =
                         '<div class="alert alert-danger mt-2">Please fill out all required fields.</div>';
@@ -1421,9 +1426,9 @@ require_once __DIR__ . '/../includes/header.php';
                 newPatientStatusDiv.innerHTML = ''; // Clear previous status
 
                 fetch('/api.php', {
-                        method: 'POST',
-                        body: formData
-                    })
+                    method: 'POST',
+                    body: formData
+                })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
@@ -1493,7 +1498,7 @@ require_once __DIR__ . '/../includes/header.php';
         const statusSelect = document.getElementById('status');
 
         if (currentGraftCountInput && statusSelect) {
-            currentGraftCountInput.addEventListener('input', function() {
+            currentGraftCountInput.addEventListener('input', function () {
                 if (this.value.trim() !== '' && parseInt(this.value) >= 0) {
                     statusSelect.value = 'completed';
                     updateStatusDisplayFromData('completed');
@@ -1503,14 +1508,14 @@ require_once __DIR__ . '/../includes/header.php';
 
         // Reset modal form when hidden
         if (newPatientModal) {
-            newPatientModal.addEventListener('hidden.bs.modal', function() {
+            newPatientModal.addEventListener('hidden.bs.modal', function () {
                 newPatientForm.reset();
                 newPatientForm.querySelectorAll('.is-invalid').forEach(el => el.classList.remove(
                     'is-invalid'));
                 newPatientStatusDiv.innerHTML = '';
             });
 
-            newPatientModal.addEventListener('shown.bs.modal', function() {
+            newPatientModal.addEventListener('shown.bs.modal', function () {
                 const userRole = '<?php echo get_user_role(); ?>';
                 const userAgencyId = '<?php echo get_user_agency_id(); ?>';
                 const agencySelect = document.getElementById('new_patient_agency_id');
@@ -1609,9 +1614,9 @@ require_once __DIR__ . '/../includes/header.php';
                     formData.append('status', newStatus);
 
                     fetch('/api.php', {
-                            method: 'POST',
-                            body: formData
-                        })
+                        method: 'POST',
+                        body: formData
+                    })
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
@@ -1648,7 +1653,7 @@ require_once __DIR__ . '/../includes/header.php';
 
             // Handle Enter and Escape keys in inline select
             if (statusInline) {
-                statusInline.addEventListener('keydown', function(e) {
+                statusInline.addEventListener('keydown', function (e) {
                     if (e.key === 'Enter') {
                         e.preventDefault();
                         saveStatus();

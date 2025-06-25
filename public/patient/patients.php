@@ -106,9 +106,10 @@ $page_title = "Patients";
                         let tableRows = '';
 
                         patients.forEach(patient => {
-                            const avatarHtml = patient.avatar ?
-                                `<img src="${patient.avatar}" alt="Avatar" class="avatar">` :
-                                `<img src="../assets/avatar.png" alt="Default Avatar" class="avatar">`;
+                            const avatarSrc = patient.avatar ?
+                                `${patient.avatar}` :
+                                `../assets/avatar.png`;
+                            const avatarHtml = `<img src="${avatarSrc}" alt="Avatar" class="avatar">`;
 
                             // Build agency column for admin/editor users
                             const agencyColumnHtml =

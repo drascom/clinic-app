@@ -40,7 +40,8 @@ if (
 
     <!-- Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <!-- Custom CSS -->
+    <!-- VanillaJS Datepicker CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/css/datepicker.min.css">
 
     <?php if (is_staff()): ?>
         <link rel="stylesheet" href="/assets/css/style.css">
@@ -50,7 +51,6 @@ if (
     <?php endif; ?>
     <!-- Dropzone JS -->
     <script src="https://unpkg.com/dropzone@6.0.0-beta.1/dist/dropzone-min.js"></script>
-
     <!-- API Helper for secure POST requests -->
     <script src="/assets/js/api-helper.js"></script>
     <script>
@@ -98,7 +98,13 @@ if (
                     <span class="d-none d-sm-inline">Liv Patient Management</span>
                     <span class="d-inline d-sm-none">LivPM</span>
                 </a>
-
+                <ul class="navbar-nav">
+                    <li>
+                        <button id="theme-btn" class="m-2 nav-link btn btn-lg text-white" aria-label="Toggle theme">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                    </li>
+                </ul>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -153,20 +159,8 @@ if (
                                         <span class="d-lg-inline">Patients</span>
                                     </a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/app-msg">
-                                        <i class="fas fa-sms me-1"></i>
-                                        <span class="d-lg-inline">Messages</span>
-                                    </a>
-                                </li>
-                                <?php if (is_editor() || is_admin()): ?>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="/app-email">
-                                            <i class="fas fa-envelope me-1"></i>
-                                            <span class="d-lg-inline">Emails</span>
-                                        </a>
-                                    </li>
 
+                                <?php if (is_editor() || is_admin()): ?>
                                     <!-- HR Management - for Editor -->
                                     <li class="nav-item dropdown">
                                         <a class="nav-link dropdown-toggle" href="#" id="hrDropdown" role="button"
@@ -261,71 +255,78 @@ if (
                                             Database Import
                                         </a>
                                     </li>
+                                </ul>
+                                </li>
+                            <?php endif; ?>
+                        <?php endif; ?>
                         </ul>
-                        </li>
-                    <?php endif; ?>
-                <?php endif; ?>
-                </ul>
-                <ul class="navbar-nav">
-                    <li>
-                        <button id="theme-btn" class="m-2 nav-link btn btn-lg text-white" aria-label="Toggle theme">
-                            <i class="fas fa-moon"></i>
-                        </button>
-                    </li>
-                </ul>
-                <ul class="navbar-nav">
-                    <?php
-                        // Fetch username for the logged-in user
-                        $user_id = get_user_id();
-                        $stmt = $pdo->prepare("SELECT username FROM users WHERE id = ?");
-                        $stmt->execute([$user_id]);
-                        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-                        $username = $user['username'] ?? 'User';
-                    ?>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-user-circle me-1"></i>
-                            <span class="d-none d-md-inline"><?php htmlspecialchars($username); ?></span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
-                            <li>
-                                <a class="dropdown-item"
-                                    href="/profile/profile.php?user_id=<?php echo $_SESSION['user_id']; ?>">
-                                    <i class="fas fa-user-cog me-2"></i>Profile
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="/admin/email_settings.php">
-                                    <i class="fas fa-envelope-open-text me-2"></i>Email Settings
-                                </a>
-                            </li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="/logout.php">
-                                    <i class="fas fa-sign-out-alt me-2"></i>Logout
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
 
-            <?php else: ?>
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="login.php">
-                            <i class="fas fa-sign-in-alt me-1"></i>Login
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/auth/signup.php">
-                            <i class="fas fa-user-plus me-1"></i>Sign Up
-                        </a>
-                    </li>
-                </ul>
-            <?php endif; ?>
+                        <ul class="navbar-nav">
+                            <?php
+                            // Fetch username for the logged-in user
+                            $user_id = get_user_id();
+                            $stmt = $pdo->prepare("SELECT name,surname,username FROM users WHERE id = ?");
+                            $stmt->execute([$user_id]);
+                            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                            $name = trim(($user['name'] ?? '') . ' ' . ($user['surname'] ?? ''));
+                            $username = $user['username'] ?? 'User';
+                            ?>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user-circle me-2"></i>
+                                    <span class="d-sm-inline"><?php echo htmlspecialchars($name ?: $username); ?></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
+                                    <li>
+                                        <a class="dropdown-item"
+                                            href="/profile/profile.php?user_id=<?php echo $_SESSION['user_id']; ?>">
+                                            <i class="fas fa-user-cog me-2"></i>Profile
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="/app-msg">
+                                            <i class="fas fa-sms me-1"></i>
+                                            <span class="d-lg-inline">Messages</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="/app-email">
+                                            <i class="fas fa-envelope me-1"></i>
+                                            <span class="d-lg-inline">Emails</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="/admin/email_settings.php">
+                                            <i class="fas fa-envelope-open-text me-2"></i>Email Settings
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="/logout.php">
+                                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                    <?php else: ?>
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" href="login.php">
+                                    <i class="fas fa-sign-in-alt me-1"></i>Login
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/auth/signup.php">
+                                    <i class="fas fa-user-plus me-1"></i>Sign Up
+                                </a>
+                            </li>
+                        </ul>
+                    <?php endif; ?>
 
                 </div>
             </div>
