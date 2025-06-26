@@ -246,3 +246,7 @@
     background-color: var(--bs-primary);
     border-color: var(--bs-primary);
 }
+
+.card-body > .text-muted.font-weight-medium {
+    font-size: 1.3rem; /* Increased font size for top card headers */
+}

@@ -15,3 +15,5 @@ uploads/
 .kilocode/
 php_error.log
 Archive.zip
+db/database.sql
+db/migrations

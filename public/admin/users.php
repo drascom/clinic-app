@@ -206,7 +206,7 @@ $page_title = "User Management";
 <?php include __DIR__ . '/../includes/footer.php'; ?>
 <script>
     // User Management Script
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const userModal = document.getElementById('userModal');
         const userForm = document.getElementById('userForm');
         const userIdInput = document.getElementById('userId');
@@ -229,7 +229,7 @@ $page_title = "User Management";
         const clearSearchBtn = document.getElementById('clear-search');
 
         if (searchInput && clearSearchBtn) {
-            clearSearchBtn.addEventListener('click', function() {
+            clearSearchBtn.addEventListener('click', function () {
                 searchInput.value = '';
                 populateUsersTable(allUsers);
             });
@@ -275,7 +275,7 @@ $page_title = "User Management";
             apiRequest('users', 'list')
                 .then(data => {
                     if (data.success) {
-                        allUsers = data.users; // Store fetched users
+                        allUsers = data.data; // Store fetched users
                         populateUsersTable(allUsers);
                     } else {
                         console.error('Error fetching users:', data.message); // Log 12
@@ -359,7 +359,7 @@ $page_title = "User Management";
 
         // Event listener for the modal show event (for editing)
         if (userModal) {
-            userModal.addEventListener('show.bs.modal', function(event) {
+            userModal.addEventListener('show.bs.modal', function (event) {
                 const button = event.relatedTarget; // Button that triggered the modal
                 const userId = button.getAttribute('data-id');
 
@@ -373,8 +373,8 @@ $page_title = "User Management";
 
                     // Fetch user data to populate the form
                     apiRequest('users', 'get', {
-                            id: userId
-                        })
+                        id: userId
+                    })
                         .then(data => {
                             if (data.success && data.user) {
                                 emailInput.value = data.user.email;
@@ -410,7 +410,7 @@ $page_title = "User Management";
 
         // Event listener for the Save User button
         if (saveUserBtn) {
-            saveUserBtn.addEventListener('click', function() {
+            saveUserBtn.addEventListener('click', function () {
                 // Add Bootstrap validation classes
                 userForm.classList.add('was-validated');
 
@@ -455,12 +455,12 @@ $page_title = "User Management";
                 userData.action = action; // Add action to the data payload
 
                 fetch('/api.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(userData)
-                    })
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                })
                     .then(response => response.json())
                     .then(response => {
                         if (response.success) {
@@ -483,26 +483,26 @@ $page_title = "User Management";
 
         // Event delegation for Edit and Delete buttons
         if (usersTableBody) {
-            usersTableBody.addEventListener('click', function(event) {
+            usersTableBody.addEventListener('click', function (event) {
                 const target = event.target;
 
                 // Handle Delete button click
                 if (target.classList.contains('delete-user-btn') || target.closest(
-                        '.delete-user-btn')) { // Also check parent for icon clicks
+                    '.delete-user-btn')) { // Also check parent for icon clicks
                     const deleteButton = target.closest('.delete-user-btn');
                     const userId = deleteButton.getAttribute('data-id');
                     if (confirm('Are you sure you want to delete this user?')) {
                         fetch('/api.php', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({
-                                    entity: 'users',
-                                    action: 'delete',
-                                    id: userId
-                                })
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                entity: 'users',
+                                action: 'delete',
+                                id: userId
                             })
+                        })
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
@@ -523,7 +523,7 @@ $page_title = "User Management";
 
         // Event listener for the search input
         if (searchInput) {
-            searchInput.addEventListener('input', function() {
+            searchInput.addEventListener('input', function () {
                 const searchTerm = this.value.toLowerCase();
                 const filteredUsers = allUsers.filter(user => {
                     // Search by ID, email, username, or role

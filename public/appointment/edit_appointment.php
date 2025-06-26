@@ -70,13 +70,14 @@ $page_title = 'Edit Appointment';
 
                     <!-- Second Column -->
                     <div class="col-md-6">
-                        <div class="btn-group d-grid gap-2 d-md-flex justify-content-md-center p-4">
-                            <button id="btn-consultation" type="button"
-                                class="btn btn-outline-primary px-4">Consultation</button>
-                            <button id="btn-treatment" type="button"
-                                class="btn btn-outline-primary px-4">Treatment</button>
-                        </div>
                         <fieldset class="border rounded p-3 mb-3 shadow-sm">
+                            <div class="btn-group d-grid gap-2 d-md-flex justify-content-md-center p-4">
+                                <button id="btn-consultation" type="button"
+                                    class="btn btn-outline-primary px-4">Consultation</button>
+                                <button id="btn-treatment" type="button"
+                                    class="btn btn-outline-primary px-4">Treatment</button>
+                            </div>
+
                             <div id="treatment-section" class="fade-out">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <legend class="w-auto m-0 p-0" style="font-size:1rem;">
@@ -97,10 +98,10 @@ $page_title = 'Edit Appointment';
                                         class="text-danger">*</span>
                                 </legend></br>
                                 <div class="btn-group mx-auto" role="group" aria-label="Consultation type selection">
-                                    <label class="btn btn-outline-primary"
-                                        for="consultation_type_ftof">Face-to-face</label>
                                     <input type="radio" class="btn-check" name="consultation_type"
                                         id="consultation_type_ftof" value="face-to-face" autocomplete="off">
+                                    <label class="btn btn-outline-primary"
+                                        for="consultation_type_ftof">Face-to-face</label>
 
                                     <input type="radio" class="btn-check" name="consultation_type"
                                         id="consultation_type_vtov" value="video-to-video" autocomplete="off">
@@ -178,17 +179,13 @@ $page_title = 'Edit Appointment';
 
 <!-- Dependency & Enhancement scripts -->
 <script>
-    // Helper to log all major steps and responses
-    function debugLog(...args) { console.log('[APPT EDIT]', ...args); }
-
-
+    // All console logs removed as per request.
 
     let rooms = [], patients = [], procedures = [];
     const appointmentId = <?= $appointment_id ? (int) $appointment_id : 'null' ?>;
 
     document.addEventListener('DOMContentLoaded', function () {
         if (!appointmentId) {
-            debugLog('No appointmentId specified in URL. Nothing to edit.');
             document.getElementById('appointment-form').innerHTML =
                 '<div class="alert alert-danger">No appointment ID provided.</div>';
             return;
@@ -209,7 +206,7 @@ $page_title = 'Edit Appointment';
 
                 // Automatically submit the form
                 const form = document.getElementById('appointment-form');
-                onFormSubmit({
+                onBackgroundSubmit({
                     target: form
                 });
             });
@@ -244,6 +241,7 @@ $page_title = 'Edit Appointment';
 
             btnConsultation.classList.add('active');
             btnTreatment.classList.remove('active');
+            $('#procedure-id').val(1).trigger('change'); // Set procedure_id to 1
         });
 
         btnTreatment.addEventListener('click', () => {
@@ -281,7 +279,6 @@ $page_title = 'Edit Appointment';
         }
         // Always add the event listener after datepicker is ensured
         datepickerContainer.addEventListener('changeDate', (event) => {
-            debugLog('Datepicker changeDate event fired!');
             const datepickerInstance = datepickerContainer.datepicker;
             if (datepickerInstance) {
                 const formattedDate = datepickerInstance.getDate('yyyy-mm-dd');
@@ -295,7 +292,6 @@ $page_title = 'Edit Appointment';
     });
 
     async function loadAppointmentForEdit(id) {
-        debugLog('Starting to load appointment for edit:', id);
         try {
 
             const [roomsR, patientsR, proceduresR, appointmentData] = await Promise.all([
@@ -304,11 +300,6 @@ $page_title = 'Edit Appointment';
                 apiRequest('procedures', 'active'),
                 apiRequest('appointments', 'get', { id })
             ]);
-
-            debugLog('API Response - Rooms:', roomsR);
-            debugLog('API Response - Patients:', patientsR);
-            debugLog('API Response - Procedures:', proceduresR);
-            debugLog('API Response - Appointment:', appointmentData);
 
             rooms = roomsR.rooms || [];
             patients = patientsR.patients || [];
@@ -320,7 +311,6 @@ $page_title = 'Edit Appointment';
 
             // Defensive: if data missing, abort
             if (!(appointmentData && appointmentData.success && appointmentData.appointment)) {
-                debugLog('Appointment not found or failed to fetch.');
                 document.getElementById('appointment-form').innerHTML =
                     '<div class="alert alert-danger">Could not load appointment details.</div>';
                 return;
@@ -360,7 +350,6 @@ $page_title = 'Edit Appointment';
             fetchAvailableSlots();
 
         } catch (err) {
-            debugLog('Error loading appointment:', err);
             document.getElementById('appointment-form').innerHTML =
                 '<div class="alert alert-danger">Could not load appointment details. Please try again later.</div>';
         }
@@ -371,19 +360,15 @@ $page_title = 'Edit Appointment';
         const roomId = document.getElementById('room-id-input').value;
 
         if (!date || !roomId) {
-            debugLog('Date or Room ID missing for fetching available slots. Skipping API call.');
             return;
         }
 
-        debugLog('Fetching available slots for Date:', date, 'Room ID:', roomId);
         try {
             const response = await apiRequest('appointments', 'get_available_slots', { date, room_id: roomId });
-            debugLog('API Response - Available Slots:', response);
 
             if (response.success && response.booked_slots) {
                 // Here you would update the UI to show available/booked slots
                 // For now, just logging the booked slots
-                debugLog('Booked slots:', response.booked_slots);
                 // Example: Visually mark booked slots
                 document.querySelectorAll('.time-slot-btn').forEach(btn => {
                     const slotStart = btn.dataset.start;
@@ -405,10 +390,10 @@ $page_title = 'Edit Appointment';
                     }
                 });
             } else {
-                debugLog('Failed to fetch available slots:', response.error || 'Unknown error');
+                // Silently fail on fetch error
             }
         } catch (error) {
-            debugLog('Error fetching available slots:', error);
+            // Silently fail on fetch error
         }
     }
 
@@ -462,14 +447,43 @@ $page_title = 'Edit Appointment';
         apiRequest('appointments', 'update', payload)
             .then(res => {
                 if (res.success) {
-                    alert('Appointment updated successfully!');
-                    window.location = `/patient/patient_details.php?id=${payload.patient_id}&tab=appointments`;
+                    showToast('Appointment updated successfully!', 'success');
+                    setTimeout(() => {
+                        // window.location = `/patient/patient_details.php?id=${payload.patient_id}&tab=appointments`;
+                    }, 1000);
                 } else {
-                    alert('Failed to update: ' + (res.error || 'Unknown error'));
+                    showToast('Failed to update: ' + (res.error || 'Unknown error'), 'danger');
                 }
             })
             .catch(err => {
-                alert('Error submitting: ' + err);
+                showToast('Error submitting: ' + err, 'danger');
+            });
+    }
+
+    function onBackgroundSubmit(e) {
+        const payload = {
+            id: appointmentId,
+            patient_id: document.getElementById('patient-id').value,
+            room_id: document.getElementById('room-id-input').value,
+            appointment_date: document.getElementById('appointment-date-input').value,
+            start_time: document.getElementById('start-time').value,
+            end_time: document.getElementById('end-time').value,
+            procedure_id: document.getElementById('procedure-id').value,
+            notes: document.getElementById('notes').value,
+            consultation_type: document.querySelector('input[name="consultation_type"]:checked')?.value,
+            appointment_type: document.querySelector('.btn-group button.active')?.id === 'btn-consultation' ? 'consultation' : 'treatment'
+        };
+        apiRequest('appointments', 'update', payload)
+            .then(res => {
+                if (res.success) {
+                    // Soft refresh by re-loading available slots
+                    fetchAvailableSlots();
+                } else {
+                    // Fail silently on background update
+                }
+            })
+            .catch(err => {
+                // Fail silently on background update
             });
     }
 

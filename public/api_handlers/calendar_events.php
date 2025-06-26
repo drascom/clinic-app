@@ -38,12 +38,7 @@ function handle_calendar_events($action, $method, $db, $input = [])
         // Get all appointments for the specified month
         $stmt_app = $db->prepare("
             SELECT
-                a.id,
-                a.appointment_date,
-                a.start_time,
-                a.end_time,
-                a.consultation_type,
-                a.notes,
+                a.*,
                 p.id as patient_id,
                 p.name as patient_name,
                 r.name as room_name,
@@ -60,58 +55,35 @@ function handle_calendar_events($action, $method, $db, $input = [])
         foreach ($appointments as $apt) {
             $date = $apt['appointment_date'];
             if (isset($events[$date])) {
-                $events[$date]['appointments'][] = [
-                    'id' => $apt['id'],
-                    'patient_id' => $apt['patient_id'],
-                    'patient_name' => $apt['patient_name'],
-                    'date' => $apt['appointment_date'],
-                    'start_time' => $apt['start_time'],
-                    'end_time' => $apt['end_time'],
-                    'room_name' => $apt['room_name'],
-                    'type' => $apt['consultation_type'],
-                    'procedure_name' => $apt['procedure_name'],
-                    'notes' => $apt['notes'],
-                    'summary' => trim($apt['start_time'] . ' ' . $apt['notes'])
-                ];
+                $events[$date]['appointments'][] = $apt;
             }
         }
 
         // Get all surgeries for the specified month
         $stmt_surg = $db->prepare("
             SELECT
-                s.id,
-                s.date as surgery_date,
-                s.notes,
-                s.status,
-                s.predicted_grafts_count,
-                s.current_grafts_count,
-                s.is_recorded,
+                s.*,
                 p.id as patient_id,
                 p.name as patient_name,
-                r.name as room_name
+                r.name as room_name,
+                a.name as agency_name,
+                GROUP_CONCAT(st.name) as assigned_staff_names
             FROM surgeries s
             JOIN patients p ON s.patient_id = p.id
             LEFT JOIN rooms r ON s.room_id = r.id
+            LEFT JOIN agencies a ON p.agency_id = a.id
+            LEFT JOIN surgery_staff ss ON s.id = ss.surgery_id
+            LEFT JOIN staff st ON ss.staff_id = st.id
             WHERE s.date BETWEEN ? AND ?
+            GROUP BY s.id
         ");
         $stmt_surg->execute([$startDate, $endDate]);
         $surgeries = $stmt_surg->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($surgeries as $surg) {
-            $date = $surg['surgery_date'];
+            $date = $surg['date'];
             if (isset($events[$date])) {
-                $events[$date]['surgeries'][] = [
-                    'id' => $surg['id'],
-                    'patient_id' => $surg['patient_id'],
-                    'patient_name' => $surg['patient_name'],
-                    'notes' => $surg['notes'],
-                    'status' => $surg['status'],
-                    'predicted_grafts_count' => $surg['predicted_grafts_count'],
-                    'current_grafts_count' => $surg['current_grafts_count'],
-                    'is_recorded' => $surg['is_recorded'],
-                    'room_name' => $surg['room_name'],
-                    'summary' => 'Surgery' // Keep summary for existing display logic
-                ];
+                $events[$date]['surgeries'][] = $surg;
             }
         }
 

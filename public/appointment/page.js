@@ -199,14 +199,14 @@ document.addEventListener('DOMContentLoaded', function() {
             .addEventListener('click', () => handlePurposeSelection('Treatment'));
 
     function handlePurposeSelection(purpose) {
-        appointmentData.appointment_type = purpose.toLowerCase(); // Set appointment_type based on purpose
-        appointmentData.consultation_type = null; // Reset consultation type
+        appointmentData.appointment_type = purpose.toLowerCase();
+        appointmentData.consultation_type = null;
         if (appointmentData.appointment_type === 'consultation') {
-            appointmentData.procedure_id = 1; // Set to 1 for Consultation
-            appointmentData.room_id = 1;      // Set to 1 for Consultation
-        } else { // Treatment
-            appointmentData.procedure_id = null; // Reset for Treatment
-            appointmentData.room_id = null;      // Reset for Treatment
+            appointmentData.procedure_id = 1;
+            appointmentData.room_id = 1;
+        } else {
+            appointmentData.procedure_id = null;
+            appointmentData.room_id = null;
         }
         
         currentStep = 2; // Directly advance to the service step

@@ -55,7 +55,6 @@
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s;
-  font-size: 0.875rem;
 }
 
 .view-toggle button.active {
@@ -81,21 +80,22 @@
   text-align: center;
   font-weight: 600;
   color: #495057;
-  font-size: 0.875rem;
+  /* font-size: 0.875rem; */
 }
 
 .calendar-day {
   background: white;
   min-height: 120px;
-  padding: 0.5rem;
+  padding: 30% 0.5rem 0.5rem 0.5rem; /* Top padding 30%, others 0.5rem */
   position: relative;
   border: 1px solid transparent;
   transition: all 0.2s;
 }
 
 .calendar-day:hover {
-  background: #f8f9fa;
+  background: #e9ecef; /* Slightly darker grey on hover */
   border-color: #dee2e6;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); /* shadow-sm effect */
 }
 
 .calendar-day.other-month {
@@ -110,8 +110,10 @@
 
 .day-number {
   font-weight: 600;
-  margin-bottom: 0.5rem;
-  font-size: 0.875rem;
+  position: absolute; /* Position day number at the top */
+  top: 0.5rem;
+  left: 0.5rem;
+  /* font-size: 0.875rem; */
 }
 
 /* Add Event Icon */
@@ -119,8 +121,8 @@
   position: absolute;
   top: 5px;
   right: 5px;
-  width: 24px;
-  height: 24px;
+  width: 35px;
+  height: 35px;
   background-color: rgba(0, 0, 0, 0.1);
   color: rgba(0, 0, 0, 0.4);
   border-radius: 50%;
@@ -139,18 +141,19 @@
 }
 
 .add-event-icon:hover {
-  background-color: rgba(0, 0, 0, 0.2);
-  color: #000;
+  background-color: rgba(0, 255, 0, 0.2); /* Light green background on hover */
+  color: rgb(2, 24, 2); /* Neon green color */
   transform: scale(1.1);
+  box-shadow: 0 0 3px #0f0, 0 0 5px #0f0, 0 0 7px #0f0; /* Neon glow effect */
 }
 
 .event-summary {
-  position: absolute;
-  bottom: 5px;
-  left: 5px;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column; /* Stack events vertically */
   gap: 4px;
+  width: 100%; /* Take full width */
+  box-sizing: border-box;
+  padding-top: 0.5rem; /* Add some padding between day number and events */
 }
 
 .event-summary .badge {
@@ -164,28 +167,45 @@
   gap: 2px;
 }
 .event {
-  padding: 2px 6px;
-  border-left: 3px solid;
+  padding: 8px 12px; /* More padding for block feel */
+  border: 1px solid; /* Solid border for piano key */
   border-radius: 0.25rem;
   font-size: 0.825rem;
   display: flex;
   align-items: center;
-  flex-grow: 1;
-  flex-shrink: 1;
-  min-width: 0;
+  width: 100%; /* Full width */
   margin-bottom: 4px;
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+  cursor: pointer; /* Indicate clickable */
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.event:hover {
+  background-color: #e0e0e0; /* Darker grey on hover */
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1); /* More pronounced shadow on hover */
+}
+
+.event.appointment:hover {
+  font-weight: bold;
+  border-color: #00f; /* Neon blue border */
+  box-shadow: 0 0 5px #00f, 0 0 10px #00f, 0 0 5px #00f; /* Neon glow effect */
+}
+
+.event.surgery:hover {
+  border-color: #0f0; /* Neon green border */
+  box-shadow: 0 0 5px #0f0, 0 0 10px #0f0, 0 0 5px #0f0; /* Neon glow effect */
 }
 
 .event.surgery {
-  color: #ab3e3e;
-  border-color: #dc3545;
-  background: rgba(220, 53, 69, 0.05);
+  color: #212529; /* Dark text for piano key look */
+  border-color: #e9ecef; /* Light grey border */
+  background: #f8f9fa; /* Light background */
 }
 
 .event.appointment {
-  color: #0d6efd;
-  border-color: #0d6efd;
-  background: rgba(13, 110, 253, 0.05);
+  color: #212529; /* Dark text for piano key look */
+  border-color: #e9ecef; /* Light grey border */
+  background: #f8f9fa; /* Light background */
 }
 .event-item {
   display: flex;
@@ -603,4 +623,39 @@
 
 .list-view .event {
   cursor: pointer;
+}
+
+.calendar-day.closed-day {
+    background-color: #f8d7da;
+    /* A light red to indicate closure */
+    position: relative;
+}
+
+.closed-day .day-number {
+    text-decoration: line-through;
+}
+
+.closed-day .event-summary,
+.closed-day .add-event-icon {
+    display: none;
+}
+
+.reopen-day-icon {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    cursor: pointer;
+    color: #dc3545;
+    font-size: 1.2em;
+    display: none;
+    /* Hidden by default */
+}
+
+.closed-day .reopen-day-icon {
+    display: block;
+    /* Show only on closed days */
+}
+
+.reopen-day-icon:hover {
+    color: #a71d2a;
 }

@@ -107,14 +107,15 @@ function handle_users($action, $method, $db, $request_data = [])
                 $limit = 10;
                 $offset = ($page - 1) * $limit;
 
-                $sql = "SELECT id, username FROM users";
+                $sql = "SELECT id, email, username, name, surname, role, agency_id, is_active FROM users";
                 $count_sql = "SELECT COUNT(id) FROM users";
                 $params = [];
 
                 if (!empty($search)) {
-                    $sql .= " WHERE username LIKE ?";
-                    $count_sql .= " WHERE username LIKE ?";
-                    $params[] = '%' . $search . '%';
+                    $search_term = '%' . $search . '%';
+                    $sql .= " WHERE username LIKE ? OR email LIKE ? OR role LIKE ? OR name LIKE ? OR surname LIKE ?";
+                    $count_sql .= " WHERE username LIKE ? OR email LIKE ? OR role LIKE ? OR name LIKE ? OR surname LIKE ?";
+                    $params = [$search_term, $search_term, $search_term, $search_term, $search_term];
                 }
 
                 $sql .= " ORDER BY username LIMIT ? OFFSET ?";

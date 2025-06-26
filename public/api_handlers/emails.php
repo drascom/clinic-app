@@ -45,7 +45,7 @@ function handle_emails($action, $method, $db, $input)
                 flush();
                 exit; // Exit after sending SSE
             } catch (Exception $e) {
-                $logService->log('emails', 'error', "API Error (check_new_emails): " . $e->getMessage(), ['error' => $e->getMessage()]);
+                $logService->log('emails', 'error', "Check new emails failed: " . $e->getMessage());
                 echo "data: " . json_encode(['status' => 'error', 'message' => 'Failed to check for new emails.']) . "\n\n";
                 flush();
                 exit; // Exit after sending SSE
@@ -58,17 +58,17 @@ function handle_emails($action, $method, $db, $input)
                 // Now fetches emails from the local database
                 $emails = get_emails_from_db($db, $user_id, 1);
                 $conversations = group_emails_by_sender($emails);
-                $logService->log('emails', 'success', 'Senders listed successfully.', ['count' => count($conversations)]);
+                $logService->log('emails', 'success', 'Senders listed.');
                 return ['success' => true, 'conversations' => array_values($conversations)];
             } catch (Exception $e) {
-                $logService->log('emails', 'error', "API Error (list_senders): " . $e->getMessage(), ['error' => $e->getMessage()]);
+                $logService->log('emails', 'error', "List senders failed: " . $e->getMessage());
                 return ['success' => false, 'message' => 'Failed to retrieve email conversations from the database.'];
             }
             break;
 
         case 'get_conversation':
             if (!isset($input['sender_email'])) {
-                $logService->log('emails', 'error', 'Missing sender_email for get_conversation.', $input);
+                $logService->log('emails', 'error', 'Missing sender_email for get_conversation.');
                 return ['success' => false, 'message' => 'Sender email is required.'];
             }
             try {
@@ -88,14 +88,14 @@ function handle_emails($action, $method, $db, $input)
                     return ['success' => false, 'message' => 'Conversation not found.'];
                 }
             } catch (Exception $e) {
-                $logService->log('emails', 'error', "API Error (get_conversation): " . $e->getMessage(), ['error' => $e->getMessage(), 'sender_email' => $input['sender_email']]);
+                $logService->log('emails', 'error', "Get conversation failed: " . $e->getMessage());
                 return ['success' => false, 'message' => 'Failed to retrieve conversation details.'];
             }
             break;
 
         case 'mark_as_read':
             if (!isset($input['sender_email'])) {
-                $logService->log('emails', 'error', 'Missing sender_email for mark_as_read.', $input);
+                $logService->log('emails', 'error', 'Missing sender_email for mark_as_read.');
                 return ['success' => false, 'message' => 'Sender email is required.'];
             }
             try {
@@ -108,14 +108,14 @@ function handle_emails($action, $method, $db, $input)
                     return ['success' => false, 'message' => 'Failed to mark conversation as read.'];
                 }
             } catch (Exception $e) {
-                $logService->log('emails', 'error', "API Error (mark_as_read): " . $e->getMessage(), ['error' => $e->getMessage(), 'sender_email' => $input['sender_email']]);
+                $logService->log('emails', 'error', "Mark as read failed: " . $e->getMessage());
                 return ['success' => false, 'message' => 'An error occurred while marking emails as read.'];
             }
             break;
 
         case 'delete_conversation':
             if (!isset($input['sender_email'])) {
-                $logService->log('emails', 'error', 'Missing sender_email for delete_conversation.', $input);
+                $logService->log('emails', 'error', 'Missing sender_email for delete_conversation.');
                 return ['success' => false, 'message' => 'Sender email is required.'];
             }
             try {
@@ -128,13 +128,13 @@ function handle_emails($action, $method, $db, $input)
                     return ['success' => false, 'message' => 'Failed to delete conversation.'];
                 }
             } catch (Exception $e) {
-                $logService->log('emails', 'error', "API Error (delete_conversation): " . $e->getMessage(), ['error' => $e->getMessage(), 'sender_email' => $input['sender_email']]);
+                $logService->log('emails', 'error', "Delete conversation failed: " . $e->getMessage());
                 return ['success' => false, 'message' => 'An error occurred while deleting the conversation.'];
             }
             break;
         case 'deactivate_conversation':
             if (!isset($input['sender_email'])) {
-                $logService->log('emails', 'error', 'Missing sender_email for deactivate_conversation.', $input);
+                $logService->log('emails', 'error', 'Missing sender_email for deactivate_conversation.');
                 return ['success' => false, 'message' => 'Sender email is required.'];
             }
             try {
@@ -147,7 +147,7 @@ function handle_emails($action, $method, $db, $input)
                     return ['success' => false, 'message' => 'Failed to deactivate conversation.'];
                 }
             } catch (Exception $e) {
-                $logService->log('emails', 'error', "API Error (deactivate_conversation): " . $e->getMessage(), ['error' => $e->getMessage(), 'sender_email' => $input['sender_email']]);
+                $logService->log('emails', 'error', "Deactivate conversation failed: " . $e->getMessage());
                 return ['success' => false, 'message' => 'An error occurred while deactivating the conversation.'];
             }
             break;
@@ -158,17 +158,17 @@ function handle_emails($action, $method, $db, $input)
                 // Fetches emails from the local database where is_active = 0
                 $emails = get_emails_from_db($db, $user_id, 0); // Assuming 0 for deactivated
                 $conversations = group_emails_by_sender($emails);
-                $logService->log('emails', 'success', 'Deactivated senders listed successfully.', ['count' => count($conversations)]);
+                $logService->log('emails', 'success', 'Deactivated senders listed.');
                 return ['success' => true, 'conversations' => array_values($conversations)];
             } catch (Exception $e) {
-                $logService->log('emails', 'error', "API Error (list_deactivated_senders): " . $e->getMessage(), ['error' => $e->getMessage()]);
+                $logService->log('emails', 'error', "List deactivated senders failed: " . $e->getMessage());
                 return ['success' => false, 'message' => 'Failed to retrieve deactivated email conversations from the database.'];
             }
             break;
 
         case 'get_draft':
             if (!isset($input['draft_id'])) {
-                $logService->log('emails', 'error', 'Draft ID is required for get_draft.', $input);
+                $logService->log('emails', 'error', 'Draft ID required for get_draft.');
                 return ['success' => false, 'message' => 'Draft ID is required.'];
             }
             try {
@@ -180,14 +180,14 @@ function handle_emails($action, $method, $db, $input)
                     return ['success' => false, 'message' => 'Draft not found or access denied.'];
                 }
             } catch (Exception $e) {
-                $logService->log('emails', 'error', "API Error (get_draft): " . $e->getMessage(), ['error' => $e->getMessage(), 'draft_id' => $input['draft_id']]);
+                $logService->log('emails', 'error', "Get draft failed: " . $e->getMessage());
                 return ['success' => false, 'message' => 'Failed to retrieve draft.'];
             }
             break;
         case 'save_email':
             // Basic validation
             if (empty($input['to'])) {
-                $logService->log('emails', 'error', 'Recipient email is required for save_email.', $input);
+                $logService->log('emails', 'error', 'Recipient email required for save_email.');
                 return ['success' => false, 'message' => 'Recipient email is required.'];
             }
 
@@ -214,13 +214,13 @@ function handle_emails($action, $method, $db, $input)
                     return ['success' => false, 'message' => 'Failed to save email.'];
                 }
             } catch (Exception $e) {
-                $logService->log('emails', 'error', "API Error (save_email): " . $e->getMessage(), ['error' => $e->getMessage(), 'input' => $input]);
+                $logService->log('emails', 'error', "Save email failed: " . $e->getMessage());
                 return ['success' => false, 'message' => 'An error occurred while saving the email.'];
             }
             break;
 
         default:
-            $logService->log('emails', 'error', 'Invalid action for emails.', ['action' => $action]);
+            $logService->log('emails', 'error', 'Invalid action for emails.');
             return ['success' => false, 'message' => 'Invalid action for emails.'];
     }
 }

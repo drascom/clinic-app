@@ -360,7 +360,8 @@ function handle_dashboard($action, $method, $db, $input = [])
                         'staff_availability' => get_staff_availability_data($db),
                         'pending_tasks' => get_pending_tasks_data($db, get_user_id()),
                         'today_schedule' => get_today_schedule_data($db),
-                        'recent_activity' => get_recent_activity_data($db)
+                        'recent_activity' => get_recent_activity_data($db),
+                        'recent_emails' => get_last_5_emails_data($db, get_user_id())
                     ];
                     return ['success' => true, 'data' => $data];
                 } catch (PDOException $e) {
@@ -435,9 +436,22 @@ function get_overall_stats_data($db)
     $stmt->execute($agencyParams);
     $totalPatients = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
 
-    // Total procedures
-    $stmt = $db->prepare("SELECT COUNT(*) as count FROM procedures");
-    $stmt->execute();
+    // Total procedures (treatments)
+    $procedure_query = "SELECT COUNT(a.id) as count FROM appointments a";
+    $procedure_params = [];
+    $procedure_where = ["a.appointment_type = 'treatment'"];
+
+    if (is_agent() && get_user_agency_id()) {
+        // We need to join with patients to filter by agency
+        $procedure_query .= " LEFT JOIN patients p ON a.patient_id = p.id";
+        $procedure_where[] = "p.agency_id = ?";
+        $procedure_params[] = get_user_agency_id();
+    }
+
+    $procedure_query .= " WHERE " . implode(' AND ', $procedure_where);
+
+    $stmt = $db->prepare($procedure_query);
+    $stmt->execute($procedure_params);
     $totalProcedures = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
 
     // Total surgeries
@@ -641,7 +655,7 @@ function get_recent_activity_data($db)
         WHERE DATE(r.updated_at) = ?";
 
     $unionQuery = implode(" UNION ALL ", $queries);
-    $finalQuery = $unionQuery . " ORDER BY activity_timestamp DESC LIMIT 10";
+    $finalQuery = $unionQuery . " ORDER BY activity_timestamp DESC LIMIT 6";
 
     $params = [];
     foreach ($queries as $index => $query) {
@@ -666,3 +680,24 @@ function get_recent_activity_data($db)
 }
 
 
+
+/**
+ * Retrieve the last 5 emails for the current user from the database.
+ */
+function get_last_5_emails_data($db, $userId)
+{
+    try {
+        $stmt = $db->prepare("
+            SELECT subject, sender_email, date, is_read
+            FROM emails
+            WHERE user_id = ?
+            ORDER BY date DESC
+            LIMIT 5
+        ");
+        $stmt->execute([$userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Dashboard API Error (get_last_5_emails_data): " . $e->getMessage());
+        return [];
+    }
+}

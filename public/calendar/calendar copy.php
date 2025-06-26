@@ -540,95 +540,32 @@ $page_title = "Calendar";
                 return;
             }
 
+            let listHtml = '<ul class="list-group">';
             console.log("Items:", items); // Log the items array to console
+            items.forEach(item => {
 
-            let modalContentHtml = '';
+                const isAppointment = title.toLowerCase().includes('appointment');
+                const link = isAppointment ?
+                    `../appointment/edit_appointment.php?id=${item.id}` :
+                    `../surgery/add_edit_surgery.php?id=${item.id}`;
 
-            if (title.toLowerCase().includes('appointment')) {
-                const consultations = items.filter(item => item.appointment_type === 'consultation').sort((a, b) => a.start_time.localeCompare(b.start_time));
-                const treatments = items.filter(item => item.appointment_type === 'treatment').sort((a, b) => a.start_time.localeCompare(b.start_time));
-
-                modalContentHtml += `
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <div class="card h-100">
-                                <div class="card-header bg-primary text-white">
-                                    <h5 class="card-title mb-0"><i class="fas fa-syringe me-2"></i>Procedures</h5>
-                                </div>
-                                <div class="card-body">
-                                    ${treatments.length > 0 ? `<ul class="list-group list-group-flush">` : `<p class="text-muted">No procedures scheduled.</p>`}
-                                    ${treatments.map(item => `
-                                        <a href="../appointment/edit_appointment.php?id=${item.id}" class="list-group-item list-group-item-action">
-                                            <div class="d-flex w-100 justify-content-between align-items-center">
-                                                <h6 class="mb-1">${item.patient_name}</h6>
-                                                <small class="text-muted">${item.start_time} - ${item.end_time}</small>
-                                            </div>
-                                            <span class="mb-1 me-2"><i class="fas fa-tag me-1"></i> Procedure: ${item.procedure_name} </span>
-                                            ${item.type ? `<span class="mb-1"><i class="fas fa-info-circle me-1"></i> Type: ${item.type}</span>` : ''}
-                                            ${item.notes ? `<p class="mb-1 text-muted">Notes: ${item.notes}</p>` : ''}
-                                        </a>
-                                    `).join('')}
-                                    ${treatments.length > 0 ? `</ul>` : ''}
-                                </div>
-                            </div>
+                listHtml += `
+                    <a href="${link}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between align-items-center">
+                            <h6 class="mb-1">${item.patient_name}</h6>
+                            ${isAppointment ? `<small class="text-muted">${item.start_time} - ${item.end_time}</small>` : `<span class="badge bg-info">${item.status}</span>`}
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <div class="card h-100">
-                                <div class="card-header bg-info text-white">
-                                    <h5 class="card-title mb-0"><i class="fas fa-stethoscope me-2"></i>Consultations</h5>
-                                </div>
-                                <div class="card-body">
-                                    ${consultations.length > 0 ? `<ul class="list-group list-group-flush">` : `<p class="text-muted">No consultations scheduled.</p>`}
-                                    ${consultations.map(item => `
-                                        <a href="../appointment/edit_appointment.php?id=${item.id}" class="list-group-item list-group-item-action">
-                                            <div class="d-flex w-100 justify-content-between align-items-center">
-                                                <h6 class="mb-1">${item.patient_name}</h6>
-                                                <small class="text-muted">${item.start_time} - ${item.end_time}</small>
-                                            </div>
-                                            <span class="mb-1 me-2"><i class="fas fa-tag me-1"></i> Consultation </span>
-                                            ${item.type ? `<span class="mb-1"><i class="fas fa-info-circle me-1"></i> Type: ${item.type}</span>` : ''}
-                                            ${item.notes ? `<p class="mb-1 text-muted">Notes: ${item.notes}</p>` : ''}
-                                        </a>
-                                    `).join('')}
-                                    ${consultations.length > 0 ? `</ul>` : ''}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } else { // Surgeries
-                modalContentHtml += `
-                    <div class="card">
-                        <div class="card-header bg-success text-white">
-                            <h5 class="card-title mb-0"><i class="fas fa-cut me-2"></i>Hair Transplants</h5>
-                        </div>
-                        <div class="card-body">
-                            ${items.length > 0 ? `<ul class="list-group list-group-flush">` : `<p class="text-muted">No surgeries scheduled.</p>`}
-                            ${items.map(item => `
-                                <a href="../surgery/add_edit_surgery.php?id=${item.id}" class="list-group-item list-group-item-action">
-                                    <div class="d-flex w-100 justify-content-between align-items-center">
-                                        <h6 class="mb-1">${item.patient_name}</h6>
-                                        <span class="badge bg-info">${item.status}</span>
-                                    </div>
-                                    <small class="text-muted">
-                                        ${item.agency_name ? `<span class="me-2"><i class="fas fa-building me-1"></i> ${item.agency_name}</span>` : ''}
-                                        ${item.room_name ? `<span class="me-2"><i class="fas fa-hospital me-1"></i> ${item.room_name}</span>` : ''}
-                                    </small>
-                                    ${item.predicted_grafts_count ? `<span class="mb-1 me-2"><i class="fas fa-microscope me-1"></i> Predicted Grafts: ${item.predicted_grafts_count}</span>` : ''}
-                                    ${item.current_grafts_count ? `<span class="mb-1 me-2"><i class="fas fa-microscope me-1"></i> Current Grafts: ${item.current_grafts_count}</span>` : ''}
-                                    ${item.assigned_staff_names ? `<p class="mb-1"><i class="fas fa-user-md me-1"></i> Staff: ${item.assigned_staff_names}</p>` : ''}
-                                    ${item.notes ? `<p class="mb-1 text-muted">Notes: ${item.notes}</p>` : ''}
-                                    ${item.is_recorded ? `<p class="mb-1 text-success"><i class="fas fa-copy me-1"></i> Copied from excel</p>` : ''}
-                                </a>
-                            `).join('')}
-                            ${items.length > 0 ? `</ul>` : ''}
-                        </div>
-                    </div>
-                `;
-            }
+                        ${isAppointment ? `<span class="mb-1 me-2"><i class="fas fa-tag me-1"></i> ${item.procedure_type === 'treatments' ? `Procedure: ${item.procedure_name}` : 'Consultation'} </span>` : ''}
+                        ${isAppointment && item.type ? `<span class="mb-1"><i class="fas fa-info-circle me-1"></i> Type: ${item.type}</span>` : ''}
+                        ${!isAppointment && item.predicted_grafts_count ? `<span class="mb-1 me-2"><i class="fas fa-microscope me-1"></i> Predicted Grafts: ${item.predicted_grafts_count}</span>` : ''}
+                        ${!isAppointment && item.current_grafts_count ? `<span class="mb-1 me-2"><i class="fas fa-microscope me-1"></i> Current Grafts: ${item.current_grafts_count}</span>` : ''}
+                        ${item.notes ? `<p class="mb-1 text-muted">Notes: ${item.notes}</p>` : ''}
+                        ${!isAppointment && item.is_recorded ? `<p class="mb-1 text-success"><i class="fas fa-copy me-1"></i> Copied from excel</p>` : ''}
+                    </a>`;
+            });
+            listHtml += '</ul>';
 
-            modalBody.innerHTML = modalContentHtml;
-
+            modalBody.innerHTML = listHtml;
             this.detailsModal.show();
         }
 

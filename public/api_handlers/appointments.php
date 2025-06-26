@@ -16,6 +16,7 @@ function handle_appointments($action, $method, $db, $input = [])
                 $notes = $_POST['notes'] ?? $input['notes'] ?? null;
                 $created_by = $input['authenticated_user_id'] ?? null;
                 $consultation_type = $_POST['consultation_type'] ?? $input['consultation_type'] ?? 'face-to-face';
+                $appointment_type = $_POST['appointment_type'] ?? $input['appointment_type'] ?? 'consultation';
 
                 if (!$room_id || !$patient_id || !$appointment_date || !$start_time || !$end_time || !$procedure_id) {
                     $logService->log('appointments', 'error', 'Missing required fields for create appointment.', $input);
@@ -38,10 +39,10 @@ function handle_appointments($action, $method, $db, $input = [])
 
                 try {
                     $stmt = $db->prepare("
-                        INSERT INTO appointments (room_id, patient_id, appointment_date, start_time, end_time, procedure_id, notes, created_by, consultation_type)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        INSERT INTO appointments (room_id, patient_id, appointment_date, start_time, end_time, procedure_id, notes, created_by, consultation_type, appointment_type)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     ");
-                    $stmt->execute([$room_id, $patient_id, $appointment_date, $start_time, $end_time, $procedure_id, $notes, $created_by, $consultation_type]);
+                    $stmt->execute([$room_id, $patient_id, $appointment_date, $start_time, $end_time, $procedure_id, $notes, $created_by, $consultation_type, $appointment_type]);
                     $newId = $db->lastInsertId();
                     $logService->log('appointments', 'success', 'Appointment created successfully.', ['id' => $newId, 'patient_id' => $patient_id, 'date' => $appointment_date]);
                     return ['success' => true, 'id' => $newId];
@@ -66,8 +67,9 @@ function handle_appointments($action, $method, $db, $input = [])
                 $notes = $_POST['notes'] ?? $input['notes'] ?? null;
                 $updated_by = $input['authenticated_user_id'] ?? null;
                 $consultation_type = $_POST['consultation_type'] ?? $input['consultation_type'] ?? 'face-to-face';
+                $appointment_type = $_POST['appointment_type'] ?? $input['appointment_type'] ?? 'consultation';
 
-                if (!$id || !$room_id || !$patient_id || !$appointment_date || !$start_time || !$end_time || !$procedure_id) {
+                if (!$id || !$room_id || !$patient_id || !$appointment_date || !$start_time || !$end_time) {
                     $logService->log('appointments', 'error', 'Missing required fields for update appointment.', $input);
                     return ['success' => false, 'error' => 'Missing required fields'];
                 }
@@ -90,10 +92,23 @@ function handle_appointments($action, $method, $db, $input = [])
                     $stmt = $db->prepare("
                         UPDATE appointments
                         SET room_id = ?, patient_id = ?, appointment_date = ?, start_time = ?, end_time = ?,
-                            procedure_id = ?, notes = ?, updated_at = datetime('now'), updated_by = ?, consultation_type = ?
+                            procedure_id = ?, notes = ?, updated_at = datetime('now'), updated_by = ?,
+                            consultation_type = ?, appointment_type = ?
                         WHERE id = ?
                     ");
-                    $stmt->execute([$room_id, $patient_id, $appointment_date, $start_time, $end_time, $procedure_id, $notes, $updated_by, $consultation_type, $id]);
+                    $stmt->execute([
+                        $room_id,
+                        $patient_id,
+                        $appointment_date,
+                        $start_time,
+                        $end_time,
+                        $procedure_id,
+                        $notes,
+                        $updated_by,
+                        $consultation_type,
+                        $appointment_type,
+                        $id
+                    ]);
                     $logService->log('appointments', 'success', 'Appointment updated successfully.', ['id' => $id, 'patient_id' => $patient_id, 'date' => $appointment_date]);
                     return ['success' => true, 'message' => 'Appointment updated successfully'];
                 } catch (PDOException $e) {
@@ -214,35 +229,35 @@ function handle_appointments($action, $method, $db, $input = [])
                 $logService->log('appointments', 'error', 'Invalid method for list action.', ['method' => $method]);
             }
             break;
-    break;
+            break;
 
-case 'get_available_slots':
-    if ($method === 'POST') {
-        $date = $input['date'] ?? null;
-        $room_id = $input['room_id'] ?? null;
+        case 'get_available_slots':
+            if ($method === 'POST') {
+                $date = $input['date'] ?? null;
+                $room_id = $input['room_id'] ?? null;
 
-        if (!$date || !$room_id) {
-            return ['success' => false, 'error' => 'Date and Room ID are required'];
-        }
+                if (!$date || !$room_id) {
+                    return ['success' => false, 'error' => 'Date and Room ID are required'];
+                }
 
-        try {
-            $stmt = $db->prepare("
+                try {
+                    $stmt = $db->prepare("
                 SELECT start_time, end_time FROM appointments
                 WHERE appointment_date = ? AND room_id = ?
             ");
-            $stmt->execute([$date, $room_id]);
-            $booked_slots = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    $stmt->execute([$date, $room_id]);
+                    $booked_slots = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            return ['success' => true, 'booked_slots' => $booked_slots];
-        } catch (PDOException $e) {
-            $logService->log('appointments', 'error', 'Database error during get_available_slots: ' . $e->getMessage(), ['error' => $e->getMessage(), 'input' => $input]);
-            return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
-        }
-    } else {
-        $logService->log('appointments', 'error', 'Invalid method for get_available_slots action.', ['method' => $method]);
+                    return ['success' => true, 'booked_slots' => $booked_slots];
+                } catch (PDOException $e) {
+                    $logService->log('appointments', 'error', 'Database error during get_available_slots: ' . $e->getMessage(), ['error' => $e->getMessage(), 'input' => $input]);
+                    return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
+                }
+            } else {
+                $logService->log('appointments', 'error', 'Invalid method for get_available_slots action.', ['method' => $method]);
+            }
+            break;
     }
-    break;
-}
-$logService->log('appointments', 'error', 'Invalid action for appointments entity.', ['action' => $action, 'method' => $method]);
-return ['success' => false, 'error' => 'Invalid action for appointments entity'];
+    $logService->log('appointments', 'error', 'Invalid action for appointments entity.', ['action' => $action, 'method' => $method]);
+    return ['success' => false, 'error' => 'Invalid action for appointments entity'];
 }

@@ -7,7 +7,7 @@ use PHPMailer\PHPMailer\Exception;
 
 // Define log_message function if it doesn't exist
 if (!function_exists('log_message')) {
-    function log_message($message, $file = 'app.log')
+    function log_message($message, $file = 'emails.log')
     {
         $timestamp = date('Y-m-d H:i:s');
         $log_dir = __DIR__ . '/../../logs/';
@@ -144,7 +144,7 @@ function get_email_attachments($inbox, $email_uid, $structure)
                     'part_index' => $part_index,
                     'file_path' => null // Set to null as it's not downloaded yet
                 ];
-                log_message("Found attachment metadata: {$filename} with MIME type: {$mime_type}");
+                log_message("Attachment metadata: {$filename}, MIME: {$mime_type}");
             }
         }
     }
@@ -160,7 +160,7 @@ function get_last_email_date($db, $user_id)
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['last_date'] ? (int) $result['last_date'] : 0;
     } catch (PDOException $e) {
-        log_message("Database error in get_last_email_date: " . $e->getMessage());
+        log_message("DB error get_last_email_date: " . $e->getMessage());
         error_log("Database error in get_last_email_date: " . $e->getMessage());
         return 0;
     }
@@ -192,7 +192,7 @@ function store_emails($db, $emails)
 
             // Ensure user_id is passed with the email data
             if (!isset($email['user_id'])) {
-                log_message("Error: user_id not provided for email storage. Skipping email.");
+                log_message("User ID missing for email storage. Skipping.");
                 continue;
             }
 
@@ -225,15 +225,15 @@ function store_emails($db, $emails)
                             $attachment_stmt->bindValue(':part_index', $attachment['part_index']);
                             $attachment_stmt->execute();
                         }
-                        log_message("Stored " . count($email['attachments']) . " attachments for email ID: {$email_id}");
+                        log_message("Stored " . count($email['attachments']) . " attachments for email ID {$email_id}.");
                     }
                 }
             }
         }
-        log_message("Stored {$inserted_count} new emails in the database.");
+        log_message("Stored {$inserted_count} new emails.");
         return $inserted_count;
     } catch (PDOException $e) {
-        log_message("Database error in store_emails: " . $e->getMessage());
+        log_message("DB error store_emails: " . $e->getMessage());
         error_log("Database error in store_emails: " . $e->getMessage());
         return 0;
     }
@@ -244,7 +244,7 @@ function fetch_new_emails($db, $user_id, $last_email_date = 0)
 {
     $settings = get_user_email_settings($db, $user_id);
     if (!$settings) {
-        log_message("IMAP settings not found for user_id: {$user_id}. Cannot fetch new emails.");
+        log_message("IMAP settings not found for user {$user_id}. Cannot fetch emails.");
         error_log("IMAP settings not found for user_id: {$user_id}.");
         return [];
     }
@@ -256,41 +256,29 @@ function fetch_new_emails($db, $user_id, $last_email_date = 0)
     // Construct IMAP host string with standard IMAP SSL port (993) and /ssl flag
     $imap_host = '{' . $imap_host_base . ':993/imap/ssl}INBOX';
 
-    // Log the IMAP settings used for fetching new emails
-    $settings_log = "IMAP Settings Used for Fetching New Emails (User ID: {$user_id}):\n";
-    $settings_log .= " Host: " . ($settings['smtp_host'] ?? $_ENV['EMAIL_HOST']) . "\n";
-    $settings_log .= " Username: " . ($settings['smtp_username'] ?? $_ENV['EMAIL_USERNAME']) . "\n";
-    $settings_log .= " Port: 993 (IMAP SSL default)\n";
-    $settings_log .= " Secure: SSL\n";
-    $settings_log .= " Folder: INBOX";
-    log_message($settings_log, EMAIL_SETTINGS_LOG_FILE);
-
-    // Open an IMAP stream
-    log_message("Constructed IMAP host string: " . $imap_host);
-    log_message("Attempting IMAP connection to host: {$imap_host} with user: {$imap_user}");
+    log_message("Attempting IMAP connection for user {$user_id}.");
     $inbox = imap_open($imap_host, $imap_user, $imap_pass);
 
     if (!$inbox) {
         $error = imap_last_error();
-        log_message("IMAP connection failed: {$error}");
+        log_message("IMAP connection failed: {$error}.");
         error_log("IMAP connection failed: {$error}");
         return [];
     }
-    log_message("IMAP connection successful.");
+    log_message("IMAP connection successful for user {$user_id}.");
 
     // Search for emails since the last stored email date
     // Always fetch all emails to ensure no emails are missed due to IMAP search limitations.
     // Filtering by date will be done after fetching.
     $search_criteria = 'ALL';
-    log_message("Searching for all emails in inbox.");
     $emails = imap_search($inbox, $search_criteria);
 
     if (!$emails) {
-        log_message("No emails found or an error occurred during search.");
+        log_message("No emails found or search error.");
         imap_close($inbox);
         return [];
     }
-    log_message("Found " . count($emails) . " emails.");
+    log_message("Found " . count($emails) . " emails on server for user {$user_id}.");
 
     // Sort emails from newest to oldest
     rsort($emails);
@@ -303,7 +291,6 @@ function fetch_new_emails($db, $user_id, $last_email_date = 0)
 
             // Only process emails newer than the last_email_date
             if ($email_date > $last_email_date) {
-                log_message("Fetching details for new email number: {$email_number}");
                 $header = imap_headerinfo($inbox, $email_number);
                 $structure = imap_fetchstructure($inbox, $email_number);
                 $body = get_email_body($inbox, $email_number, $structure);
@@ -324,18 +311,18 @@ function fetch_new_emails($db, $user_id, $last_email_date = 0)
                     'attachments' => $attachments, // Add attachments here
                 ];
                 $email_data[] = $email_entry;
-                log_message("Fetched new email: Subject='{$email_entry['subject']}', From='{$email_entry['from']}', Attachments: " .
-                    count($attachments));
+                log_message("Fetched new email: '{$email_entry['subject']}' from '{$email_entry['from']}'.");
             } else {
-                log_message("Skipping old email number: {$email_number} (Date: " . date("Y-m-d H:i:s", $email_date) . ", Last Email Date: " . date("Y-m-d H:i:s", $last_email_date) . ")");
+                log_message("Skipping old email: {$email_number}.");
             }
         } else {
-            log_message("Failed to fetch overview for email number: {$email_number}");
+            log_message("Failed to fetch overview for email {$email_number}.");
         }
     }
 
     // Close the IMAP stream
     imap_close($inbox);
+    log_message("Fetched " . count($email_data) . " new emails for user {$user_id}.");
 
     return $email_data;
 }
@@ -354,30 +341,12 @@ function fetch_junk_emails($db, $user_id)
     // Construct IMAP host string with standard IMAP SSL port (993) and /ssl flag
     $imap_host = '{' . $imap_host_base . ':993/imap/ssl}' . $junk_folder;
 
-    // Log the IMAP settings used for fetching junk emails
-    $settings_log = "IMAP Settings Used for Fetching Junk Emails (User ID: {$user_id}):\n";
-    $settings_log .= " Host: " . ($settings['smtp_host'] ?? $_ENV['EMAIL_HOST']) . "\n";
-    $settings_log .= " Username: " . ($settings['smtp_username'] ?? $_ENV['EMAIL_USERNAME']) . "\n";
-    $settings_log .= " Port: " . ($settings['smtp_port'] ?? '993') . "\n"; // Assuming 993 for IMAP
-    $settings_log .= " Secure: " . ($settings['smtp_secure'] ?? 'ssl') . "\n"; // Assuming ssl for IMAP
-    $settings_log .= " Folder: {$junk_folder}";
-    log_message($settings_log, EMAIL_SETTINGS_LOG_FILE);
-
-    // Log the IMAP settings used for fetching junk emails
-    $settings_log = "IMAP Settings Used for Fetching Junk Emails (User ID: {$user_id}):\n";
-    $settings_log .= " Host: " . ($settings['smtp_host'] ?? $_ENV['EMAIL_HOST']) . "\n";
-    $settings_log .= " Username: " . ($settings['smtp_username'] ?? $_ENV['EMAIL_USERNAME']) . "\n";
-    $settings_log .= " Port: " . ($settings['smtp_port'] ?? '993') . "\n"; // Assuming 993 for IMAP
-    $settings_log .= " Secure: " . ($settings['smtp_secure'] ?? 'ssl') . "\n"; // Assuming ssl for IMAP
-    $settings_log .= " Folder: {$junk_folder}";
-    log_message($settings_log, EMAIL_SETTINGS_LOG_FILE);
-
-    log_message("Attempting IMAP connection to Junk folder: {$imap_host} with user: {$imap_user}");
+    log_message("Attempting IMAP connection to Junk folder for user {$user_id}.");
     $inbox = imap_open($imap_host, $imap_user, $imap_pass);
 
     if (!$inbox) {
         $error = imap_last_error();
-        log_message("IMAP connection to Junk folder failed: {$error}");
+        log_message("IMAP connection to Junk folder failed: {$error}.");
         error_log("IMAP connection to Junk folder failed: {$error}");
         return [];
     }
@@ -386,7 +355,7 @@ function fetch_junk_emails($db, $user_id)
     $emails = imap_search($inbox, 'ALL');
 
     if (!$emails) {
-        log_message("No emails found in Junk folder or an error occurred during search.");
+        log_message("No emails found in Junk folder or search error.");
         imap_close($inbox);
         return [];
     }
@@ -438,7 +407,7 @@ function deactivate_emails_by_sender($db, $sender_email, $user_id)
             log_message("Added 'is_active' column to 'emails' table.");
         }
     } catch (PDOException $e) {
-        log_message("Database error checking/adding 'is_active' column: " . $e->getMessage());
+        log_message("DB error checking/adding 'is_active' column: " . $e->getMessage());
         error_log("Database error checking/adding 'is_active' column: " . $e->getMessage());
         return false;
     }
@@ -450,10 +419,10 @@ function deactivate_emails_by_sender($db, $sender_email, $user_id)
         $stmt->bindValue(':user_id', $user_id);
         $stmt->execute();
         $affected_rows = $stmt->rowCount();
-        log_message("Deactivated {$affected_rows} emails for sender: {$sender_email} (User ID: {$user_id})");
+        log_message("Deactivated {$affected_rows} emails for sender {$sender_email}.");
         return $affected_rows;
     } catch (PDOException $e) {
-        log_message("Database error in deactivate_emails_by_sender: " . $e->getMessage());
+        log_message("DB error deactivate_emails_by_sender: " . $e->getMessage());
         error_log("Database error in deactivate_emails_by_sender: " . $e->getMessage());
         return false;
     }
@@ -502,7 +471,7 @@ function get_emails_from_db($db, $user_id, $is_active = null)
         }
         return $formatted_emails;
     } catch (PDOException $e) {
-        log_message("Database error in get_emails_from_db: " . $e->getMessage());
+        log_message("DB error get_emails_from_db: " . $e->getMessage());
         error_log("Database error in get_emails_from_db: " . $e->getMessage());
         return [];
     }
@@ -561,10 +530,10 @@ function mark_conversation_as_read($db, $sender_email, $user_id)
         $stmt->bindValue(':user_id', $user_id);
         $stmt->execute();
         $affected_rows = $stmt->rowCount();
-        log_message("Marked {$affected_rows} emails as read for sender: {$sender_email} (User ID: {$user_id})");
+        log_message("Marked {$affected_rows} emails as read for sender {$sender_email}.");
         return $affected_rows;
     } catch (PDOException $e) {
-        log_message("Database error in mark_conversation_as_read: " . $e->getMessage());
+        log_message("DB error mark_conversation_as_read: " . $e->getMessage());
         error_log("Database error in mark_conversation_as_read: " . $e->getMessage());
         return false;
     }
@@ -582,13 +551,13 @@ function delete_emails_by_sender($db, $sender_email, $user_id)
         $stmt->execute();
         $uids_to_delete = $stmt->fetchAll(PDO::FETCH_COLUMN);
     } catch (PDOException $e) {
-        log_message("Database error in delete_emails_by_sender (getting UIDs): " . $e->getMessage());
+        log_message("DB error delete_emails_by_sender (UIDs): " . $e->getMessage());
         error_log("Database error in delete_emails_by_sender (getting UIDs): " . $e->getMessage());
         return false;
     }
 
     if (empty($uids_to_delete)) {
-        log_message("No emails found in the database for sender: {$sender_email}. Nothing to delete.");
+        log_message("No emails found for sender {$sender_email}. Nothing to delete.");
         return 0; // No emails to delete
     }
 
@@ -605,20 +574,20 @@ function delete_emails_by_sender($db, $sender_email, $user_id)
         $imap_pass = $settings['imap_pass'];
     }
 
-    log_message("Attempting IMAP connection for deletion to host: {$imap_host} with user: {$imap_user}");
+    log_message("Attempting IMAP deletion connection for user {$imap_user}.");
     $inbox = imap_open($imap_host, $imap_user, $imap_pass);
 
     if ($inbox) {
-        log_message("IMAP connection successful for deletion. UIDs to delete: " . implode(',', $uids_to_delete));
+        log_message("IMAP deletion connection successful. UIDs: " . implode(',', $uids_to_delete));
         foreach ($uids_to_delete as $uid) {
             imap_delete($inbox, $uid, FT_UID);
         }
         imap_expunge($inbox);
         imap_close($inbox);
-        log_message("Emails deleted from IMAP server for sender: {$sender_email}");
+        log_message("Emails deleted from IMAP for sender {$sender_email}.");
     } else {
         $error = imap_last_error();
-        log_message("IMAP connection failed for deletion: {$error}");
+        log_message("IMAP deletion failed: {$error}.");
         error_log("IMAP connection failed for deletion: {$error}");
         // Decide if you want to proceed with DB deletion even if server deletion fails.
         // For now, we'll stop to ensure data consistency.
@@ -633,11 +602,10 @@ function delete_emails_by_sender($db, $sender_email, $user_id)
         $stmt->bindValue(':user_id', $user_id);
         $stmt->execute();
         $affected_rows = $stmt->rowCount();
-        log_message("Deleted {$affected_rows} emails from database for sender: {$sender_email} (User ID:
-            {$user_id})");
+        log_message("Deleted {$affected_rows} emails from DB for sender {$sender_email}.");
         return $affected_rows;
     } catch (PDOException $e) {
-        log_message("Database error in delete_emails_by_sender (deleting from DB): " . $e->getMessage());
+        log_message("DB error delete_emails_by_sender (DB deletion): " . $e->getMessage());
         error_log("Database error in delete_emails_by_sender (deleting from DB): " . $e->getMessage());
         return false;
     }
@@ -661,7 +629,7 @@ function get_draft_by_id($db, $draft_id, $user_id)
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        log_message("Database error in get_draft_by_id: " . $e->getMessage());
+        log_message("DB error get_draft_by_id: " . $e->getMessage());
         error_log("Database error in get_draft_by_id: " . $e->getMessage());
         return false;
     }
@@ -710,7 +678,7 @@ function save_email($db, $data)
             return false;
         }
     } catch (PDOException $e) {
-        log_message("Database error in save_email: " . $e->getMessage());
+        log_message("DB error save_email: " . $e->getMessage());
         error_log("Database error in save_email: " . $e->getMessage());
         return false;
     }

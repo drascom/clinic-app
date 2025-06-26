@@ -94,7 +94,6 @@ require_once '../includes/header.php';
                                         <button id="btn-treatment"
                                             class="btn btn-outline-success px-4">Treatment</button>
                                     </div>
-                                    <input type="hidden" id="appointment-type" name="appointment_type" value="">
                                 </fieldset>
                             </div>
 

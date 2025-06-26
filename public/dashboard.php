@@ -19,7 +19,9 @@ require_once __DIR__ . '/includes/header.php';
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary badge-lg"
                     id="today-events-badge"></span>
                 <div class="card-body d-flex flex-row align-items-center justify-content-between pb-2">
-                    <div class="text-muted  font-weight-medium">Today's Events</div>
+                    <div class="text-muted">
+                        <h3>Today's Events</h3>
+                    </div>
                     <i class="fas fa-calendar-day text-muted"></i>
                 </div>
                 <div class="card-body pt-0">
@@ -32,7 +34,9 @@ require_once __DIR__ . '/includes/header.php';
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success badge-lg"
                     id="overall-stats-badge"></span>
                 <div class="card-body d-flex flex-row align-items-center justify-content-between pb-2">
-                    <div class="text-muted text-sm font-weight-medium">Overall Statistics</div>
+                    <div class="text-muted text-sm font-weight-medium">
+                        <h3>Overall Statistics</h3>
+                    </div>
                     <i class="fas fa-chart-bar text-muted"></i>
                 </div>
                 <div class="card-body pt-0">
@@ -45,7 +49,9 @@ require_once __DIR__ . '/includes/header.php';
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark badge-lg"
                     id="total-staff-badge"></span>
                 <div class="card-body d-flex flex-row align-items-center justify-content-between pb-2">
-                    <div class="text-muted text-sm font-weight-medium">Staff Overview</div>
+                    <div class="text-muted text-sm font-weight-medium">
+                        <h3>Staff Overview</h3>
+                    </div>
                     <i class="fas fa-users text-muted"></i>
                 </div>
                 <div class="card-body pt-0">
@@ -58,7 +64,9 @@ require_once __DIR__ . '/includes/header.php';
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger badge-lg"
                     id="pending-communications-badge"></span>
                 <div class="card-body d-flex flex-row align-items-center justify-content-between pb-2">
-                    <div class="text-muted text-sm font-weight-medium">Pending Communications</div>
+                    <div class="text-muted text-sm font-weight-medium">
+                        <h3>Pending Communications</h3>
+                    </div>
                     <i class="fas fa-comments text-muted"></i>
                 </div>
                 <div class="card-body pt-0">
@@ -69,10 +77,12 @@ require_once __DIR__ . '/includes/header.php';
     </div>
 
     <div class="row g-4">
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="card shadow-sm h-100">
                 <div class="card-header">
-                    <h5 class="card-title mb-0"><i class="fas fa-clock me-2"></i>Today's Schedule</h5>
+                    <h5 class="card-title mb-0"><i class="fas fa-clock me-2"></i>
+                        <h3>Today's Schedule</h3>
+                    </h5>
                     <p class="card-subtitle text-muted">Upcoming appointments and surgeries for today</p>
                 </div>
                 <div class="card-body pt-0 space-y-3" id="today-schedule-list">
@@ -83,13 +93,27 @@ require_once __DIR__ . '/includes/header.php';
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Recent Messages</h5>
+                    <p class="card-subtitle text-muted">Latest Emails & Messages</p>
+                </div>
+                <div class="card-body pt-0 space-y-3" id="recent-messages-list">
+                    <!-- Activity items will be populated by JavaScript -->
+                    <div class="text-center text-muted py-4" id="no-recent-messages" style="display: none;">
+                        No recent message today.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
             <div class="card shadow-sm h-100">
                 <div class="card-header">
                     <h5 class="card-title mb-0">Recent Activity</h5>
                     <p class="card-subtitle text-muted">Latest updates and changes across the system</p>
                 </div>
-                <div class="card-body pt-0 space-y-3" id="recent-activity-list">
+                <div class="card-body p-0 " id="recent-activity-list">
                     <!-- Activity items will be populated by JavaScript -->
                     <div class="text-center text-muted py-4" id="no-recent-activity" style="display: none;">
                         No recent activity today.
