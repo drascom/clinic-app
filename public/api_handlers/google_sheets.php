@@ -73,7 +73,7 @@ function get_setting($key)
 }
 
 // --- Configuration ---
-$credentialsPath = __DIR__ . '/../../secrets/liv-hsh-patients-18682cec86db.json'; // Adjust path relative to this file
+$credentialsPath = __DIR__ . '/../../secrets/google-sheets-api.json'; // Adjust path relative to this file
 $spreadsheetId = get_setting('spreadsheet_id'); // Get Spreadsheet ID from settings
 $cacheDuration = (int) get_setting('cache_duration') ?: 3600; // Default 1 hour
 $cellRange = get_setting('cell_range') ?: 'A1:Z'; // Default range

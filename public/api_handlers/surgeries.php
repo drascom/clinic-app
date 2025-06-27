@@ -16,6 +16,7 @@ function handle_surgeries($action, $method, $db, $input = [])
                 $patient_id = $_POST['patient_id'] ?? null;
                 $technician_ids = $_POST['technician_ids'] ?? [];
                 $period = $_POST['period'] ?? 'full'; // Surgery period (am, pm, full)
+                $forms = $_POST['forms'] ?? '{}';
 
                 if (!$date || !$patient_id) {
                     return ['success' => false, 'error' => 'Date and patient_id are required.'];
@@ -112,8 +113,8 @@ function handle_surgeries($action, $method, $db, $input = [])
                     }
 
                     // Insert surgery
-                    $stmt = $db->prepare("INSERT INTO surgeries (date, notes, status, room_id, predicted_grafts_count, current_grafts_count, patient_id, is_recorded, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))");
-                    $stmt->execute([$date, $notes, $status, $room_id, $predicted_grafts_count, $current_grafts_count, $patient_id, TRUE]);
+                    $stmt = $db->prepare("INSERT INTO surgeries (date, notes, status, room_id, predicted_grafts_count, current_grafts_count, patient_id, is_recorded, forms, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))");
+                    $stmt->execute([$date, $notes, $status, $room_id, $predicted_grafts_count, $current_grafts_count, $patient_id, TRUE, $forms]);
                     $surgery_id = $db->lastInsertId();
 
                     // Reserve room if provided
@@ -153,6 +154,7 @@ function handle_surgeries($action, $method, $db, $input = [])
                 $patient_id = $_POST['patient_id'] ?? null;
                 $technician_ids = $_POST['technician_ids'] ?? [];
                 $period = $_POST['period'] ?? 'full';
+                $forms = $_POST['forms'] ?? null;
 
                 // Remove duplicate technician IDs from the input to prevent unique constraint violations
                 $technician_ids = array_unique($technician_ids);
@@ -283,8 +285,19 @@ function handle_surgeries($action, $method, $db, $input = [])
                     }
 
                     // Update surgery first
-                    $stmt = $db->prepare("UPDATE surgeries SET date = ?, notes = ?, status = ?, predicted_grafts_count = ?, current_grafts_count = ?, room_id = ?, patient_id = ?, updated_at = datetime('now') WHERE id = ?");
-                    $stmt->execute([$date, $notes, $status, $predicted_grafts_count, $current_grafts_count, $room_id, $patient_id, $id]);
+                    $update_sql = "UPDATE surgeries SET date = ?, notes = ?, status = ?, predicted_grafts_count = ?, current_grafts_count = ?, room_id = ?, patient_id = ?, updated_at = datetime('now')";
+                    $update_params = [$date, $notes, $status, $predicted_grafts_count, $current_grafts_count, $room_id, $patient_id];
+
+                    if ($forms !== null) {
+                        $update_sql .= ", forms = ?";
+                        $update_params[] = $forms;
+                    }
+
+                    $update_sql .= " WHERE id = ?";
+                    $update_params[] = $id;
+
+                    $stmt = $db->prepare($update_sql);
+                    $stmt->execute($update_params);
 
                     // Handle room reservation
                     if ($room_id) {
@@ -459,6 +472,25 @@ function handle_surgeries($action, $method, $db, $input = [])
                     $stmt = $db->prepare($sql);
                     $stmt->execute($params);
                     return ['success' => true, 'surgeries' => $stmt->fetchAll(PDO::FETCH_ASSOC)];
+                }
+            }
+            break;
+
+        case 'updateForms':
+            if ($method === 'POST') {
+                $id = $_POST['id'] ?? null;
+                $forms = $_POST['forms'] ?? null;
+
+                if (!$id || $forms === null) {
+                    return ['success' => false, 'error' => 'Surgery ID and forms data are required.'];
+                }
+
+                try {
+                    $stmt = $db->prepare("UPDATE surgeries SET forms = ?, updated_at = datetime('now') WHERE id = ?");
+                    $stmt->execute([$forms, $id]);
+                    return ['success' => true, 'message' => 'Surgery forms updated successfully.'];
+                } catch (PDOException $e) {
+                    return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
                 }
             }
             break;

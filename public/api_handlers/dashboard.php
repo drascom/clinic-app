@@ -359,9 +359,9 @@ function handle_dashboard($action, $method, $db, $input = [])
                         'overall_stats' => get_overall_stats_data($db),
                         'staff_availability' => get_staff_availability_data($db),
                         'pending_tasks' => get_pending_tasks_data($db, get_user_id()),
-                        'today_schedule' => get_today_schedule_data($db),
+                        'week_schedule' => get_week_schedule_data($db),
                         'recent_activity' => get_recent_activity_data($db),
-                        'recent_emails' => get_last_5_emails_data($db, get_user_id())
+                        'recent_surgeries' => get_recent_surgeries_data($db),
                     ];
                     return ['success' => true, 'data' => $data];
                 } catch (PDOException $e) {
@@ -533,7 +533,7 @@ function get_pending_tasks_data($db, $userId)
 /**
  * Get today's schedule details (appointments and surgeries).
  */
-function get_today_schedule_data($db)
+function get_week_schedule_data($db)
 {
     $today = date('Y-m-d');
     $agencyFilter = '';
@@ -543,30 +543,21 @@ function get_today_schedule_data($db)
         $agencyParams = [get_user_agency_id()];
     }
 
-    // List of patient names with appointments scheduled for today
+    // Upcoming 10 appointments
     $appointmentsStmt = $db->prepare("
-        SELECT p.name as patient_name, a.start_time as time, 'Appointment' as type
+        SELECT p.name as patient_name, a.appointment_date as date, a.start_time as time, 'Appointment' as type
         FROM appointments a
         JOIN patients p ON a.patient_id = p.id
-        WHERE DATE(a.appointment_date) = ?" . $agencyFilter . "
-        ORDER BY a.start_time
+        WHERE a.appointment_date >= ? " . $agencyFilter . "
+        ORDER BY a.appointment_date DESC, a.start_time
+        LIMIT 10
     ");
     $appointmentsStmt->execute(array_merge([$today], $agencyParams));
     $appointments = $appointmentsStmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // List of patient names with surgeries scheduled for today
-    $surgeriesStmt = $db->prepare("
-        SELECT p.name as patient_name, 'N/A' as time, 'Surgery' as type
-        FROM surgeries s
-        JOIN patients p ON s.patient_id = p.id
-        WHERE DATE(s.date) = ?" . $agencyFilter
-    );
-    $surgeriesStmt->execute(array_merge([$today], $agencyParams));
-    $surgeries = $surgeriesStmt->fetchAll(PDO::FETCH_ASSOC);
-
     return [
         'appointments' => $appointments,
-        'surgeries' => $surgeries
+        'surgeries' => []
     ];
 }
 
@@ -679,25 +670,26 @@ function get_recent_activity_data($db)
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-
-
 /**
- * Retrieve the last 5 emails for the current user from the database.
+ * Retrieve the last 10 recent surgeries.
  */
-function get_last_5_emails_data($db, $userId)
+function get_recent_surgeries_data($db)
 {
-    try {
-        $stmt = $db->prepare("
-            SELECT subject, sender_email, date, is_read
-            FROM emails
-            WHERE user_id = ?
-            ORDER BY date DESC
-            LIMIT 5
-        ");
-        $stmt->execute([$userId]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-        error_log("Dashboard API Error (get_last_5_emails_data): " . $e->getMessage());
-        return [];
+    $agencyFilter = '';
+    $agencyParams = [];
+    if (is_agent() && get_user_agency_id()) {
+        $agencyFilter = ' WHERE p.agency_id = ?';
+        $agencyParams = [get_user_agency_id()];
     }
+
+    $stmt = $db->prepare("
+        SELECT s.date, p.name as patient_name, s.status, s.forms
+        FROM surgeries s
+        JOIN patients p ON s.patient_id = p.id
+        " . $agencyFilter . "
+        ORDER BY s.date DESC
+        LIMIT 10
+    ");
+    $stmt->execute($agencyParams);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }

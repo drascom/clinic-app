@@ -30,6 +30,7 @@ CREATE TABLE surgeries (
   room_id INTEGER,
   patient_id INTEGER NOT NULL,
   is_recorded BOOLEAN DEFAULT FALSE,
+  forms TEXT DEFAULT '{"form1": false, "form2": false, "form3": false}',
   updated_by INTEGER NULL,
   created_at TEXT DEFAULT CURRENT_TIMESTAMP,
   updated_at TEXT DEFAULT CURRENT_TIMESTAMP,

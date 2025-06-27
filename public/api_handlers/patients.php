@@ -36,13 +36,14 @@ function convert_heic_to_jpeg($source_path, $destination_path)
 
     // Try ImageMagick first (preferred method)
     if (extension_loaded('imagick') && class_exists('Imagick')) {
+        error_log("Imagick extension is loaded.");
         try {
             $imagick = new \Imagick();
 
             // Check if ImageMagick supports HEIC
             $formats = $imagick->queryFormats();
             if (in_array('HEIC', $formats) || in_array('HEIF', $formats)) {
-                error_log("Using ImageMagick for HEIC conversion");
+                error_log("ImageMagick supports HEIC/HEIF format. Using ImageMagick for HEIC conversion.");
 
                 $imagick->readImage($source_path);
                 $imagick->setImageFormat('JPEG');

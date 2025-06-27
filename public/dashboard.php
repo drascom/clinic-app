@@ -65,7 +65,7 @@ require_once __DIR__ . '/includes/header.php';
                     id="pending-communications-badge"></span>
                 <div class="card-body d-flex flex-row align-items-center justify-content-between pb-2">
                     <div class="text-muted text-sm font-weight-medium">
-                        <h3>Pending Communications</h3>
+                        <h3>Communications</h3>
                     </div>
                     <i class="fas fa-comments text-muted"></i>
                 </div>
@@ -80,12 +80,13 @@ require_once __DIR__ . '/includes/header.php';
         <div class="col-md-4">
             <div class="card shadow-sm h-100">
                 <div class="card-header">
-                    <h5 class="card-title mb-0"><i class="fas fa-clock me-2"></i>
-                        <h3>Today's Schedule</h3>
+                    <h5 class="card-title mb-1">
+                        <i class="fas fa-clock me-2"></i>
+                        Week's Appointment List
                     </h5>
-                    <p class="card-subtitle text-muted">Upcoming appointments and surgeries for today</p>
+                    <p class="card-subtitle text-muted">Upcoming 10 appointments</p>
                 </div>
-                <div class="card-body pt-0 space-y-3" id="today-schedule-list">
+                <div class="card-body pt-0 space-y-3" id="week-appointment-list">
                     <!-- Schedule items will be populated by JavaScript -->
                     <div class="text-center text-muted py-4" id="no-schedule-today" style="display: none;">
                         No appointments or surgeries scheduled for today.
@@ -96,13 +97,15 @@ require_once __DIR__ . '/includes/header.php';
         <div class="col-md-4">
             <div class="card shadow-sm h-100">
                 <div class="card-header">
-                    <h5 class="card-title mb-0">Recent Messages</h5>
-                    <p class="card-subtitle text-muted">Latest Emails & Messages</p>
+                    <h5 class="card-title mb-1">
+                        <i class="fas fa-stethoscope me-2"></i>Recent Surgeries
+                    </h5>
+                    <p class="card-subtitle text-muted">Recent surgeries status list</p>
                 </div>
-                <div class="card-body pt-0 space-y-3" id="recent-messages-list">
+                <div class="card-body p-0 " id="recent-surgery-list">
                     <!-- Activity items will be populated by JavaScript -->
-                    <div class="text-center text-muted py-4" id="no-recent-messages" style="display: none;">
-                        No recent message today.
+                    <div class="text-center text-muted py-4" id="no-recent-surgery" style="display: none;">
+                        No recent surgery .
                     </div>
                 </div>
             </div>
@@ -110,7 +113,10 @@ require_once __DIR__ . '/includes/header.php';
         <div class="col-md-4">
             <div class="card shadow-sm h-100">
                 <div class="card-header">
-                    <h5 class="card-title mb-0">Recent Activity</h5>
+                    <h5 class="card-title mb-1">
+                        <i class="fas fa-tasks"></i>
+                        Recent Activity
+                    </h5>
                     <p class="card-subtitle text-muted">Latest updates and changes across the system</p>
                 </div>
                 <div class="card-body p-0 " id="recent-activity-list">
@@ -125,6 +131,48 @@ require_once __DIR__ . '/includes/header.php';
 </div>
 
 <script>
+    // Helper function to get initials for avatar
+    function getInitials(name) {
+        if (!name) return '';
+        const parts = name.split(' ');
+        if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+        return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+    }
+
+    function formatTimeAgo(timestamp) {
+        const now = new Date();
+        const updatedDate = new Date(timestamp.replace(' ', 'T') + 'Z'); // Assume UTC for consistency
+        const seconds = Math.floor((now - updatedDate) / 1000);
+
+        let interval = seconds / 31536000;
+        if (interval > 1) return Math.floor(interval) + " years ago";
+        interval = seconds / 2592000;
+        if (interval > 1) return Math.floor(interval) + " months ago";
+        interval = seconds / 86400;
+        if (interval > 1) return Math.floor(interval) + " days ago";
+        interval = seconds / 3600;
+        if (interval > 1) return Math.floor(interval) + " hours ago";
+        interval = seconds / 60;
+        if (interval > 1) return Math.floor(interval) + " minutes ago";
+        return Math.floor(seconds) + " seconds ago";
+    }
+
+    function formatDate(dateString) {
+        const options = { day: '2-digit', month: 'short', year: '2-digit' };
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-GB', options).replace(/\//g, ' / ');
+    }
+
+    function getStatusColor(status) {
+        switch (status.toLowerCase()) {
+            case 'completed': return 'success';
+            case 'scheduled': return 'primary';
+            case 'confirmed': return 'info';
+            case 'cancelled': return 'danger';
+            default: return 'secondary';
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         loadDashboardData();
     });
@@ -140,8 +188,9 @@ require_once __DIR__ . '/includes/header.php';
                 renderOverallStats(data.overall_stats);
                 renderStaffAvailability(data.staff_availability);
                 renderPendingTasks(data.pending_tasks);
-                renderTodaySchedule(data.today_schedule);
+                renderWeekSchedule(data.week_schedule);
                 renderRecentActivity(data.recent_activity);
+                renderRecentSurgeries(data.recent_surgeries);
             } else {
                 console.error('Error fetching dashboard data:', response.error);
                 alert('Failed to load dashboard data: ' + (response.error || 'Unknown error'));
@@ -152,6 +201,173 @@ require_once __DIR__ . '/includes/header.php';
         } finally {
             // Hide loading indicators
         }
+    }
+
+    function renderTodayOverview(data) {
+        const totalTodayEvents = data.appointments_today + data.surgeries_today;
+        document.getElementById('today-events-details').innerHTML = `<a href="/appointment/appointments.php" class="text-primary">Appointments</a>: ${data.appointments_today} | <a href="/surgery/surgeries.php" class="text-success">Surgeries</a>: ${data.surgeries_today} `;
+        document.getElementById('today-events-badge').textContent = totalTodayEvents;
+    }
+
+    function renderOverallStats(data) {
+        document.getElementById('overall-stats-details').innerHTML = `<a href="/patient/patients.php" class="text-primary">Patients</a>: ${data.total_patients} </br> Procedures: ${data.total_procedures} | <a href="/surgery/surgeries.php" class="text-success">Surgeries</a>: ${data.total_surgeries} `;
+        document.getElementById('overall-stats-badge').textContent = data.total_patients;
+    }
+
+    function renderStaffAvailability(data) {
+        document.getElementById('staff-overview-details').innerHTML = `<a href="staff/" class="text-primary">Total</a>: ${data.total_staff} | <a href="/staff/staff-availability.php" class="text-success">Available</a>: ${data.available_staff_this_month}`;
+        document.getElementById('total-staff-badge').textContent = data.total_staff;
+    }
+
+    function renderPendingTasks(data) {
+        const totalPending = data.unread_messages + data.unread_emails;
+        document.getElementById('pending-communications-details').innerHTML = `<a href="/app-msg/" class="text-primary">Messages</a>:  ${data.unread_messages}/${data.read_messages} | <a href="/app-email/" class=" text-success">Emails</a>: ${data.unread_emails}/${data.read_emails}`;
+        document.getElementById('pending-communications-badge').textContent = totalPending;
+    }
+
+    function renderWeekSchedule(data) {
+        const scheduleList = document.getElementById('week-appointment-list');
+        scheduleList.innerHTML = ''; // Clear existing content
+        const allEvents = [...data.appointments].sort((a, b) => {
+            const dateA = new Date(a.date + 'T' + a.time);
+            const dateB = new Date(b.date + 'T' + b.time);
+            return dateB - dateA;
+        });
+
+        if (allEvents.length === 0) {
+            scheduleList.innerHTML = `
+            <div class="text-center text-muted py-4" id="no-upcoming-schedule">
+                No upcoming appointments.
+            </div>`;
+            return;
+        }
+
+        allEvents.forEach(event => {
+            const eventDate = new Date(event.date);
+            const formattedDate = eventDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+            const badgeClass = event.type === 'Appointment' ? 'bg-primary-subtle text-primary' : 'bg-success-subtle text-success';
+            const itemHtml = `
+            <div class="d-flex align-items-center justify-content-between p-3 rounded hover-bg-light-dark">
+                <div class="d-flex align-items-center space-x-3">
+                    <span class="avatar avatar-sm rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center">
+                        ${getInitials(event.patient_name)}
+                    </span>
+                    <div>
+                        <p class="font-weight-medium mb-0">${event.patient_name}</p>
+                        <p class="text-sm text-muted mb-0">${event.type}</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="font-weight-medium mb-0">${event.time.substring(0, 5)}</p>
+                    <p class="text-sm text-muted mb-0">${formattedDate}</p>
+                </div>
+            </div>`;
+            scheduleList.insertAdjacentHTML('beforeend', itemHtml);
+        });
+    }
+
+    function renderRecentActivity(data) {
+        const activityList = document.getElementById('recent-activity-list');
+        activityList.innerHTML = ''; // Clear existing content
+
+        if (data.length === 0) {
+            activityList.innerHTML = `
+            <div class="text-center text-muted py-4" id = "no-recent-activity" >
+                No recent activity today.
+                </div > `;
+            return;
+        }
+
+        data.forEach(activity => {
+            let iconClass = '';
+            switch (activity.type) {
+                case 'Patient':
+                    iconClass = 'fas fa-user';
+                    break;
+                case 'Appointment':
+                    iconClass = 'fas fa-calendar-alt';
+                    break;
+                case 'Surgery':
+                    iconClass = 'fas fa-hospital';
+                    break;
+                case 'Staff':
+                    iconClass = 'fas fa-user-tie';
+                    break;
+                case 'Staff Detail':
+                    iconClass = 'fas fa-user-edit'; // Icon for staff details
+                    break;
+                case 'Room':
+                    iconClass = 'fas fa-door-open';
+                    break;
+                default:
+                    iconClass = 'fas fa-info-circle';
+            }
+
+            const timeAgo = formatTimeAgo(activity.activity_timestamp);
+
+            const itemHtml = `
+            <div class="d-flex align-items-center space-x-3 p-3 rounded  hover-bg-light-dark" >
+                    <div class="flex-shrink-0 mt-1">
+                       
+                    </div>
+                    <div class="flex-grow-1 min-w-0">
+                        <p class="text-sm mb-0 d-flex justify-content-between"><span> <i class="${iconClass} text-muted me-2"></i>${activity.process_type || 'N/A'}: ${activity.description}<small class="text-muted"> by ${activity.updated_by || 'N/A'}</small></span> <small class="text-xs text-muted">${timeAgo}</small></p>
+                    </div>
+                </div >
+            `;
+            activityList.insertAdjacentHTML('beforeend', itemHtml);
+        });
+    }
+
+    function renderRecentSurgeries(data) {
+        const surgeryList = document.getElementById('recent-surgery-list');
+        surgeryList.innerHTML = ''; // Clear existing content
+
+        if (data.length === 0) {
+            surgeryList.innerHTML = `
+            <div class="text-center text-muted py-4" id="no-recent-surgery">
+                No recent surgery.
+            </div>`;
+            return;
+        }
+
+        data.forEach(surgery => {
+            const formattedDate = formatDate(surgery.date);
+            let formsContent = '';
+            if (surgery.forms) {
+                try {
+                    const forms = JSON.parse(surgery.forms);
+                    for (const [formName, isCompleted] of Object.entries(forms)) {
+                        const icon = isCompleted ? 'fa-check-circle text-success' : 'fa-times-circle text-danger';
+                        formsContent += `<i class="fas ${icon} me-2" title="${formName}"></i>`;
+                    }
+                } catch (e) {
+                    formsContent += '<span class="text-danger">Error</span>';
+                }
+            } else {
+                formsContent += '<span class="text-muted">N/A</span>';
+            }
+
+            const itemHtml = `
+            <div class="d-flex align-items-center space-x-3 p-3 rounded bg-light hover-bg-light-dark">
+                <div class="flex-shrink-0 mt-1">
+                    <i class="fas fa-hospital text-muted me-2"></i>
+                </div>
+                <div class="flex-grow-1 min-w-0">
+                    <p class="text-sm mb-0 d-flex justify-content-between">
+                        <span>${surgery.patient_name}</span>
+                        <small class="text-xs text-muted">${formattedDate}</small>
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center mt-1">
+                        <div class="d-flex justify-content-start align-items-center">
+                            ${formsContent}
+                        </div>
+                        <p class="text-xs text-muted mb-0"><span class="badge bg-${getStatusColor(surgery.status)}">${surgery.status}</span></p>
+                    </div>
+                </div>
+            </div>`;
+            surgeryList.insertAdjacentHTML('beforeend', itemHtml);
+        });
     }
 
     function renderTodayOverview(data) {
@@ -253,7 +469,7 @@ require_once __DIR__ . '/includes/header.php';
             const timeAgo = formatTimeAgo(activity.activity_timestamp);
 
             const itemHtml = `
-            <div class="d-flex align-items-center space-x-3 p-3 rounded bg-light hover-bg-light-dark" >
+            <div class="d-flex align-items-center space-x-3 p-3 rounded  hover-bg-light-dark" >
                     <div class="flex-shrink-0 mt-1">
                         <i class="${iconClass} text-muted me-2"></i>
                     </div>
@@ -266,22 +482,69 @@ require_once __DIR__ . '/includes/header.php';
         });
     }
 
-    function formatTimeAgo(timestamp) {
-        const now = new Date();
-        const updatedDate = new Date(timestamp.replace(' ', 'T') + 'Z'); // Assume UTC for consistency
-        const seconds = Math.floor((now - updatedDate) / 1000);
+    function renderRecentSurgeries(data) {
+        const surgeryList = document.getElementById('recent-surgery-list');
+        surgeryList.innerHTML = ''; // Clear existing content
 
-        let interval = seconds / 31536000;
-        if (interval > 1) return Math.floor(interval) + " years ago";
-        interval = seconds / 2592000;
-        if (interval > 1) return Math.floor(interval) + " months ago";
-        interval = seconds / 86400;
-        if (interval > 1) return Math.floor(interval) + " days ago";
-        interval = seconds / 3600;
-        if (interval > 1) return Math.floor(interval) + " hours ago";
-        interval = seconds / 60;
-        if (interval > 1) return Math.floor(interval) + " minutes ago";
-        return Math.floor(seconds) + " seconds ago";
+        if (data.length === 0) {
+            surgeryList.innerHTML = `
+            <div class="text-center text-muted py-4" id="no-recent-surgery">
+                No recent surgery.
+            </div>`;
+            return;
+        }
+
+        data.forEach(surgery => {
+            const formattedDate = formatDate(surgery.date);
+            let formsContent = '';
+            if (surgery.forms) {
+                try {
+                    const forms = JSON.parse(surgery.forms);
+                    for (const [formName, isCompleted] of Object.entries(forms)) {
+                        const icon = isCompleted ? 'fa-check-circle text-success' : 'fa-times-circle text-danger';
+                        formsContent += `<i class="fas ${icon} me-2" title="${formName}"></i>`;
+                    }
+                } catch (e) {
+                    formsContent += '<span class="text-danger">Error</span>';
+                }
+            } else {
+                formsContent += '<span class="text-muted">N/A</span>';
+            }
+
+            const itemHtml = `
+            <div class="d-flex align-items-center space-x-3 p-3 rounded shadow-sm  hover-bg-light-dark">
+               
+                <div class="flex-grow-1 min-w-0">
+                    <p class="text-sm mb-0 d-flex justify-content-between">
+                        <span>  <i class="fas fa-hospital text-muted me-2"></i>${surgery.patient_name}</span>
+                        <small class="text-xs text-muted">${formattedDate}</small>
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center mt-1">
+                        <div class="d-flex justify-content-start align-items-center">
+                            ${formsContent}
+                        </div>
+                        <span class="badge bg-${getStatusColor(surgery.status)}">${surgery.status}</span>
+                    </div>
+                </div>
+            </div>`;
+            surgeryList.insertAdjacentHTML('beforeend', itemHtml);
+        });
+    }
+
+    function formatDate(dateString) {
+        const options = { day: '2-digit', month: 'short', year: '2-digit' };
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-GB', options).replace(/\//g, ' / ');
+    }
+
+    function getStatusColor(status) {
+        switch (status.toLowerCase()) {
+            case 'completed': return 'success';
+            case 'scheduled': return 'primary';
+            case 'confirmed': return 'info';
+            case 'cancelled': return 'danger';
+            default: return 'secondary';
+        }
     }
 
     // Helper function to get initials for avatar

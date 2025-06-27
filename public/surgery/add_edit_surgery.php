@@ -230,6 +230,15 @@ require_once __DIR__ . '/../includes/header.php';
                             </div>
                             <input type="hidden" id="status" name="status" value="scheduled">
                         </fieldset>
+                        <fieldset class="border rounded p-3 mb-3 shadow-sm">
+                            <legend class="w-auto px-2 mb-3" style="font-size: 1rem;">
+                                <i class="far fa-file-alt me-2"></i>Forms
+                            </legend>
+                            <div id="forms-container" class="d-flex flex-wrap gap-3">
+                                <!-- Form toggles will be loaded here -->
+                            </div>
+                            <input type="hidden" name="forms" id="forms-input">
+                        </fieldset>
                     </div>
                     <div class="col-12">
                         <!-- Notes Section -->
@@ -901,6 +910,15 @@ require_once __DIR__ . '/../includes/header.php';
                         document.getElementById('current_grafts_count').value = surgery.current_grafts_count;
                         document.getElementById('notes').value = surgery.notes;
 
+                        if (surgery.forms) {
+                            try {
+                                const forms = JSON.parse(surgery.forms);
+                                renderForms(forms);
+                            } catch (e) {
+                                console.error('Error parsing forms JSON:', e);
+                            }
+                        }
+
                         // Update status display in header
                         updateStatusDisplayFromData(surgery.status);
 
@@ -999,6 +1017,10 @@ require_once __DIR__ . '/../includes/header.php';
 
             // If adding, load room options and pre-select if provided
             loadRoomOptions(roomIdFromUrl);
+
+            // Render default forms for a new surgery
+            const defaultForms = { "form1": false, "form2": false, "form3": false };
+            renderForms(defaultForms);
         }
 
         // Fetch agencies for modal
@@ -1668,6 +1690,37 @@ require_once __DIR__ . '/../includes/header.php';
             if (!isEditing) {
                 updateStatusDisplay('scheduled');
             }
+        }
+
+        function renderForms(forms) {
+            const container = document.getElementById('forms-container');
+            const formsInput = document.getElementById('forms-input');
+            container.innerHTML = '';
+            let formState = {};
+
+            for (const [formName, isCompleted] of Object.entries(forms)) {
+                const isChecked = Boolean(isCompleted);
+                formState[formName] = isChecked;
+                const iconClass = isChecked ? 'fa-check-circle text-success' : 'fa-times-circle text-danger';
+                const formId = `form-toggle-${formName}`;
+
+                const formElement = document.createElement('div');
+                formElement.className = 'form-check form-switch';
+                formElement.innerHTML = `
+                   <i class="fas ${iconClass} fa-2x" id="icon-${formId}" style="cursor: pointer;"></i>
+                   <label class="form-check-label ms-2" for="${formId}">${formName}</label>
+               `;
+
+                container.appendChild(formElement);
+
+                document.getElementById(`icon-${formId}`).addEventListener('click', () => {
+                    formState[formName] = !formState[formName];
+                    const newIconClass = formState[formName] ? 'fa-check-circle text-success' : 'fa-times-circle text-danger';
+                    document.getElementById(`icon-${formId}`).className = `fas ${newIconClass} fa-2x`;
+                    formsInput.value = JSON.stringify(formState);
+                });
+            }
+            formsInput.value = JSON.stringify(formState);
         }
 
         // Initialize agencies for the modal

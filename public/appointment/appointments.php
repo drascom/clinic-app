@@ -59,12 +59,18 @@ $page_title = "Appointment Management";
             <table class="table table-hover  table-sm" id="appointments-table">
                 <thead class="table-light">
                     <tr>
-                        <th>Date</th>
-                        <th>Time</th>
-                        <th>Patient</th>
-                        <th>Room</th>
-                        <th>Procedure</th>
-                        <th>Type</th>
+                        <th class="sortable" data-sort-by="appointment_date" data-sort-order="desc">Date <i
+                                class="fas fa-sort-down ms-1"></i></th>
+                        <th class="sortable" data-sort-by="start_time" data-sort-order="asc">Time <i
+                                class="fas fa-sort ms-1"></i></th>
+                        <th class="sortable" data-sort-by="patient_name" data-sort-order="asc">Patient <i
+                                class="fas fa-sort ms-1"></i></th>
+                        <th class="sortable" data-sort-by="room_name" data-sort-order="asc">Room <i
+                                class="fas fa-sort ms-1"></i></th>
+                        <th class="sortable" data-sort-by="procedure_name" data-sort-order="asc">Procedure <i
+                                class="fas fa-sort ms-1"></i></th>
+                        <th class="sortable" data-sort-by="consultation_type" data-sort-order="asc">Type <i
+                                class="fas fa-sort ms-1"></i></th>
                         <th>Notes</th>
                         <th>Actions</th>
                     </tr>
@@ -169,6 +175,8 @@ $page_title = "Appointment Management";
     let appointments = [];
     let rooms = [];
     let patients = [];
+    let currentSortColumn = 'appointment_date';
+    let currentSortOrder = 'desc';
 
     document.addEventListener('DOMContentLoaded', function () {
         loadInitialData();
@@ -181,7 +189,7 @@ $page_title = "Appointment Management";
         if (searchInput && clearSearchBtn) {
             clearSearchBtn.addEventListener('click', function () {
                 searchInput.value = '';
-                renderAppointmentsTable();
+                searchAppointments();
             });
         }
 
@@ -219,6 +227,23 @@ $page_title = "Appointment Management";
                     updateEditSubmitButtonState();
                 });
             }
+        });
+
+        const sortableHeaders = document.querySelectorAll('.sortable');
+        sortableHeaders.forEach(header => {
+            header.addEventListener('click', function () {
+                const sortColumn = this.dataset.sortBy;
+                let newSortOrder;
+
+                if (currentSortColumn === sortColumn) {
+                    // Toggle order if same column is clicked
+                    newSortOrder = currentSortOrder === 'asc' ? 'desc' : 'asc';
+                } else {
+                    // Default to 'asc' for new column, or use its default sort order from data attribute
+                    newSortOrder = this.dataset.sortOrder || 'asc';
+                }
+                sortAndDisplayAppointments(appointments, sortColumn, newSortOrder);
+            });
         });
     });
 
@@ -409,7 +434,7 @@ $page_title = "Appointment Management";
 
             if (appointmentsData.success) {
                 appointments = appointmentsData.appointments || [];
-                renderAppointmentsTable();
+                sortAndDisplayAppointments(appointments, currentSortColumn, currentSortOrder);
             } else {
                 showToast('Error loading appointments: ' + (appointmentsData.error || 'Unknown error'), 'danger');
             }
@@ -459,14 +484,14 @@ $page_title = "Appointment Management";
         }
     }
 
-    function renderAppointmentsTable() {
+    function renderAppointmentsTable(appointmentsToRender) {
         const tbody = document.getElementById('appointments-tbody');
-        document.getElementById('records-count').textContent = ' ' + appointments.length + ' ';
+        document.getElementById('records-count').textContent = ' ' + appointmentsToRender.length + ' ';
 
-        if (appointments.length === 0) {
+        if (appointmentsToRender.length === 0) {
             tbody.innerHTML = `
             <tr>
-                <td colspan="7" class="text-center text-muted">
+                <td colspan="8" class="text-center text-muted py-4">
                     <i class="fas fa-calendar-times fa-2x mb-2"></i><br>
                     No appointments found
                 </td>
@@ -475,7 +500,7 @@ $page_title = "Appointment Management";
             return;
         }
 
-        tbody.innerHTML = appointments.map(appointment => `
+        tbody.innerHTML = appointmentsToRender.map(appointment => `
         <tr>
             <td>${formatDate(appointment.appointment_date)}</td>
             <td>${appointment.start_time} - ${appointment.end_time}</td>
@@ -525,12 +550,8 @@ $page_title = "Appointment Management";
     function searchAppointments() {
         const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
 
-        if (!searchTerm) {
-            renderAppointmentsTable();
-            return;
-        }
-
         const filteredAppointments = appointments.filter(appointment => {
+            if (!searchTerm) return true;
             return (
                 appointment.patient_name.toLowerCase().includes(searchTerm) ||
                 appointment.room_name.toLowerCase().includes(searchTerm) ||
@@ -540,48 +561,7 @@ $page_title = "Appointment Management";
             );
         });
 
-        renderFilteredAppointmentsTable(filteredAppointments);
-    }
-
-    function renderFilteredAppointmentsTable(filteredAppointments) {
-        const tbody = document.getElementById('appointments-tbody');
-
-        if (filteredAppointments.length === 0) {
-            tbody.innerHTML = `
-            <tr>
-                <td colspan="6" class="text-center text-muted py-4">
-                    <i class="fas fa-search fa-2x mb-2"></i><br>
-                    No appointments found matching your search
-                </td>
-            </tr>
-        `;
-            return;
-        }
-
-        tbody.innerHTML = filteredAppointments.map(appointment => `
-        <tr>
-            <td>${formatDate(appointment.appointment_date)}</td>
-            <td>${appointment.start_time} - ${appointment.end_time}</td>
-            <td><a href="/patient/patient_details.php?id=${appointment.patient_id}&tab=appointments">${appointment.patient_name}</a></td>
-            <td>${appointment.room_name}</td>
-            <td>
-                <span class="badge bg-primary">
-                    ${appointment.procedure_name || 'No Procedure'}
-                </span>
-            </td>
-            <td>${appointment.notes || '-'}</td>
-            <td>
-                <div class="btn-group btn-group-sm" role="group">
-                    <button type="button" class="btn btn-outline-primary" onclick="editAppointment(${appointment.id})" title="Edit">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button type="button" class="btn btn-outline-danger" onclick="deleteAppointment(${appointment.id}, '${appointment.patient_name}')" title="Delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </td>
-        </tr>
-    `).join('');
+        sortAndDisplayAppointments(filteredAppointments, currentSortColumn, currentSortOrder);
     }
 
     function editAppointment(appointmentId) {
@@ -691,6 +671,41 @@ $page_title = "Appointment Management";
             default:
                 return 'bg-secondary';
         }
+    }
+    function sortAndDisplayAppointments(appointmentsToSort, sortColumn, sortOrder) {
+        const sortedAppointments = [...appointmentsToSort].sort((a, b) => {
+            let valA = a[sortColumn];
+            let valB = b[sortColumn];
+
+            if (sortColumn === 'appointment_date') {
+                valA = new Date(valA);
+                valB = new Date(valB);
+            }
+
+            if (typeof valA === 'string') valA = valA.toLowerCase();
+            if (typeof valB === 'string') valB = valB.toLowerCase();
+
+            if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
+            if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
+            return 0;
+        });
+
+        renderAppointmentsTable(sortedAppointments);
+
+        currentSortColumn = sortColumn;
+        currentSortOrder = sortOrder;
+
+        document.querySelectorAll('.sortable').forEach(header => {
+            const icon = header.querySelector('i');
+            if (icon) {
+                icon.className = 'fas ms-1'; // Reset classes
+                if (header.dataset.sortBy === currentSortColumn) {
+                    icon.classList.add(currentSortOrder === 'asc' ? 'fa-sort-up' : 'fa-sort-down');
+                } else {
+                    icon.classList.add('fa-sort');
+                }
+            }
+        });
     }
 </script>
 

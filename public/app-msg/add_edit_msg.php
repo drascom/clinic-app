@@ -4,7 +4,7 @@
 require_once __DIR__ . '/../includes/header.php';
 require_once __DIR__ . '/../includes/db.php';
 
-$message_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$message_id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 $page_title = $message_id > 0 ? 'Edit Message' : 'Add New Message';
 
 // Placeholder for current user ID - replace with actual session/auth logic
@@ -52,7 +52,8 @@ $current_user_id = 1;
 
         <div class="mb-3">
             <label for="messageContent" class="form-label">Message:</label>
-            <textarea class="form-control" id="messageContent" rows="5" required placeholder="Enter your message"></textarea>
+            <textarea class="form-control" id="messageContent" rows="5" required
+                placeholder="Enter your message"></textarea>
             <div class="invalid-feedback">Message content cannot be empty.</div>
         </div>
 
@@ -68,7 +69,7 @@ $current_user_id = 1;
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 <script src="../assets/js/api-helper.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', async function() {
+    document.addEventListener('DOMContentLoaded', async function () {
         const messageId = document.getElementById('messageId').value;
         const senderId = document.getElementById('senderId').value;
         const receiverIdSelect = document.getElementById('receiverId'); // Renamed for clarity
@@ -85,7 +86,7 @@ $current_user_id = 1;
             allowClear: true,
             ajax: {
                 delay: 250,
-                transport: function(params, success, failure) {
+                transport: function (params, success, failure) {
                     const requestData = {
                         search: params.data.term,
                         page: params.data.page || 1
@@ -94,7 +95,7 @@ $current_user_id = 1;
                         .then(success)
                         .catch(failure);
                 },
-                processResults: function(data, params) {
+                processResults: function (data, params) {
                     params.page = params.page || 1;
                     if (data.success && data.data) { // Assuming the handler returns data in a 'data' property
                         return {
@@ -123,7 +124,7 @@ $current_user_id = 1;
             allowClear: true,
             ajax: {
                 delay: 250,
-                transport: function(params, success, failure) {
+                transport: function (params, success, failure) {
                     const requestData = {
                         search: params.data.term,
                         page: params.data.page || 1
@@ -132,7 +133,7 @@ $current_user_id = 1;
                         .then(success)
                         .catch(failure);
                 },
-                processResults: function(data, params) {
+                processResults: function (data, params) {
                     params.page = params.page || 1;
                     if (data.success && data.data) {
                         return {
@@ -181,16 +182,16 @@ $current_user_id = 1;
         }
 
         // Add event listeners for real-time validation
-        relatedTableSelect.addEventListener('change', async function() {
+        relatedTableSelect.addEventListener('change', async function () {
             validateField(this);
             await populateRelatedIdOptions(this.value);
             updateSubmitButtonState();
         });
-        relatedIdInput.addEventListener('change', function() {
+        relatedIdInput.addEventListener('change', function () {
             validateField(this);
             updateSubmitButtonState();
         });
-        messageContentTextarea.addEventListener('input', function() {
+        messageContentTextarea.addEventListener('input', function () {
             validateField(this);
             updateSubmitButtonState();
         });
@@ -286,7 +287,7 @@ $current_user_id = 1;
             }
         }
 
-        messageForm.addEventListener('submit', async function(event) {
+        messageForm.addEventListener('submit', async function (event) {
             event.preventDefault();
 
             if (!validateForm()) {
@@ -331,7 +332,7 @@ $current_user_id = 1;
                 receiver_id: receiverIdSelect.value || null,
                 patient_id: patientIdSelect.value || null, // Add patient_id to payload
                 related_tables: relatedTablesPayload,
-                message: messageContentTextarea.value
+                message: messageContentTextarea.value,
             };
 
             // Sample insert/update request:
