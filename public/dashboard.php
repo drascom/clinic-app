@@ -185,7 +185,7 @@
         return date.toLocaleDateString('en-GB', options).replace(/\//g, ' / ');
     }
 
-    function getStatusColor(status) {
+    function getStatusBadgeClass(status) {
         switch (status.toLowerCase()) {
             case 'completed': return 'success';
             case 'scheduled': return 'primary';
@@ -210,7 +210,7 @@
                 renderOverallStats(data.overall_stats);
                 renderStaffAvailability(data.staff_availability);
                 renderPendingTasks(data.pending_tasks);
-                renderWeekSchedule(data.week_schedule);
+                renderWeekSchedule(data.appointments);
                 renderRecentActivity(data.recent_activity);
                 renderRecentSurgeries(data.recent_surgeries);
                 renderRecentLeads(data.recent_leads);
@@ -251,10 +251,17 @@
     function renderWeekSchedule(data) {
         const scheduleList = document.getElementById('week-appointment-list');
         scheduleList.innerHTML = ''; // Clear existing content
-        const allEvents = [...data.appointments].sort((a, b) => {
+
+        if (!Array.isArray(data)) {
+            console.error('Data passed to renderWeekSchedule is not an array:', data);
+            scheduleList.innerHTML = '<div class="text-center text-muted py-4">Could not load schedule.</div>';
+            return;
+        }
+
+        const allEvents = [...data].sort((a, b) => {
             const dateA = new Date(a.date + 'T' + a.time);
             const dateB = new Date(b.date + 'T' + b.time);
-            return dateB - dateA;
+            return dateA - dateB;
         });
 
         if (allEvents.length === 0) {
@@ -268,7 +275,7 @@
         allEvents.forEach(event => {
             const eventDate = new Date(event.date);
             const formattedDate = eventDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
-            const badgeClass = event.type === 'Appointment' ? 'bg-primary-subtle text-primary' : 'bg-success-subtle text-success';
+            const badgeClass = event.appointment_type === 'consultation' ? 'bg-primary-subtle text-primary' : 'bg-success-subtle text-success';
             const itemHtml = `
             <div class="d-flex align-items-center justify-content-between p-3 rounded hover-bg-light-dark">
                 <div class="d-flex align-items-center space-x-3">
@@ -277,7 +284,7 @@
                     </span>
                     <div>
                         <p class="font-weight-medium mb-0">${event.patient_name}</p>
-                        <p class="text-sm text-muted mb-0">${event.type}</p>
+                        <p class="text-sm text-muted mb-0"> ${event.procedure_name}</p>
                     </div>
                 </div>
                 <div class="text-right">
@@ -387,7 +394,7 @@
                             <div class="d-flex justify-content-start align-items-center">
                                 ${formsContent}
                             </div>
-                            <p class="text-xs text-muted mb-0"><span class="badge bg-${getStatusColor(surgery.status)}">${surgery.status}</span></p>
+                            <p class="text-xs text-muted mb-0"><span class="badge ${getStatusBadgeClass(surgery.status)}">${surgery.status}</span></p>
                         </div>
                     </div>
                 </div>
@@ -420,7 +427,7 @@
                                 <div class="d-flex justify-content-start align-items-center">
                                     ${lead.email || ''}
                                 </div>
-                                <span class="badge bg-${getStatusColor(lead.status)}">${lead.status}</span>
+                                <span class="badge ${getStatusBadgeClass(lead.status)}">${lead.status}</span>
                             </div>
                         </div>
                     </div>
@@ -434,7 +441,7 @@
         return date.toLocaleDateString('en-GB', options).replace(/\//g, ' / ');
     }
 
-    function getStatusColor(status) {
+    function getStatusBadgeClass(status) {
         switch (status.toLowerCase()) {
             case 'completed': return 'success';
             case 'scheduled': return 'primary';

@@ -13,12 +13,62 @@ function getStatusColor(status) {
       return "secondary";
   }
 }
+function getStatusBadgeClass(status) {
+    switch (status.toLowerCase()) {
+        // Lead statuses
+        case 'intake':
+            return 'bg-info';
+        case 'not answered':
+            return 'bg-warning text-dark';
+        case 'not interested':
+            return 'bg-danger';
+        case 'qualified':
+            return 'bg-success';
+        case 'converted':
+            return 'bg-primary';
 
- // Initialize tooltips globally
- document.addEventListener('DOMContentLoaded', function() {
+        // Surgery/Appointment statuses
+        case "completed":
+            return "bg-success";
+        case "booked":
+        case "scheduled":
+            return "bg-primary";
+        case "cancelled":
+            return "bg-danger";
+        case "in-progress":
+            return "bg-warning";
+        case "confirmed":
+            return "bg-info";
+
+        // Consultation types
+        case 'face-to-face':
+            return 'bg-info text-dark';
+        case 'video-to-video':
+            return 'bg-success';
+
+        // Staff statuses
+        case 'candidate':
+            return 'bg-info';
+        case 'staff':
+            return 'bg-primary';
+        case 'active':
+            return 'bg-success';
+        case 'inactive':
+            return 'bg-danger';
+        // agency colors
+        case 'hospital':
+          return 'bg-secondary';
+        case 'want hair':
+          return 'bg-primary';
+        default:
+            return 'bg-secondary';
+    }
+}
+// Initialize tooltips globally
+document.addEventListener('DOMContentLoaded', function () {
   var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-  var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-      return new bootstrap.Tooltip(tooltipTriggerEl)
+  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl)
   })
 });
 // Initialize all Bootstrap toasts
@@ -30,17 +80,17 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 const themeToggle = document.getElementById('themeToggle');
 if (themeToggle) {
-    themeToggle.addEventListener('click', () => {
-        const html = document.documentElement;
-        html.dataset.bsTheme =
-            html.dataset.bsTheme === 'dark' ? 'light' : 'dark';
-        localStorage.setItem('theme', html.dataset.bsTheme);
-    });
+  themeToggle.addEventListener('click', () => {
+    const html = document.documentElement;
+    html.dataset.bsTheme =
+      html.dataset.bsTheme === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('theme', html.dataset.bsTheme);
+  });
 }
 
 // on load
 document.documentElement.dataset.bsTheme =
-    localStorage.getItem('theme') ?? 'light';
+  localStorage.getItem('theme') ?? 'light';
 // Function to show a Bootstrap toast message
 function showToast(message, type = "info", delay = 1000) {
   const toastContainer = document.querySelector(".toast-container");

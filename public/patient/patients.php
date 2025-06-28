@@ -113,7 +113,7 @@ $page_title = "Patients";
 
                             // Build agency column for admin/editor users
                             const agencyColumnHtml =
-                                `<td><span class="text-truncate-mobile badge bg-secondary">${patient.agency_name || 'No Agency'}</span></td>`;
+                                `<td><span class="text-truncate-mobile badge ${getStatusBadgeClass(patient.agency_name)}">${patient.agency_name || 'No Agency'}</span></td>`;
 
                             tableRows += `
                             <tr data-patient-id="${patient.id}"

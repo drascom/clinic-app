@@ -182,7 +182,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <span class="fw-medium">${surgery.predicted_grafts_count || '0'} / ${surgery.current_grafts_count || '0'}</span>
                     </td>
                     <td>
-                        <span class="badge bg-${getStatusColor(surgery.status)} status-${surgery.status}">
+                        <span class="badge ${getStatusBadgeClass(surgery.status)} status-${surgery.status}">
                             ${surgery.status}
                         </span>
                     </td>

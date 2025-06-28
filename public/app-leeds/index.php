@@ -24,6 +24,8 @@ require_once '../includes/header.php';
     }
 
     .wrap-text {
+        max-width:30%;
+        width:20%;
         white-space: normal;
         word-break: break-word;
     }
@@ -139,23 +141,6 @@ require_once '../includes/footer.php';
             } catch (error) {
                 console.error('Failed to fetch leads:', error);
                 tableBody.innerHTML = '<tr><td colspan="6" class="text-center text-danger">An unexpected error occurred.</td></tr>';
-            }
-        }
-
-        function getStatusBadgeClass(status) {
-            switch (status) {
-                case 'intake':
-                    return 'bg-info';
-                case 'not answered':
-                    return 'bg-warning text-dark';
-                case 'not interested':
-                    return 'bg-danger';
-                case 'qualified':
-                    return 'bg-success';
-                case 'converted':
-                    return 'bg-primary';
-                default:
-                    return 'bg-secondary';
             }
         }
 

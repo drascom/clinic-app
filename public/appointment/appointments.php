@@ -512,7 +512,7 @@ $page_title = "Appointment Management";
                 </span>
             </td>
             <td>
-                <span class="badge ${getConsultationTypeClass(appointment.consultation_type)}">
+                <span class="badge ${getStatusBadgeClass(appointment.consultation_type)}">
                     <i class="fas ${appointment.consultation_type === 'video-to-video' ? 'fa-video' : 'fa-user-friends'} me-1"></i>
                     ${appointment.consultation_type}
                 </span>
@@ -662,16 +662,6 @@ $page_title = "Appointment Management";
         document.getElementById('loading-spinner').style.display = show ? 'block' : 'none';
     }
 
-    function getConsultationTypeClass(type) {
-        switch (type) {
-            case 'face-to-face':
-                return 'bg-info text-dark';
-            case 'video-to-video':
-                return 'bg-success';
-            default:
-                return 'bg-secondary';
-        }
-    }
     function sortAndDisplayAppointments(appointmentsToSort, sortColumn, sortOrder) {
         const sortedAppointments = [...appointmentsToSort].sort((a, b) => {
             let valA = a[sortColumn];

@@ -1,13 +1,4 @@
 <?php
-require_once __DIR__ . '/../includes/db.php';
-require_once __DIR__ . '/../auth/auth.php';
-
-// Ensure user is logged in and is admin or editor
-if (!is_logged_in() || (!is_admin() && !is_editor())) {
-    header('Location: /auth/login.php');
-    exit();
-}
-
 $page_title = "Interview Invitations";
 include __DIR__ . '/../includes/header.php';
 ?>
@@ -312,12 +303,7 @@ include __DIR__ . '/../includes/header.php';
     </div>
 </div>
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- API Helper for secure POST requests -->
-<script src="/assets/js/api-helper.js"></script>
-<?php require_once '../includes/footer.php'; ?>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Global variables
@@ -1308,3 +1294,4 @@ include __DIR__ . '/../includes/header.php';
         }
     });
 </script>
+<?php require_once '../includes/footer.php'; ?>
