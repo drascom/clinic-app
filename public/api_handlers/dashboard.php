@@ -359,9 +359,10 @@ function handle_dashboard($action, $method, $db, $input = [])
                         'overall_stats' => get_overall_stats_data($db),
                         'staff_availability' => get_staff_availability_data($db),
                         'pending_tasks' => get_pending_tasks_data($db, get_user_id()),
-                        'week_schedule' => get_week_schedule_data($db),
+                        'week_schedule' => get_recent_appointments_data($db),
                         'recent_activity' => get_recent_activity_data($db),
                         'recent_surgeries' => get_recent_surgeries_data($db),
+                        'recent_leads' => get_recent_leads_data($db),
                     ];
                     return ['success' => true, 'data' => $data];
                 } catch (PDOException $e) {
@@ -533,9 +534,10 @@ function get_pending_tasks_data($db, $userId)
 /**
  * Get today's schedule details (appointments and surgeries).
  */
-function get_week_schedule_data($db)
+function get_recent_appointments_data($db)
 {
     $today = date('Y-m-d');
+    $sevenDaysLater = date('Y-m-d', strtotime('+7 days'));
     $agencyFilter = '';
     $agencyParams = [];
     if (is_agent() && get_user_agency_id()) {
@@ -543,16 +545,16 @@ function get_week_schedule_data($db)
         $agencyParams = [get_user_agency_id()];
     }
 
-    // Upcoming 10 appointments
+    // Upcoming 10 appointments for the next 7 days
     $appointmentsStmt = $db->prepare("
         SELECT p.name as patient_name, a.appointment_date as date, a.start_time as time, 'Appointment' as type
         FROM appointments a
         JOIN patients p ON a.patient_id = p.id
-        WHERE a.appointment_date >= ? " . $agencyFilter . "
-        ORDER BY a.appointment_date DESC, a.start_time
+        WHERE a.appointment_date BETWEEN ? AND ? " . $agencyFilter . "
+        ORDER BY a.appointment_date ASC, a.start_time
         LIMIT 10
     ");
-    $appointmentsStmt->execute(array_merge([$today], $agencyParams));
+    $appointmentsStmt->execute(array_merge([$today, $sevenDaysLater], $agencyParams));
     $appointments = $appointmentsStmt->fetchAll(PDO::FETCH_ASSOC);
 
     return [
@@ -567,102 +569,51 @@ function get_week_schedule_data($db)
 function get_recent_activity_data($db)
 {
     $today = date('Y-m-d');
+    $sevenDaysLater = date('Y-m-d', strtotime('+7 days'));
     $agencyFilter = '';
-    $agencyParams = [];
     if (is_agent() && get_user_agency_id()) {
         $agencyFilter = ' AND p.agency_id = ?';
-        $agencyParams = [get_user_agency_id()];
     }
 
     $queries = [];
 
-    // Patients
+    // Upcoming Appointments
     $queries[] = "
-        SELECT 'Patient' as type, p.name as description,
-        CASE WHEN p.updated_at > p.created_at THEN u_updated.username ELSE u_created.username END as updated_by,
-        p.updated_at as activity_timestamp,
-        CASE WHEN p.updated_at = p.created_at THEN 'Created' ELSE 'Updated' END as process_type
-        FROM patients p
-        LEFT JOIN users u_updated ON p.updated_by = u_updated.id
-        LEFT JOIN users u_created ON p.created_by = u_created.id
-        WHERE DATE(p.updated_at) = ? " . $agencyFilter;
-
-    // Appointments
-    $queries[] = "
-        SELECT 'Appointment' as type, p.name || ' appointment' as description,
-        CASE WHEN a.updated_at > a.created_at THEN u_updated.username ELSE u_created.username END as updated_by,
-        a.updated_at as activity_timestamp,
-        CASE WHEN a.updated_at = a.created_at THEN 'Created' ELSE 'Updated' END as process_type
+        SELECT 'Appointment' as type, p.name || ' on ' || a.appointment_date as description,
+        u.username as updated_by,
+        a.appointment_date || ' ' || a.start_time as activity_timestamp,
+        'Upcoming' as process_type
         FROM appointments a
-        LEFT JOIN patients p ON a.patient_id = p.id
-        LEFT JOIN users u_updated ON a.updated_by = u_updated.id
-        LEFT JOIN users u_created ON a.created_by = u_created.id
-        WHERE DATE(a.updated_at) = ? " . $agencyFilter;
+        JOIN patients p ON a.patient_id = p.id
+        LEFT JOIN users u ON a.created_by = u.id
+        WHERE a.appointment_date BETWEEN ? AND ? " . $agencyFilter;
 
-    // Surgeries
+    // Upcoming Surgeries
     $queries[] = "
-        SELECT 'Surgery' as type, p.name || ' surgery' as description,
-        CASE WHEN s.updated_at > s.created_at THEN u_updated.username ELSE u_created.username END as updated_by,
-        s.updated_at as activity_timestamp,
-        CASE WHEN s.updated_at = s.created_at THEN 'Created' ELSE 'Updated' END as process_type
+        SELECT 'Surgery' as type, p.name || ' on ' || s.date as description,
+        u.username as updated_by,
+        s.date as activity_timestamp,
+        'Upcoming' as process_type
         FROM surgeries s
-        LEFT JOIN patients p ON s.patient_id = p.id
-        LEFT JOIN users u_updated ON s.updated_by = u_updated.id
-        LEFT JOIN users u_created ON s.created_by = u_created.id
-        WHERE DATE(s.updated_at) = ? " . $agencyFilter;
-
-    // Staff and Staff Details combined
-    $queries[] = "
-        SELECT 'Staff' as type, s.name as description,
-        CASE WHEN s.updated_at > s.created_at THEN u_updated.username ELSE u_created.username END as updated_by,
-        s.updated_at as activity_timestamp,
-        CASE WHEN s.updated_at = s.created_at THEN 'Created' ELSE 'Updated' END as process_type
-        FROM staff s
-        LEFT JOIN users u_updated ON s.updated_by = u_updated.id
-        LEFT JOIN users u_created ON s.created_by = u_created.id
-        WHERE DATE(s.updated_at) = ?
-
-        UNION ALL
-
-        SELECT 'Staff Detail' as type, s.name || ' details' as description,
-        CASE WHEN sd.updated_at > sd.created_at THEN u_updated.username ELSE u_created.username END as updated_by,
-        sd.updated_at as activity_timestamp,
-        CASE WHEN sd.updated_at = sd.created_at THEN 'Created' ELSE 'Updated' END as process_type
-        FROM staff_details sd
-        LEFT JOIN staff s ON sd.staff_id = s.id
-        LEFT JOIN users u_updated ON sd.updated_by = u_updated.id
-        LEFT JOIN users u_created ON sd.created_by = u_created.id
-        WHERE DATE(sd.updated_at) = ?";
-
-    // Rooms (assuming rooms table has updated_at and updated_by)
-    $queries[] = "
-        SELECT 'Room' as type, r.name as description,
-        CASE WHEN r.updated_at > r.created_at THEN u_updated.username ELSE u_created.username END as updated_by,
-        r.updated_at as activity_timestamp,
-        CASE WHEN r.updated_at = r.created_at THEN 'Created' ELSE 'Updated' END as process_type
-        FROM rooms r
-        LEFT JOIN users u_updated ON r.updated_by = u_updated.id
-        LEFT JOIN users u_created ON r.created_by = u_created.id
-        WHERE DATE(r.updated_at) = ?";
+        JOIN patients p ON s.patient_id = p.id
+        LEFT JOIN users u ON s.created_by = u.id
+        WHERE s.date BETWEEN ? AND ? " . $agencyFilter;
 
     $unionQuery = implode(" UNION ALL ", $queries);
-    $finalQuery = $unionQuery . " ORDER BY activity_timestamp DESC LIMIT 6";
+    $finalQuery = $unionQuery . " ORDER BY activity_timestamp ASC LIMIT 10";
 
     $params = [];
-    foreach ($queries as $index => $query) {
-        $params[] = $today; // Add parameter for the first DATE(?) in each query
-
-        // For the combined Staff/Staff Details query (which is at index 3 in the $queries array),
-        // it has two '?' placeholders for dates.
-        if ($index === 3) { // Assuming the combined query is the 4th element (index 3)
-            $params[] = $today; // Add parameter for the second DATE(?)
-        }
-
-        // Add agency_id filter if applicable. This filter is only for Patient, Appointment, and Surgery queries.
-        // The combined Staff/Staff Details query does not have an agency_id filter.
-        if (is_agent() && get_user_agency_id() && (strpos($query, 'p.agency_id') !== false || strpos($query, 'a.agency_id') !== false || strpos($query, 's.agency_id') !== false)) {
-            $params[] = get_user_agency_id();
-        }
+    // Params for Appointments query
+    $params[] = $today;
+    $params[] = $sevenDaysLater;
+    if (is_agent() && get_user_agency_id()) {
+        $params[] = get_user_agency_id();
+    }
+    // Params for Surgeries query
+    $params[] = $today;
+    $params[] = $sevenDaysLater;
+    if (is_agent() && get_user_agency_id()) {
+        $params[] = get_user_agency_id();
     }
 
     $stmt = $db->prepare($finalQuery);
@@ -683,7 +634,7 @@ function get_recent_surgeries_data($db)
     }
 
     $stmt = $db->prepare("
-        SELECT s.date, p.name as patient_name, s.status, s.forms
+        SELECT s.id, s.date, p.name as patient_name, s.status, s.forms
         FROM surgeries s
         JOIN patients p ON s.patient_id = p.id
         " . $agencyFilter . "
@@ -691,5 +642,21 @@ function get_recent_surgeries_data($db)
         LIMIT 10
     ");
     $stmt->execute($agencyParams);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
+/**
+ * Retrieve the last 5 recent leads.
+ */
+function get_recent_leads_data($db)
+{
+    $stmt = $db->prepare("
+        SELECT id, name, email, phone, status
+        FROM leeds
+        ORDER BY created_at DESC
+        LIMIT 5
+    ");
+    $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }

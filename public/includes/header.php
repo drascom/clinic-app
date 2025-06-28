@@ -188,6 +188,12 @@ if (
                                                     Interview Invitations
                                                 </a>
                                             </li>
+                                            <li>
+                                                <a class="dropdown-item" href="/app-leeds/">
+                                                    <i class="fas fa-file-import me-1"></i>
+                                                    Leeds Submissions
+                                                </a>
+                                            </li>
                                         </ul>
                                     </li>
                                 <?php endif; ?>

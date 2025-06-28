@@ -653,3 +653,28 @@ INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_b
 INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (30, 6, '\u{2705}', 1);
 INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (31, 2, '\u{1F44D}', 1);
 INSERT INTO message_reactions (`message_id`, `user_id`, `emoji_code`, `created_by`) VALUES (32, 3, '\u{2764}', 1);
+
+-- Table for Leeds submissions
+CREATE TABLE leeds (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  submission_id INTEGER UNIQUE,
+  name TEXT,
+  email TEXT,
+  phone TEXT,
+  treatment TEXT,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  created_by INTEGER,
+  updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  status TEXT DEFAULT 'intake' CHECK (status IN ('intake', 'not answered', 'not interested', 'qualified', 'converted')),
+  FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
+);
+CREATE TABLE IF NOT EXISTS notes (
+  id INTEGER PRIMARY KEY AUTOINCREMENT, 
+  lead_id INTEGER NOT NULL, 
+  user_id INTEGER NOT NULL,
+  section_name TEXT,
+  note TEXT NOT NULL, 
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TEXT DEFAULT CURRENT_TIMESTAMP, 
+  FOREIGN KEY (lead_id) REFERENCES leeds(id) ON DELETE CASCADE, 
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE);

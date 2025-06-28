@@ -246,7 +246,7 @@ function handleTest()
     }
 
     // Test credentials file
-    $credentialsPath = __DIR__ . '/../../secrets/liv-hsh-patients-18682cec86db.json';
+    $credentialsPath = __DIR__ . '/../../secrets/google-sheets-api.json';
     if (file_exists($credentialsPath)) {
         $tests['credentials'] = 'OK';
     } else {

@@ -38,6 +38,17 @@ function handle_appointments($action, $method, $db, $input = [])
                 }
 
                 try {
+                    $logService->log('appointments', 'info', 'Attempting to create appointment.', [
+                        'room_id' => $room_id,
+                        'patient_id' => $patient_id,
+                        'appointment_date' => $appointment_date,
+                        'start_time' => $start_time,
+                        'end_time' => $end_time,
+                        'procedure_id' => $procedure_id,
+                        'consultation_type' => $consultation_type,
+                        'appointment_type' => $appointment_type,
+                        'created_by' => $created_by
+                    ]);
                     $stmt = $db->prepare("
                         INSERT INTO appointments (room_id, patient_id, appointment_date, start_time, end_time, procedure_id, notes, created_by, consultation_type, appointment_type)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -89,6 +100,18 @@ function handle_appointments($action, $method, $db, $input = [])
                 }
 
                 try {
+                    $logService->log('appointments', 'info', 'Attempting to update appointment.', [
+                        'id' => $id,
+                        'room_id' => $room_id,
+                        'patient_id' => $patient_id,
+                        'appointment_date' => $appointment_date,
+                        'start_time' => $start_time,
+                        'end_time' => $end_time,
+                        'procedure_id' => $procedure_id,
+                        'consultation_type' => $consultation_type,
+                        'appointment_type' => $appointment_type,
+                        'updated_by' => $updated_by
+                    ]);
                     $stmt = $db->prepare("
                         UPDATE appointments
                         SET room_id = ?, patient_id = ?, appointment_date = ?, start_time = ?, end_time = ?,
@@ -228,7 +251,6 @@ function handle_appointments($action, $method, $db, $input = [])
             } else {
                 $logService->log('appointments', 'error', 'Invalid method for list action.', ['method' => $method]);
             }
-            break;
             break;
 
         case 'get_available_slots':
